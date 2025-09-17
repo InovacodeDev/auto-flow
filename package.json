@@ -1,0 +1,31 @@
+{
+    "name": "autoflow-monorepo",
+    "private": true,
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "dev:backend": "turbo run dev --filter=@autoflow/backend",
+        "dev:frontend": "turbo run dev --filter=@autoflow/frontend",
+        "lint": "turbo run lint",
+        "test": "turbo run test",
+        "clean": "turbo run clean",
+        "type-check": "turbo run type-check",
+        "setup": "./dev-setup.sh"
+    },
+    "devDependencies": {
+        "@turbo/gen": "^1.10.12",
+        "turbo": "^1.10.12",
+        "prettier": "^3.0.0",
+        "eslint": "^8.48.0",
+        "typescript": "^5.2.2"
+    },
+    "engines": {
+        "node": ">=18",
+        "pnpm": ">=8"
+    },
+    "packageManager": "pnpm@8.15.0",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ]
+}
