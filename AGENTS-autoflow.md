@@ -293,34 +293,34 @@ docs/
 **Objetivo**: Base arquitetural sólida
 
 #### Semana 1-2: Backend Foundation
-- [ ] Setup Turborepo + Fastify + Drizzle
-- [ ] Sistema de autenticação multi-tenant
-- [ ] Database schema inicial (users, organizations, workflows)
-- [ ] API base para workflows CRUD
-- [ ] Sistema de plugins para integrações
+- [x] Setup Turborepo + Fastify + Drizzle
+- [x] Sistema de autenticação multi-tenant
+- [x] Database schema inicial (users, organizations, workflows)
+- [x] API base para workflows CRUD
+- [x] Sistema de plugins para integrações
 
 #### Semana 3-4: Frontend Foundation
-- [ ] Setup React + TanStack Router + Tailwind
-- [ ] Sistema de autenticação frontend
-- [ ] Dashboard inicial com métricas mock
-- [ ] Layout responsivo Material Expressive
-- [ ] Navegação e estrutura base
+- [x] Setup React + TanStack Router + Tailwind
+- [x] Sistema de autenticação frontend
+- [x] Dashboard inicial com métricas mock
+- [x] Layout responsivo Material Expressive
+- [x] Navegação e estrutura base
 
 ### Sprint 3-4: Core Features (4 semanas)
 
 #### Semana 5-6: Workflow Engine
-- [ ] Engine de execução de workflows
-- [ ] Sistema de triggers (webhook, schedule, manual)
-- [ ] Sistema de actions (send message, save data, API call)
-- [ ] Sistema de conditions (if/else, loops)
-- [ ] Queue system com Redis para execução
+- [x] Engine de execução de workflows
+- [x] Sistema de triggers (webhook, schedule, manual)
+- [x] Sistema de actions (send message, save data, API call)
+- [x] Sistema de conditions (if/else, loops)
+- [x] Queue system com Redis para execução
 
 #### Semana 7-8: Constructor Visual
-- [ ] Canvas drag-and-drop com ReactFlow
-- [ ] Componentes visuais para triggers/actions
-- [ ] Sistema de configuração de nodes
-- [ ] Preview e teste de workflows
-- [ ] Versionamento e histórico
+- [x] Canvas drag-and-drop com ReactFlow
+- [x] Componentes visuais para triggers/actions
+- [x] Sistema de configuração de nodes
+- [x] Preview e teste de workflows
+- [x] Versionamento e histórico
 
 ### Sprint 5-6: IA & Integrations (4 semanas)
 

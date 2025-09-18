@@ -780,4 +780,83 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
             };
         }
     );
+
+    // GET /api/workflows/queue/stats - Queue statistics
+    fastify.get(
+        "/queue/stats",
+        {
+            schema: {
+                tags: ["workflows"],
+                description: "Get queue statistics",
+                security: [{ bearerAuth: [] }],
+                response: {
+                    200: {
+                        type: "object",
+                        properties: {
+                            queueType: { type: "string" },
+                            stats: {
+                                type: "object",
+                                properties: {
+                                    waiting: { type: "number" },
+                                    active: { type: "number" },
+                                    completed: { type: "number" },
+                                    failed: { type: "number" },
+                                    delayed: { type: "number" },
+                                },
+                            },
+                            engineMetrics: {
+                                type: "object",
+                                properties: {
+                                    totalExecutions: { type: "number" },
+                                    successfulExecutions: { type: "number" },
+                                    failedExecutions: { type: "number" },
+                                    currentConcurrentExecutions: { type: "number" },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        async (_request) => {
+            try {
+                const engineMetrics = workflowEngine.getMetrics();
+
+                // Se usando Redis Queue, obter estatísticas
+                let queueStats = null;
+                let queueType = "memory";
+
+                // @ts-ignore - Acessar propriedade privada para demonstração
+                if (workflowEngine.workflowQueue) {
+                    try {
+                        // @ts-ignore
+                        queueStats = await workflowEngine.workflowQueue.getStats();
+                        queueType = "redis";
+                    } catch (error) {
+                        fastify.log.warn(`Failed to get Redis queue stats: ${error}`);
+                    }
+                }
+
+                return {
+                    queueType,
+                    stats: queueStats || {
+                        waiting: engineMetrics.queueSize,
+                        active: engineMetrics.currentConcurrentExecutions,
+                        completed: engineMetrics.successfulExecutions,
+                        failed: engineMetrics.failedExecutions,
+                        delayed: 0,
+                    },
+                    engineMetrics: {
+                        totalExecutions: engineMetrics.totalExecutions,
+                        successfulExecutions: engineMetrics.successfulExecutions,
+                        failedExecutions: engineMetrics.failedExecutions,
+                        currentConcurrentExecutions: engineMetrics.currentConcurrentExecutions,
+                    },
+                };
+            } catch (error) {
+                fastify.log.error(`Error getting queue stats: ${error}`);
+                throw new Error("Failed to get queue statistics");
+            }
+        }
+    );
 };

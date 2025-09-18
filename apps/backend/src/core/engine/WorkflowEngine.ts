@@ -18,6 +18,7 @@ import {
 import { ManualTriggerHandler } from "./triggers/ManualTriggerHandler";
 import { WebhookTriggerHandler } from "./triggers/WebhookTriggerHandler";
 import { ScheduleTriggerHandler } from "./triggers/ScheduleTriggerHandler";
+import { WorkflowQueue } from "../queue/WorkflowQueue";
 
 /**
  * AutoFlow Workflow Engine - Fase 4
@@ -32,6 +33,7 @@ export class WorkflowEngine extends EventEmitter implements IWorkflowEngine {
     private isProcessing = false;
     private metrics: ExecutionMetrics;
     private fastify?: FastifyInstance;
+    private workflowQueue?: WorkflowQueue;
 
     public config: EngineConfig = {
         maxConcurrentExecutions: 100,
@@ -46,7 +48,7 @@ export class WorkflowEngine extends EventEmitter implements IWorkflowEngine {
         sandboxEnabled: true,
     };
 
-    constructor(config?: Partial<EngineConfig>, fastify?: FastifyInstance) {
+    constructor(config?: Partial<EngineConfig>, fastify?: FastifyInstance, useRedisQueue: boolean = false) {
         super();
 
         if (config) {
@@ -56,11 +58,38 @@ export class WorkflowEngine extends EventEmitter implements IWorkflowEngine {
         if (fastify) {
             this.fastify = fastify;
         }
+
         this.metrics = this.initializeMetrics();
         this.initializeTriggerHandlers();
-        this.startQueueProcessor();
+
+        // Inicializar Redis Queue se solicitado
+        if (useRedisQueue) {
+            this.initializeRedisQueue();
+        } else {
+            this.startQueueProcessor();
+        }
 
         this.log("info", "WorkflowEngine", "Engine initialized successfully");
+    }
+
+    /**
+     * Inicializar Redis Queue System
+     */
+    private initializeRedisQueue(): void {
+        try {
+            const queueConfig = WorkflowQueue.getDefaultConfig();
+            this.workflowQueue = new WorkflowQueue(queueConfig);
+            this.workflowQueue.setWorkflowEngine(this);
+            this.log("info", "WorkflowEngine", "Redis Queue initialized successfully");
+        } catch (error) {
+            this.log(
+                "error",
+                "WorkflowEngine",
+                "Failed to initialize Redis Queue, falling back to memory queue:",
+                error
+            );
+            this.startQueueProcessor();
+        }
     }
 
     /**
@@ -201,6 +230,23 @@ export class WorkflowEngine extends EventEmitter implements IWorkflowEngine {
      * Executar um workflow (chamado pelos trigger handlers)
      */
     async executeWorkflow(workflowId: string, triggerData: any, userId?: string): Promise<void> {
+        // Se Redis Queue estiver disponível, usar ela
+        if (this.workflowQueue) {
+            const jobData: any = {
+                workflowId,
+                triggerData,
+            };
+
+            if (userId) {
+                jobData.userId = userId;
+            }
+
+            await this.workflowQueue.addJob(jobData);
+            this.log("info", "WorkflowEngine", `Workflow queued in Redis: ${workflowId}`);
+            return;
+        }
+
+        // Fallback para queue em memória
         const queueItem: { workflowId: string; triggerData: any; userId?: string } = {
             workflowId,
             triggerData,

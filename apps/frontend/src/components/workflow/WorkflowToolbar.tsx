@@ -16,6 +16,7 @@ interface WorkflowToolbarProps {
     onFitView: () => void;
     onToggleLibrary: () => void;
     onToggleInspector: () => void;
+    onToggleVersioning?: () => void;
     onOpenTemplates?: () => void;
     canExecute: boolean;
     readOnly: boolean;

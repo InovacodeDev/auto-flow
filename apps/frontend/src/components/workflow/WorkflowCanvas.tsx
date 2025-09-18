@@ -34,6 +34,7 @@ import {
 
 // Componente de execução
 import ExecutionPanel from "./ExecutionPanel";
+// import WorkflowVersioning from "./WorkflowVersioning"; // Descomentado quando integrado
 
 interface WorkflowCanvasProps {
     workflowId?: string;
@@ -50,6 +51,7 @@ const WorkflowCanvasInner: React.FC<WorkflowCanvasProps> = ({ workflowId, readOn
     const [isInspectorOpen, setIsInspectorOpen] = useState(false);
     const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
     const [isExecutionPanelOpen, setIsExecutionPanelOpen] = useState(false);
+    // const [isVersioningOpen, setIsVersioningOpen] = useState(false); // Para integração futura
     const [workflowName, setWorkflowName] = useState("Novo Workflow");
 
     // Persistência hooks
