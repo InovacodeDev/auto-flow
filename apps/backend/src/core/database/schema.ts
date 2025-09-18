@@ -42,12 +42,51 @@ export const workflows = pgTable("workflows", {
     name: varchar("name", { length: 255 }).notNull(),
     description: text("description"),
     status: varchar("status", { length: 50 }).default("draft").notNull(), // draft, active, paused, archived
-    triggers: jsonb("triggers").notNull(), // Array of WorkflowTrigger
-    actions: jsonb("actions").notNull(), // Array of WorkflowAction
+
+    // Visual Constructor Data (ReactFlow)
+    canvasData: jsonb("canvas_data").default({}), // { viewport, background, settings }
+
+    // Legacy format (mantido para compatibilidade)
+    triggers: jsonb("triggers").default([]), // Array of WorkflowTrigger
+    actions: jsonb("actions").default([]), // Array of WorkflowAction
     conditions: jsonb("conditions").default([]), // Array of WorkflowCondition
+
     metadata: jsonb("metadata").default({}), // { aiGenerated, language, industry, etc }
     version: integer("version").default(1).notNull(),
     isTemplate: boolean("is_template").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Workflow Nodes - Visual constructor nodes (ReactFlow nodes)
+export const workflowNodes = pgTable("workflow_nodes", {
+    id: varchar("id", { length: 255 }).primaryKey(), // ReactFlow node ID
+    workflowId: uuid("workflow_id")
+        .references(() => workflows.id, { onDelete: "cascade" })
+        .notNull(),
+    type: varchar("type", { length: 50 }).notNull(), // trigger, action, condition, utility
+    nodeType: varchar("node_type", { length: 100 }).notNull(), // manual_trigger, http_request, etc
+    position: jsonb("position").notNull(), // { x, y }
+    data: jsonb("data").notNull(), // Node configuration and properties
+    style: jsonb("style").default({}), // Visual styling overrides
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Workflow Edges - Visual constructor connections (ReactFlow edges)
+export const workflowEdges = pgTable("workflow_edges", {
+    id: varchar("id", { length: 255 }).primaryKey(), // ReactFlow edge ID
+    workflowId: uuid("workflow_id")
+        .references(() => workflows.id, { onDelete: "cascade" })
+        .notNull(),
+    source: varchar("source", { length: 255 }).notNull(), // Source node ID
+    target: varchar("target", { length: 255 }).notNull(), // Target node ID
+    sourceHandle: varchar("source_handle", { length: 100 }), // Output handle ID
+    targetHandle: varchar("target_handle", { length: 100 }), // Input handle ID
+    type: varchar("type", { length: 50 }).default("default"), // Edge type
+    data: jsonb("data").default({}), // Edge configuration
+    style: jsonb("style").default({}), // Visual styling
+    animated: boolean("animated").default(false),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -68,6 +107,23 @@ export const workflowExecutions = pgTable("workflow_executions", {
     startedAt: timestamp("started_at").defaultNow().notNull(),
     completedAt: timestamp("completed_at"),
     duration: integer("duration"), // in milliseconds
+});
+
+// Workflow execution logs - Detailed step-by-step logs
+export const workflowExecutionLogs = pgTable("workflow_execution_logs", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    executionId: uuid("execution_id")
+        .references(() => workflowExecutions.id, { onDelete: "cascade" })
+        .notNull(),
+    workflowId: uuid("workflow_id")
+        .references(() => workflows.id)
+        .notNull(),
+    nodeId: varchar("node_id", { length: 255 }), // Node being executed (optional)
+    level: varchar("level", { length: 10 }).notNull(), // info, warn, error, debug
+    component: varchar("component", { length: 100 }).notNull(), // engine, node, trigger, etc
+    message: text("message").notNull(),
+    data: jsonb("data"), // Additional structured data
+    timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
 // Integrations - Connected services
@@ -144,9 +200,36 @@ export const workflowsRelations = relations(workflows, ({ one, many }) => ({
     }),
     executions: many(workflowExecutions),
     analytics: many(analytics),
+    nodes: many(workflowNodes),
+    edges: many(workflowEdges),
 }));
 
-export const workflowExecutionsRelations = relations(workflowExecutions, ({ one }) => ({
+export const workflowNodesRelations = relations(workflowNodes, ({ one }) => ({
+    workflow: one(workflows, {
+        fields: [workflowNodes.workflowId],
+        references: [workflows.id],
+    }),
+}));
+
+export const workflowEdgesRelations = relations(workflowEdges, ({ one }) => ({
+    workflow: one(workflows, {
+        fields: [workflowEdges.workflowId],
+        references: [workflows.id],
+    }),
+}));
+
+export const workflowExecutionLogsRelations = relations(workflowExecutionLogs, ({ one }) => ({
+    execution: one(workflowExecutions, {
+        fields: [workflowExecutionLogs.executionId],
+        references: [workflowExecutions.id],
+    }),
+    workflow: one(workflows, {
+        fields: [workflowExecutionLogs.workflowId],
+        references: [workflows.id],
+    }),
+}));
+
+export const workflowExecutionsRelations = relations(workflowExecutions, ({ one, many }) => ({
     workflow: one(workflows, {
         fields: [workflowExecutions.workflowId],
         references: [workflows.id],
@@ -155,6 +238,7 @@ export const workflowExecutionsRelations = relations(workflowExecutions, ({ one 
         fields: [workflowExecutions.organizationId],
         references: [organizations.id],
     }),
+    logs: many(workflowExecutionLogs),
 }));
 
 export const integrationsRelations = relations(integrations, ({ one }) => ({

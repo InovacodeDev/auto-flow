@@ -1,299 +1,660 @@
-import { AutoFlowWorkflow, WorkflowAction, WorkflowCondition, WorkflowResult, AutoFlowError } from "../types";
+import { EventEmitter } from "events";
+import crypto from "crypto";
+import { FastifyInstance } from "fastify";
+import {
+    IWorkflowEngine,
+    WorkflowDefinition,
+    ExecutionContext,
+    ExecutionLog,
+    ExecutionMetrics,
+    NodeExecutor,
+    TriggerHandler,
+    EngineConfig,
+    NodeExecutionResult,
+    WorkflowError,
+    TimeoutError,
+    LogLevel,
+} from "./types";
+import { ManualTriggerHandler } from "./triggers/ManualTriggerHandler";
+import { WebhookTriggerHandler } from "./triggers/WebhookTriggerHandler";
+import { ScheduleTriggerHandler } from "./triggers/ScheduleTriggerHandler";
 
 /**
- * AutoFlow Workflow Engine
- * Core execution engine for automating business processes
+ * AutoFlow Workflow Engine - Fase 4
+ * Core execution engine para automações empresariais
  */
-export class WorkflowEngine {
-    private activeWorkflows = new Map<string, AutoFlowWorkflow>();
-    private executionQueue: Array<{ workflowId: string; payload: any }> = [];
+export class WorkflowEngine extends EventEmitter implements IWorkflowEngine {
+    private workflows = new Map<string, WorkflowDefinition>();
+    private executions = new Map<string, ExecutionContext>();
+    private nodeExecutors = new Map<string, NodeExecutor>();
+    private triggerHandlers = new Map<string, TriggerHandler>();
+    private executionQueue: Array<{ workflowId: string; triggerData: any; userId?: string }> = [];
     private isProcessing = false;
+    private metrics: ExecutionMetrics;
+    private fastify?: FastifyInstance;
 
-    constructor() {
-        // Start the execution queue processor
+    public config: EngineConfig = {
+        maxConcurrentExecutions: 100,
+        defaultTimeout: 300000, // 5 minutos
+        maxLogsPerExecution: 1000,
+        maxExecutionDataSize: 10 * 1024 * 1024, // 10MB
+        nodeExecutionPoolSize: 10,
+        cacheEnabled: true,
+        cacheTTL: 3600000, // 1 hora
+        metricsEnabled: true,
+        detailedLogging: true,
+        sandboxEnabled: true,
+    };
+
+    constructor(config?: Partial<EngineConfig>, fastify?: FastifyInstance) {
+        super();
+
+        if (config) {
+            this.config = { ...this.config, ...config };
+        }
+
+        if (fastify) {
+            this.fastify = fastify;
+        }
+        this.metrics = this.initializeMetrics();
+        this.initializeTriggerHandlers();
         this.startQueueProcessor();
+
+        this.log("info", "WorkflowEngine", "Engine initialized successfully");
     }
 
     /**
-     * Register a workflow for execution
+     * Inicializar handlers de trigger
      */
-    async registerWorkflow(workflow: AutoFlowWorkflow): Promise<void> {
-        this.validateWorkflow(workflow);
-        this.activeWorkflows.set(workflow.id, workflow);
-        console.log(`✅ Workflow registered: ${workflow.name} (${workflow.id})`);
+    private initializeTriggerHandlers(): void {
+        // Manual Trigger Handler
+        const manualHandler = new ManualTriggerHandler();
+        manualHandler.setExecuteCallback(this.executeWorkflow.bind(this));
+        this.triggerHandlers.set("manual", manualHandler);
+
+        // Webhook Trigger Handler
+        if (this.fastify) {
+            const webhookHandler = new WebhookTriggerHandler(this.fastify);
+            webhookHandler.setExecuteCallback(this.executeWorkflow.bind(this));
+            this.triggerHandlers.set("webhook", webhookHandler);
+        }
+
+        // Schedule Trigger Handler
+        const scheduleHandler = new ScheduleTriggerHandler();
+        scheduleHandler.setExecuteCallback(this.executeWorkflow.bind(this));
+        this.triggerHandlers.set("schedule", scheduleHandler);
+
+        this.log("info", "WorkflowEngine", "Trigger handlers initialized");
     }
 
     /**
-     * Unregister a workflow
+     * Inicializar métricas do engine
+     */
+    private initializeMetrics(): ExecutionMetrics {
+        return {
+            totalExecutions: 0,
+            successfulExecutions: 0,
+            failedExecutions: 0,
+            averageExecutionTime: 0,
+            totalExecutionTime: 0,
+            peakConcurrentExecutions: 0,
+            currentConcurrentExecutions: 0,
+            queueSize: 0,
+            errorRate: 0,
+            lastExecution: null,
+            startTime: new Date(),
+            uptime: 0,
+            executionsPerHour: 0,
+            nodeExecutionCounts: {},
+            nodeAverageExecutionTimes: {},
+            nodeErrorRates: {},
+            memoryUsage: process.memoryUsage().heapUsed,
+            cpuUsage: process.cpuUsage().user,
+        };
+    }
+
+    /**
+     * Registrar um workflow
+     */
+    async registerWorkflow(workflow: WorkflowDefinition): Promise<void> {
+        try {
+            const validation = await this.validateWorkflow(workflow);
+            if (!validation.valid) {
+                throw new WorkflowError(
+                    `Workflow validation failed: ${validation.errors.join(", ")}`,
+                    "VALIDATION_ERROR"
+                );
+            }
+
+            this.workflows.set(workflow.id, workflow);
+
+            // Registrar triggers
+            for (const trigger of workflow.triggers) {
+                if (trigger.enabled) {
+                    await this.registerTrigger(workflow.id, trigger);
+                }
+            }
+
+            this.log("info", "WorkflowEngine", `Workflow registered: ${workflow.name} (${workflow.id})`);
+            this.emit("workflowRegistered", { workflowId: workflow.id, workflow });
+        } catch (error) {
+            this.log("error", "WorkflowEngine", `Failed to register workflow ${workflow.id}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Cancelar registro de um workflow
      */
     async unregisterWorkflow(workflowId: string): Promise<void> {
-        if (this.activeWorkflows.has(workflowId)) {
-            this.activeWorkflows.delete(workflowId);
-            console.log(`🗑️ Workflow unregistered: ${workflowId}`);
+        const workflow = this.workflows.get(workflowId);
+
+        if (!workflow) {
+            throw new WorkflowError(`Workflow not found: ${workflowId}`, "WORKFLOW_NOT_FOUND");
+        }
+
+        // Cancelar triggers
+        for (const trigger of workflow.triggers) {
+            await this.unregisterTrigger(workflowId, trigger);
+        }
+
+        // Cancelar execuções ativas
+        for (const [executionId, context] of this.executions) {
+            if (context.workflowId === workflowId && context.status === "running") {
+                await this.cancelExecution(executionId);
+            }
+        }
+
+        this.workflows.delete(workflowId);
+
+        this.log("info", "WorkflowEngine", `Workflow unregistered: ${workflowId}`);
+        this.emit("workflowUnregistered", { workflowId });
+    }
+
+    /**
+     * Registrar um trigger
+     */
+    private async registerTrigger(workflowId: string, trigger: any): Promise<void> {
+        const handler = this.triggerHandlers.get(trigger.type);
+
+        if (!handler) {
+            throw new WorkflowError(`Trigger handler not found: ${trigger.type}`, "TRIGGER_HANDLER_NOT_FOUND");
+        }
+
+        await handler.register(workflowId, trigger);
+        this.log("info", "WorkflowEngine", `Trigger registered: ${trigger.type} for workflow ${workflowId}`);
+    }
+
+    /**
+     * Cancelar registro de um trigger
+     */
+    private async unregisterTrigger(workflowId: string, trigger: any): Promise<void> {
+        const handler = this.triggerHandlers.get(trigger.type);
+
+        if (handler) {
+            await handler.unregister(workflowId);
+            this.log("info", "WorkflowEngine", `Trigger unregistered: ${trigger.type} for workflow ${workflowId}`);
         }
     }
 
     /**
-     * Trigger workflow execution
+     * Executar um workflow (chamado pelos trigger handlers)
      */
-    async triggerWorkflow(workflowId: string, triggerType: string, payload: any): Promise<void> {
-        const workflow = this.activeWorkflows.get(workflowId);
-        if (!workflow) {
-            throw new AutoFlowError(`Workflow not found: ${workflowId}`, "WORKFLOW_NOT_FOUND");
+    async executeWorkflow(workflowId: string, triggerData: any, userId?: string): Promise<void> {
+        const queueItem: { workflowId: string; triggerData: any; userId?: string } = {
+            workflowId,
+            triggerData,
+        };
+
+        if (userId) {
+            queueItem.userId = userId;
         }
 
-        // Check if trigger matches
-        const trigger = workflow.triggers.find((t) => t.type === triggerType && t.enabled);
+        this.executionQueue.push(queueItem);
+        this.metrics.queueSize = this.executionQueue.length;
 
-        if (!trigger) {
-            console.log(`⚠️ No matching trigger for ${triggerType} in workflow ${workflowId}`);
+        this.log("info", "WorkflowEngine", `Workflow queued for execution: ${workflowId}`);
+        this.emit("workflowQueued", { workflowId, triggerData, userId });
+    }
+
+    /**
+     * Executar um workflow manualmente
+     */
+    async executeManual(workflowId: string, triggerData: any = {}, userId?: string): Promise<string> {
+        const handler = this.triggerHandlers.get("manual") as ManualTriggerHandler;
+
+        if (!handler) {
+            throw new WorkflowError("Manual trigger handler not available", "TRIGGER_HANDLER_NOT_FOUND");
+        }
+
+        return await handler.execute(workflowId, triggerData, userId);
+    }
+
+    /**
+     * Processador da fila de execução
+     */
+    private async startQueueProcessor(): Promise<void> {
+        if (this.isProcessing) return;
+
+        this.isProcessing = true;
+
+        while (this.isProcessing) {
+            try {
+                if (
+                    this.executionQueue.length > 0 &&
+                    this.metrics.currentConcurrentExecutions < this.config.maxConcurrentExecutions
+                ) {
+                    const item = this.executionQueue.shift();
+                    if (item) {
+                        this.processExecution(item).catch((error) => {
+                            this.log("error", "WorkflowEngine", "Queue processing error:", error);
+                        });
+                    }
+                }
+
+                await this.sleep(100); // 100ms entre verificações
+            } catch (error) {
+                this.log("error", "WorkflowEngine", "Queue processor error:", error);
+                await this.sleep(1000); // Aguardar mais em caso de erro
+            }
+        }
+    }
+
+    /**
+     * Processar uma execução individual
+     */
+    private async processExecution(item: { workflowId: string; triggerData: any; userId?: string }): Promise<void> {
+        const { workflowId, triggerData, userId } = item;
+        const executionId = crypto.randomUUID();
+
+        const workflow = this.workflows.get(workflowId);
+        if (!workflow) {
+            this.log("error", "WorkflowEngine", `Workflow not found during execution: ${workflowId}`);
             return;
         }
 
-        // Add to execution queue
-        this.executionQueue.push({ workflowId, payload });
-        console.log(`📥 Workflow queued for execution: ${workflow.name}`);
-    }
-
-    /**
-     * Execute a workflow with given payload
-     */
-    async execute(workflow: AutoFlowWorkflow, payload: any): Promise<WorkflowResult> {
-        console.log(`🚀 Executing workflow: ${workflow.name}`);
-
-        const result: WorkflowResult = {
-            status: "success",
-            executedActions: [],
-            errors: [],
-            data: { ...payload },
+        // Criar contexto de execução
+        const context: ExecutionContext = {
+            id: executionId,
+            workflowId,
+            status: "running",
+            startTime: new Date(),
+            triggerData,
+            data: {},
+            logs: [],
+            completedNodes: [],
+            metrics: {
+                nodesExecuted: 0,
+                totalExecutionTime: 0,
+                nodeExecutionTimes: {},
+                memoryUsage: process.memoryUsage().heapUsed,
+            },
         };
 
+        // Adicionar userId se fornecido
+        if (userId) {
+            (context as any).userId = userId;
+        }
+
+        this.executions.set(executionId, context);
+        this.metrics.currentConcurrentExecutions++;
+        this.metrics.totalExecutions++;
+
+        if (this.metrics.currentConcurrentExecutions > this.metrics.peakConcurrentExecutions) {
+            this.metrics.peakConcurrentExecutions = this.metrics.currentConcurrentExecutions;
+        }
+
+        this.log("info", "WorkflowEngine", `Started execution: ${executionId} for workflow: ${workflow.name}`);
+        this.emit("executionStarted", { executionId, context });
+
         try {
-            // Execute actions in sequence
-            for (const action of workflow.actions) {
-                await this.executeAction(action, result);
-            }
+            await this.executeNodes(context, workflow);
 
-            // Process conditions if any
-            for (const condition of workflow.conditions) {
-                await this.processCondition(condition, workflow, result);
-            }
+            context.status = "completed";
+            context.endTime = new Date();
 
-            console.log(`✅ Workflow completed: ${workflow.name}`);
-            return result;
+            this.metrics.successfulExecutions++;
+            this.log("info", "WorkflowEngine", `Execution completed: ${executionId}`);
+            this.emit("executionCompleted", { executionId, context });
         } catch (error) {
-            console.error(`❌ Workflow failed: ${workflow.name}`, error);
-
-            result.status = "error";
-            result.errors?.push({
-                actionId: "unknown",
+            context.status = "failed";
+            context.endTime = new Date();
+            context.error = {
+                name: "WorkflowError",
                 message: error instanceof Error ? error.message : "Unknown error",
-                details: error,
-            });
+                code: error instanceof WorkflowError ? error.code : "EXECUTION_ERROR",
+                nodeId: context.currentNodeId,
+                retryable: true,
+            };
+
+            this.metrics.failedExecutions++;
+            this.log("error", "WorkflowEngine", `Execution failed: ${executionId}`, error);
+            this.emit("executionFailed", { executionId, context, error });
+        } finally {
+            this.metrics.currentConcurrentExecutions--;
+            this.updateMetrics(context);
+
+            // Cleanup execution após um tempo
+            setTimeout(() => {
+                this.executions.delete(executionId);
+            }, 300000); // 5 minutos
+        }
+    }
+
+    /**
+     * Executar nodes do workflow
+     */
+    private async executeNodes(context: ExecutionContext, workflow: WorkflowDefinition): Promise<void> {
+        // Encontrar node inicial (deve ter type 'start' ou ser o primeiro)
+        let currentNode = workflow.nodes.find((n) => n.type === "start") || workflow.nodes[0];
+
+        if (!currentNode) {
+            throw new WorkflowError("No start node found in workflow", "NO_START_NODE");
+        }
+
+        while (currentNode) {
+            context.currentNodeId = currentNode.id;
+
+            const startTime = Date.now();
+            this.log("info", "WorkflowEngine", `Executing node: ${currentNode.id} (${currentNode.type})`);
+
+            try {
+                const result = await this.executeNode(context, currentNode);
+                const executionTime = Date.now() - startTime;
+
+                context.metrics.nodeExecutionTimes[currentNode.id] = executionTime;
+                context.metrics.nodesExecuted++;
+                context.completedNodes.push(currentNode.id);
+
+                this.log("info", "WorkflowEngine", `Node completed: ${currentNode.id} in ${executionTime}ms`);
+
+                // Determinar próximo node
+                currentNode = this.getNextNode(workflow, currentNode, result);
+            } catch (error) {
+                this.log("error", "WorkflowEngine", `Node execution failed: ${currentNode.id}`, error);
+                throw error;
+            }
+        }
+    }
+
+    /**
+     * Executar um node individual
+     */
+    private async executeNode(context: ExecutionContext, node: any): Promise<NodeExecutionResult> {
+        const executor = this.nodeExecutors.get(node.type);
+
+        if (!executor) {
+            throw new WorkflowError(`Node executor not found: ${node.type}`, "NODE_EXECUTOR_NOT_FOUND");
+        }
+
+        // Timeout
+        const timeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(() => {
+                reject(new TimeoutError(`Node execution timeout: ${node.id}`, this.config.defaultTimeout));
+            }, this.config.defaultTimeout);
+        });
+
+        try {
+            const result = await Promise.race([
+                executor.execute(node.config || {}, context.data, context),
+                timeoutPromise,
+            ]);
 
             return result;
+        } catch (error) {
+            if (error instanceof TimeoutError) {
+                this.log("error", "WorkflowEngine", `Node timeout: ${node.id}`);
+            }
+            throw error;
         }
     }
 
     /**
-     * Execute a single workflow action
+     * Determinar próximo node baseado no resultado
      */
-    private async executeAction(action: WorkflowAction, result: WorkflowResult): Promise<void> {
-        console.log(`🔧 Executing action: ${action.type} (${action.id})`);
+    private getNextNode(workflow: WorkflowDefinition, currentNode: any, result: NodeExecutionResult): any | null {
+        // Se o node indica o próximo explicitamente
+        if (result.nextNodeId) {
+            return workflow.nodes.find((n) => n.id === result.nextNodeId) || null;
+        }
 
-        try {
-            switch (action.type) {
-                case "whatsapp_send":
-                    await this.executeWhatsAppAction(action, result);
-                    break;
+        // Seguir conexões baseadas no resultado
+        if (currentNode.connections) {
+            const connection = currentNode.connections.find((c: any) => {
+                if (!c.condition) return true; // Conexão padrão
 
-                case "email_send":
-                    await this.executeEmailAction(action, result);
-                    break;
-
-                case "http_request":
-                    await this.executeHttpAction(action, result);
-                    break;
-
-                case "database_save":
-                    await this.executeDatabaseAction(action, result);
-                    break;
-
-                case "ai_process":
-                    await this.executeAIAction(action, result);
-                    break;
-
-                case "delay":
-                    await this.executeDelayAction(action, result);
-                    break;
-
-                default:
-                    throw new AutoFlowError(`Unsupported action type: ${action.type}`, "UNSUPPORTED_ACTION_TYPE");
-            }
-
-            result.executedActions.push(action.id);
-            console.log(`✅ Action completed: ${action.type} (${action.id})`);
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Unknown error";
-            console.error(`❌ Action failed: ${action.type} (${action.id})`, error);
-
-            result.errors?.push({
-                actionId: action.id,
-                message: errorMessage,
-                details: error,
+                // Avaliar condição (implementação simplificada)
+                return this.evaluateCondition(c.condition, result.data);
             });
 
-            // Set status to partial if some actions succeeded
-            if (result.executedActions.length > 0) {
-                result.status = "partial";
-            } else {
-                result.status = "error";
+            if (connection) {
+                return workflow.nodes.find((n) => n.id === connection.targetNodeId) || null;
             }
         }
+
+        return null; // Fim do workflow
     }
 
     /**
-     * Process workflow conditions
+     * Avaliar condição simples
      */
-    private async processCondition(
-        condition: WorkflowCondition,
-        workflow: AutoFlowWorkflow,
-        result: WorkflowResult
-    ): Promise<void> {
-        console.log(`🔍 Processing condition: ${condition.type} (${condition.id})`);
-
+    private evaluateCondition(condition: any, data: any): boolean {
+        // Implementação básica - expandir conforme necessário
         try {
-            const conditionResult = await this.evaluateCondition(condition, result.data);
-
-            const actionsToExecute = conditionResult ? condition.trueActions : condition.falseActions || [];
-
-            for (const actionId of actionsToExecute) {
-                const action = workflow.actions.find((a) => a.id === actionId);
-                if (action) {
-                    await this.executeAction(action, result);
-                }
+            if (condition.type === "equals") {
+                return data[condition.field] === condition.value;
             }
-        } catch (error) {
-            console.error(`❌ Condition failed: ${condition.id}`, error);
-
-            result.errors?.push({
-                actionId: condition.id,
-                message: error instanceof Error ? error.message : "Condition evaluation failed",
-                details: error,
-            });
-        }
-    }
-
-    /**
-     * Evaluate a condition expression
-     */
-    private async evaluateCondition(condition: WorkflowCondition, data: any): Promise<boolean> {
-        // Simple condition evaluation - can be extended with more complex logic
-        try {
-            // For now, use a simple string-based evaluation
-            // In production, use a safe expression evaluator
-            const expression = condition.condition.replace(/\$\{(\w+)\}/g, (_, key) => {
-                const value = data[key];
-                return typeof value === "string" ? `"${value}"` : String(value);
-            });
-
-            // WARNING: eval is used here for simplicity
-            // In production, use a proper expression parser like JSEval or similar
-            return eval(expression);
-        } catch (error) {
-            console.error("Condition evaluation error:", error);
+            if (condition.type === "exists") {
+                return data[condition.field] !== undefined;
+            }
+            // Adicionar mais tipos de condição conforme necessário
+            return true;
+        } catch {
             return false;
         }
     }
 
-    // Action executors (placeholder implementations)
-    private async executeWhatsAppAction(action: WorkflowAction, result: WorkflowResult): Promise<void> {
-        // TODO: Implement WhatsApp integration
-        console.log("📱 WhatsApp action:", action.config);
-        result.data = { ...result.data, whatsappSent: true };
-    }
+    /**
+     * Cancelar uma execução
+     */
+    async cancelExecution(executionId: string): Promise<void> {
+        const context = this.executions.get(executionId);
 
-    private async executeEmailAction(action: WorkflowAction, result: WorkflowResult): Promise<void> {
-        // TODO: Implement email integration
-        console.log("📧 Email action:", action.config);
-        result.data = { ...result.data, emailSent: true };
-    }
+        if (!context) {
+            throw new WorkflowError(`Execution not found: ${executionId}`, "EXECUTION_NOT_FOUND");
+        }
 
-    private async executeHttpAction(action: WorkflowAction, result: WorkflowResult): Promise<void> {
-        // TODO: Implement HTTP request
-        console.log("🌐 HTTP action:", action.config);
-        result.data = { ...result.data, httpRequestMade: true };
-    }
+        if (context.status !== "running") {
+            throw new WorkflowError(
+                `Cannot cancel execution with status: ${context.status}`,
+                "INVALID_EXECUTION_STATUS"
+            );
+        }
 
-    private async executeDatabaseAction(action: WorkflowAction, result: WorkflowResult): Promise<void> {
-        // TODO: Implement database save
-        console.log("💾 Database action:", action.config);
-        result.data = { ...result.data, dataSaved: true };
-    }
+        context.status = "cancelled";
+        context.endTime = new Date();
 
-    private async executeAIAction(action: WorkflowAction, result: WorkflowResult): Promise<void> {
-        // TODO: Implement AI processing
-        console.log("🤖 AI action:", action.config);
-        result.data = { ...result.data, aiProcessed: true };
-    }
-
-    private async executeDelayAction(action: WorkflowAction, _result: WorkflowResult): Promise<void> {
-        const delayMs = action.config["delay"] || 1000;
-        console.log(`⏱️ Delay action: ${delayMs}ms`);
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        this.log("info", "WorkflowEngine", `Execution cancelled: ${executionId}`);
+        this.emit("executionCancelled", { executionId, context });
     }
 
     /**
-     * Validate workflow structure
+     * Obter status de uma execução
      */
-    private validateWorkflow(workflow: AutoFlowWorkflow): void {
-        if (!workflow.id || !workflow.name) {
-            throw new AutoFlowError("Workflow must have id and name", "INVALID_WORKFLOW");
-        }
+    getExecutionStatus(executionId: string): ExecutionContext | null {
+        return this.executions.get(executionId) || null;
+    }
 
-        if (!workflow.triggers || workflow.triggers.length === 0) {
-            throw new AutoFlowError("Workflow must have at least one trigger", "NO_TRIGGERS");
-        }
+    /**
+     * Listar execuções ativas
+     */
+    getActiveExecutions(): ExecutionContext[] {
+        return Array.from(this.executions.values()).filter((ctx) => ctx.status === "running");
+    }
 
-        if (!workflow.actions || workflow.actions.length === 0) {
-            throw new AutoFlowError("Workflow must have at least one action", "NO_ACTIONS");
+    /**
+     * Obter métricas do engine
+     */
+    getMetrics(): ExecutionMetrics {
+        this.metrics.uptime = Date.now() - this.metrics.startTime.getTime();
+        this.metrics.queueSize = this.executionQueue.length;
+        this.metrics.errorRate =
+            this.metrics.totalExecutions > 0 ? this.metrics.failedExecutions / this.metrics.totalExecutions : 0;
+
+        return { ...this.metrics };
+    }
+
+    /**
+     * Atualizar métricas após execução
+     */
+    private updateMetrics(context: ExecutionContext): void {
+        if (context.startTime && context.endTime) {
+            const executionTime = context.endTime.getTime() - context.startTime.getTime();
+            this.metrics.totalExecutionTime += executionTime;
+            this.metrics.averageExecutionTime = this.metrics.totalExecutionTime / this.metrics.totalExecutions;
+            this.metrics.lastExecution = context.endTime;
         }
     }
 
     /**
-     * Start the queue processor
+     * Registrar node executor
      */
-    private startQueueProcessor(): void {
-        setInterval(async () => {
-            if (this.isProcessing || this.executionQueue.length === 0) {
-                return;
+    registerNodeExecutor(nodeType: string, executor: NodeExecutor): void {
+        this.nodeExecutors.set(nodeType, executor);
+        this.log("info", "WorkflowEngine", `Node executor registered: ${nodeType}`);
+    }
+
+    /**
+     * Validar workflow antes do registro
+     */
+    async validateWorkflow(workflow: WorkflowDefinition): Promise<{ valid: boolean; errors: string[] }> {
+        const errors: string[] = [];
+
+        try {
+            if (!workflow.id) {
+                errors.push("Workflow ID is required");
             }
 
-            this.isProcessing = true;
-            const item = this.executionQueue.shift();
+            if (!workflow.name) {
+                errors.push("Workflow name is required");
+            }
 
-            if (item) {
-                const workflow = this.activeWorkflows.get(item.workflowId);
-                if (workflow) {
-                    try {
-                        await this.execute(workflow, item.payload);
-                    } catch (error) {
-                        console.error("Queue processing error:", error);
-                    }
+            if (!workflow.nodes || workflow.nodes.length === 0) {
+                errors.push("Workflow must have at least one node");
+            }
+
+            if (!workflow.triggers || workflow.triggers.length === 0) {
+                errors.push("Workflow must have at least one trigger");
+            }
+
+            // Validar nodes únicos
+            if (workflow.nodes) {
+                const nodeIds = workflow.nodes.map((n) => n.id);
+                const uniqueNodeIds = new Set(nodeIds);
+
+                if (nodeIds.length !== uniqueNodeIds.size) {
+                    errors.push("Workflow nodes must have unique IDs");
                 }
             }
+        } catch (error) {
+            errors.push(error instanceof Error ? error.message : "Validation error");
+        }
 
-            this.isProcessing = false;
-        }, 1000); // Process queue every second
+        return {
+            valid: errors.length === 0,
+            errors,
+        };
     }
 
     /**
-     * Get workflow statistics
+     * Logging utility
      */
-    getStats(): { activeWorkflows: number; queueLength: number } {
-        return {
-            activeWorkflows: this.activeWorkflows.size,
-            queueLength: this.executionQueue.length,
+    private log(level: LogLevel, component: string, message: string, data?: any): void {
+        if (!this.config.detailedLogging && level === "debug") {
+            return;
+        }
+
+        const logEntry: ExecutionLog = {
+            timestamp: new Date(),
+            level,
+            component,
+            message,
+            data,
         };
+
+        console.log(`[${level.toUpperCase()}] ${component}: ${message}`, data || "");
+        this.emit("log", logEntry);
+    }
+
+    /**
+     * Sleep utility
+     */
+    private sleep(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    /**
+     * Parar o engine
+     */
+    async stop(): Promise<void> {
+        this.log("info", "WorkflowEngine", "Stopping engine...");
+
+        this.isProcessing = false;
+
+        // Cleanup trigger handlers
+        for (const handler of this.triggerHandlers.values()) {
+            if ("cleanup" in handler && typeof handler.cleanup === "function") {
+                await handler.cleanup();
+            }
+        }
+
+        // Aguardar execuções ativas terminarem
+        while (Array.from(this.executions.values()).some((ctx) => ctx.status === "running")) {
+            await this.sleep(100);
+        }
+
+        this.log("info", "WorkflowEngine", "Engine stopped");
+    }
+
+    // Métodos faltantes da interface IWorkflowEngine
+    async updateWorkflow(workflow: WorkflowDefinition): Promise<void> {
+        if (!this.workflows.has(workflow.id)) {
+            throw new Error(`Workflow ${workflow.id} not found`);
+        }
+
+        this.workflows.set(workflow.id, workflow);
+        this.log("info", "WorkflowEngine", `Workflow updated: ${workflow.id}`);
+    }
+
+    async getExecution(executionId: string): Promise<ExecutionContext | null> {
+        return this.executions.get(executionId) || null;
+    }
+
+    async getExecutionLogs(executionId: string): Promise<ExecutionLog[]> {
+        const execution = this.executions.get(executionId);
+        return execution ? execution.logs : [];
+    }
+
+    getAvailableNodes(): NodeExecutor[] {
+        return Array.from(this.nodeExecutors.values());
+    }
+
+    getSystemHealth(): { status: string; metrics: ExecutionMetrics } {
+        return {
+            status: "healthy",
+            metrics: this.getMetrics(),
+        };
+    }
+
+    registerTriggerHandler(handler: TriggerHandler): void {
+        this.triggerHandlers.set(handler.type, handler);
+        this.log("info", "WorkflowEngine", `Trigger handler registered: ${handler.type}`);
+    }
+
+    async start(): Promise<void> {
+        this.log("info", "WorkflowEngine", "Engine starting...");
+        // Inicializar o processamento da fila
+        this.isProcessing = false;
+        this.log("info", "WorkflowEngine", "Engine started");
     }
 }

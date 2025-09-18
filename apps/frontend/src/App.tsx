@@ -1,9 +1,16 @@
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { initializeAuth } from "./stores/authStore";
 
 // Create a client
 const queryClient = new QueryClient();
 
 function App() {
+    // Initialize auth state on app load
+    useEffect(() => {
+        initializeAuth();
+    }, []);
+
     return (
         <QueryClientProvider client={queryClient}>
             <div className="min-h-screen bg-gray-50">
@@ -62,12 +69,19 @@ function App() {
                                     </div>
                                 </div>
                                 <div className="mt-8">
-                                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
                                         <p className="text-yellow-800">
-                                            <strong>Sprint 1-2:</strong> Configurando base arquitetural • Backend
-                                            Fastify + Frontend React ✅
+                                            <strong>Fase 5:</strong> Constructor Visual implementado ✅
+                                            <br />
+                                            ReactFlow • Drag-and-drop • Nodes configuráveis
                                         </p>
                                     </div>
+                                    <a
+                                        href="/workflow-builder"
+                                        className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                    >
+                                        🚀 Testar Constructor Visual
+                                    </a>
                                 </div>
                             </div>
                         </div>

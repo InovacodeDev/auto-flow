@@ -2,17 +2,32 @@
 
 > **Democratizando automação empresarial através de IA conversacional**
 
-AutoFlow é uma plataforma de automação inteligente projetada especificamente para pequenas e médias empresas brasileiras. Com IA conversacional e interface visual drag-and-drop, transformamos processos manuais em automações eficientes.
+AutoFlow é uma plataforma de automa### 📈 **Status Atual do Projeto:**
+
+```
+✅ Fase 1: Fundação e Estrutura
+✅ Fase 2: Sistema de Autenticação
+✅ Fase 3: Motor de Workflows
+✅ Fase 4: Interface Visual (Drag & Drop)
+✅ Fase 5: Sistema de Execução
+✅ Fase 6: Integrações Brasileiras ← CONCLUÍDA
+✅ Fase 7: Analytics e Monitoramento
+✅ Fase 8: IA Conversacional
+```
+
+**🎯 Status: BETA AVANÇADO** - Todas as funcionalidades principais implementadas!gente projetada especificamente para pequenas e médias empresas brasileiras. Com IA conversacional e interface visual drag-and-drop, transformamos processos manuais em automações eficientes.
 
 ## 🎯 Visão do Produto
 
 ### Problema Central
+
 - 76,9% das startups brasileiras focam B2B
 - PMEs operam 95% dos processos manualmente
 - Falta de integração entre ferramentas
 - Tempo perdido com tarefas repetitivas
 
 ### Solução AutoFlow
+
 - **🤖 IA Conversacional**: Crie automações em português natural
 - **🎨 Constructor Visual**: Interface drag-and-drop inspirada no N8N
 - **🇧🇷 Integrações Nativas**: 100+ ferramentas brasileiras out-of-the-box
@@ -21,6 +36,7 @@ AutoFlow é uma plataforma de automação inteligente projetada especificamente 
 ## 🛠 Stack Tecnológico
 
 ### Backend (Node.js + TypeScript)
+
 - **Framework**: Fastify (alta performance)
 - **Database**: PostgreSQL + Drizzle ORM
 - **Queue**: Redis + Bull (processamento assíncrono)
@@ -28,6 +44,7 @@ AutoFlow é uma plataforma de automação inteligente projetada especificamente 
 - **Auth**: JWT + RBAC multi-tenant
 
 ### Frontend (React + TypeScript)
+
 - **Framework**: React 18 + Vite
 - **Routing**: TanStack Router (type-safe)
 - **Styling**: Tailwind CSS + Material Expressive
@@ -35,6 +52,7 @@ AutoFlow é uma plataforma de automação inteligente projetada especificamente 
 - **Workflow UI**: ReactFlow (drag-and-drop)
 
 ### Monorepo & Deploy
+
 - **Monorepo**: Turborepo (caching inteligente)
 - **Package Manager**: pnpm (performance)
 - **Deploy**: Vercel (frontend) + Railway (backend)
@@ -43,6 +61,7 @@ AutoFlow é uma plataforma de automação inteligente projetada especificamente 
 ## 🚀 Quick Start
 
 ### Pré-requisitos
+
 ```bash
 # Node.js 18+
 node --version
@@ -60,23 +79,42 @@ sudo apt install redis  # Linux
 ```
 
 ### Instalação
+
+````bash
+## 🚀 Quick Start
+
 ```bash
-# 1. Clonar repositório
-git clone https://github.com/your-username/autoflow.git
-cd autoflow
+# Clonar repositório
+git clone <repo-url>
+cd auto-flow
 
-# 2. Setup automático
-pnpm run setup
+# Instalar dependências
+pnpm install
 
-# 3. Configurar variáveis de ambiente
-cp apps/backend/.env.example apps/backend/.env
-# Edite as configurações necessárias
+# Setup do banco (PostgreSQL necessário)
+cd apps/backend && pnpm run db:setup
 
-# 4. Iniciar desenvolvimento
+# Configurar IA (opcional - para recursos de IA conversacional)
+echo "OPENAI_API_KEY=sk-proj-your-key-here" >> apps/backend/.env
+
+# Iniciar desenvolvimento
 pnpm dev
+````
+
+### 🤖 Configuração da IA Conversacional
+
+Para utilizar os recursos de IA conversacional:
+
+1. **Obtenha uma chave API OpenAI**: [platform.openai.com](https://platform.openai.com)
+2. **Configure a variável de ambiente**: `OPENAI_API_KEY` no arquivo `apps/backend/.env`
+3. **Verifique o saldo**: Certifique-se de ter créditos suficientes na conta OpenAI
+
+**📄 Documentação completa**: [docs/setup/ai-configuration.md](docs/setup/ai-configuration.md)
+
 ```
 
 ### URLs de Desenvolvimento
+
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:3001
 - **API Docs**: http://localhost:3001/docs
@@ -84,33 +122,35 @@ pnpm dev
 ## 📁 Estrutura do Projeto
 
 ```
+
 autoflow/
 ├── apps/
-│   ├── backend/              # Fastify API
-│   │   ├── src/
-│   │   │   ├── core/         # Engine de automação
-│   │   │   ├── ai/           # IA conversacional
-│   │   │   ├── integrations/ # WhatsApp, ERPs, etc
-│   │   │   ├── workflows/    # Lógica de execução
-│   │   │   └── auth/         # Autenticação multi-tenant
-│   │   └── migrations/       # Database migrations
-│   └── frontend/             # React SPA
-│       ├── src/
-│       │   ├── components/   # Componentes reutilizáveis
-│       │   │   ├── workflow/ # Constructor drag-and-drop
-│       │   │   ├── dashboard/# Analytics e métricas
-│       │   │   └── ai-chat/  # Interface IA conversacional
-│       │   ├── pages/        # Páginas da aplicação
-│       │   └── stores/       # Estado global
+│ ├── backend/ # Fastify API
+│ │ ├── src/
+│ │ │ ├── core/ # Engine de automação
+│ │ │ ├── ai/ # IA conversacional
+│ │ │ ├── integrations/ # WhatsApp, ERPs, etc
+│ │ │ ├── workflows/ # Lógica de execução
+│ │ │ └── auth/ # Autenticação multi-tenant
+│ │ └── migrations/ # Database migrations
+│ └── frontend/ # React SPA
+│ ├── src/
+│ │ ├── components/ # Componentes reutilizáveis
+│ │ │ ├── workflow/ # Constructor drag-and-drop
+│ │ │ ├── dashboard/# Analytics e métricas
+│ │ │ └── ai-chat/ # Interface IA conversacional
+│ │ ├── pages/ # Páginas da aplicação
+│ │ └── stores/ # Estado global
 ├── packages/
-│   ├── types/                # TypeScript types compartilhados
-│   ├── ui/                   # Componentes UI compartilhados
-│   └── config/               # Configurações compartilhadas
-└── docs/                     # Documentação completa
-    ├── features/             # Documentação de features
-    ├── api/                  # Documentação da API
-    └── architecture/         # Decisões arquiteturais
-```
+│ ├── types/ # TypeScript types compartilhados
+│ ├── ui/ # Componentes UI compartilhados
+│ └── config/ # Configurações compartilhadas
+└── docs/ # Documentação completa
+├── features/ # Documentação de features
+├── api/ # Documentação da API
+└── architecture/ # Decisões arquiteturais
+
+````
 
 ## 🔧 Scripts Disponíveis
 
@@ -134,53 +174,84 @@ pnpm db:studio           # Drizzle Studio (GUI)
 # Utilitários
 pnpm clean               # Limpar builds
 pnpm setup               # Setup inicial automatizado
-```
+````
 
-## 🎯 Roadmap de Desenvolvimento
+## 🎯 Status do Projeto
 
-### ✅ Sprint 1-2: Foundation (4 semanas)
-- [x] Setup Turborepo + Fastify + Drizzle
-- [x] Setup React + TanStack Router + Tailwind
-- [x] Database schema inicial
-- [x] Documentação arquitetural
+- ✅ **Fase 1**: Documentação e Arquitetura (100%)
+- ✅ **Fase 2**: Infraestrutura Base Turborepo (100%)
+- ✅ **Fase 3**: Sistema de Autenticação Multi-tenant (100%)
+- ✅ **Fase 4**: Workflow Engine Core (100%)
+- ✅ **Fase 5**: Interface Visual e Drag-and-Drop (100%)
+- ✅ **Fase 7**: Sistema de Execução de Workflows (100%)
+- ✅ **Fase 8**: IA Conversacional Assistant (100%)
+- ⏳ **Fase 6**: Integrações Brasileiras (0%)
 
-### 🚧 Sprint 3-4: Core Features (4 semanas)
-- [ ] Workflow Engine completo
-- [ ] Constructor Visual drag-and-drop
-- [ ] Sistema de autenticação
-- [ ] API CRUD para workflows
+### Fase 8 Concluída ✅ - IA Conversacional
 
-### 📋 Sprint 5-6: IA & Integrations (4 semanas)
-- [ ] IA Conversacional (GPT-4)
-- [ ] WhatsApp Business API
-- [ ] Integração PIX
-- [ ] ERPs brasileiros (Omie, ContaAzul)
+**🤖 Sistema de IA:**
 
-### 🔮 Sprint 7-8: Analytics & Polish (4 semanas)
-- [ ] Dashboard de métricas
-- [ ] Cálculo de ROI automático
-- [ ] Templates pré-configurados
-- [ ] Onboarding interativo
+- OpenAI GPT-4 integration para criação de workflows
+- Chat conversacional em linguagem natural
+- Parser inteligente texto → workflow
+- Contexto organizacional e sugestões personalizadas
+- Interface de chat integrada ao dashboard
+
+**🔧 Backend:**
+
+- AIService com integração OpenAI completa
+- API endpoints para chat, histórico e contexto
+- System prompts especializados em automação
+- Function calling para geração de workflows
+
+**🎨 Frontend:**
+
+- Componente AIChat responsivo e acessível
+- Botão flutuante de acesso rápido
+- Histórico de conversas persistente
+- Sugestões contextuais em tempo real
+
+### Fase 3 Concluída ✅
+
+**Backend:**
+
+- JWT + multi-tenant authentication
+- RBAC com isolamento organizacional
+- API completa de autenticação
+- PostgreSQL com RLS e migrações
+- Seeds de desenvolvimento
+
+**Frontend:**
+
+- Zustand store com persistência
+- Hook useAuth personalizado
+- Componentes de proteção de rotas
+- Formulário de login
+- Cliente HTTP com interceptores
+
+> 📖 Veja instruções detalhadas em [FASE-3-AUTH.md](./FASE-3-AUTH.md)
 
 ## 🏗 Arquitetura
 
 ### Engine de Automação
+
 ```typescript
 interface AutoFlowWorkflow {
-  id: string;
-  name: string;
-  triggers: WorkflowTrigger[];    // WhatsApp, webhook, schedule
-  actions: WorkflowAction[];      // Send message, save data, API call
-  conditions: WorkflowCondition[]; // If/else, loops
-  metadata: {
-    aiGenerated: boolean;
-    language: 'pt-BR';
-    industry: string;
-  };
+    id: string;
+    name: string;
+    triggers: WorkflowTrigger[]; // WhatsApp, webhook, schedule
+    actions: WorkflowAction[]; // Send message, save data, API call
+    conditions: WorkflowCondition[]; // If/else, loops
+    metadata: {
+        aiGenerated: boolean;
+        language: "pt-BR";
+        industry: string;
+    };
 }
 ```
 
 ### Integrações
+
 - **WhatsApp Business API**: Mensagens automáticas
 - **PIX**: Pagamentos instantâneos (Mercado Pago, PagBank)
 - **CRM**: RD Station, Pipedrive, HubSpot
@@ -190,12 +261,14 @@ interface AutoFlowWorkflow {
 ## 📊 Métricas de Sucesso
 
 ### Product-Market Fit
+
 - **NPS Score**: Target 50+
 - **MAU**: 500+ usuários em 6 meses
 - **Retention**: 80%+ no segundo mês
 - **Time to Value**: <15 minutos
 
 ### ROI para PMEs
+
 - **Economia**: R$ 2.400/mês por cliente
 - **Tempo Poupado**: 8+ horas/semana
 - **Eficiência**: 95%+ de automação de processos
@@ -211,6 +284,7 @@ interface AutoFlowWorkflow {
 7. **Abra** um Pull Request
 
 ### Diretrizes de Desenvolvimento
+
 - **Documentation First**: Sempre documente antes de implementar
 - **TypeScript Strict**: Type safety obrigatório
 - **Testing**: Coverage mínimo 80%
@@ -231,4 +305,4 @@ MIT License - veja [LICENSE](LICENSE) para detalhes.
 
 **Construído com ❤️ para PMEs brasileiras por Alex & Team**
 
-*"Democratizando automação empresarial, uma PME por vez."*
+_"Democratizando automação empresarial, uma PME por vez."_

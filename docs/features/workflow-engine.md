@@ -2,7 +2,25 @@
 
 ## Overview
 
-O Workflow Engine é o coração do AutoFlow, responsável por executar automações criadas pelos usuários através do constructor visual ou IA conversacional.
+O Workflow Engine é o núcleo do AutoFlow, responsável por executar automações definidas pelos usuários. Ele processa workflows compostos por nodes (nós) conectados por edges (arestas), suportando diferentes tipos de triggers e operações.
+
+## Arquitetura do Sistema
+
+### Componentes Principais
+
+1. **Workflow Engine**: Executor principal que processa workflows
+2. **Trigger System**: Sistema de gatilhos para iniciar workflows
+3. **Node Library**: Biblioteca de nodes disponíveis
+4. **Execution Context**: Contexto de execução com dados e variáveis
+5. **Logger**: Sistema de logs detalhado para debugging
+
+### Fluxo de Execução
+
+```
+Trigger → Engine → Node 1 → Node 2 → ... → Final Node
+    ↓        ↓        ↓        ↓              ↓
+ Webhook  Context  Process  Process     Complete/Error
+```
 
 ## Core Functionality
 

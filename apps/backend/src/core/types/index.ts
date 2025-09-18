@@ -112,6 +112,55 @@ export interface MessageResult {
     error?: string;
 }
 
+// PIX specific types
+export interface PIXConfig {
+    accessToken: string;
+    userId: string;
+    webhookUrl?: string;
+}
+
+export interface PaymentResult {
+    paymentId: string;
+    status: string;
+    amount: number;
+    statusDetail?: string;
+}
+
+// ERP specific types
+export interface ERPConfig {
+    apiKey: string;
+    appSecret?: string;
+    baseUrl?: string;
+}
+
+export interface ERPContact {
+    id?: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    document?: string;
+}
+
+export interface ERPProduct {
+    id?: string;
+    name: string;
+    sku: string;
+    price: number;
+    stock?: number;
+}
+
+export interface ERPOrder {
+    id?: string;
+    customerId: string;
+    items: Array<{
+        productId: string;
+        quantity: number;
+        price: number;
+    }>;
+    total: number;
+    status?: string;
+}
+
 // AI Assistant types
 export interface AIPromptTemplate {
     id: string;
