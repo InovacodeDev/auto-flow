@@ -62,12 +62,14 @@ class AIConversationalService {
     private conversations: Map<string, ConversationContext> = new Map();
 
     constructor() {
-        if (!process.env["OPENAI_API_KEY"]) {
-            throw new Error("OPENAI_API_KEY environment variable is required");
+        const openaiKey = process.env["OPENAI_API_KEY"];
+
+        if (!openaiKey && process.env["NODE_ENV"] === "production") {
+            throw new Error("OPENAI_API_KEY environment variable is required in production");
         }
 
         this.openai = new OpenAI({
-            apiKey: process.env["OPENAI_API_KEY"],
+            apiKey: openaiKey || "sk-fake-key-for-development",
         });
 
         this.promptSystem = new IntelligentPromptSystem();

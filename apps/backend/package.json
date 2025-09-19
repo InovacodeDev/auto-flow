@@ -28,6 +28,7 @@
         "bcrypt": "^5.1.1",
         "bull": "^4.11.3",
         "cron": "^4.3.3",
+        "dotenv": "^17.2.2",
         "drizzle-orm": "^0.28.6",
         "fastify": "^4.21.0",
         "jsonwebtoken": "^9.0.2",

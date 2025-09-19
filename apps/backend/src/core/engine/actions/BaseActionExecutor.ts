@@ -234,7 +234,7 @@ export abstract class BaseActionExecutor implements NodeExecutor {
     }
 
     // Rate limiting simples
-    protected async rateLimitCheck(key: string, limit: number, windowMs: number): Promise<boolean> {
+    protected async rateLimitCheck(_key: string, _limit: number, _windowMs: number): Promise<boolean> {
         // TODO: Implementar com Redis ou cache em memória
         // Por agora, retornar true (sem limite)
         return true;

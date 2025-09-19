@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* Mobile optimizations */
-@import "./styles/mobile.css";
+/* @import "./styles/mobile.css"; */
 
 /* AutoFlow Custom Styles - Material Expressive Design */
 :root {

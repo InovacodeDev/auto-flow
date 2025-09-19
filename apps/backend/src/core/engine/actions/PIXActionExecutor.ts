@@ -28,51 +28,15 @@ interface PIXPaymentRequest {
     metadata?: Record<string, any>;
 }
 
-interface PIXPaymentResponse {
-    id: string;
-    status:
-        | "pending"
-        | "approved"
-        | "authorized"
-        | "in_process"
-        | "in_mediation"
-        | "rejected"
-        | "cancelled"
-        | "refunded"
-        | "charged_back";
-    status_detail: string;
-    date_created: string;
-    date_last_updated: string;
-    money_release_date?: string;
-    currency_id: string;
-    transaction_amount: number;
-    net_received_amount?: number;
-    total_paid_amount?: number;
-    shipping_cost?: number;
-    coupon_amount?: number;
-    description: string;
-    external_reference?: string;
-    payment_method_id: string;
-    payment_type_id: string;
-    payer: {
-        id?: string;
-        email: string;
-        identification?: {
-            type: string;
-            number: string;
-        };
-        type?: string;
-    };
-    point_of_interaction?: {
-        transaction_data?: {
-            qr_code_base64?: string;
-            qr_code?: string;
-            ticket_url?: string;
-        };
-    };
-    notification_url?: string;
-    metadata?: Record<string, any>;
-}
+// Interfaces específicas do PIX Action Executor
+
+// interface PIXPaymentResponse { // TODO: Usar quando implementar resposta customizada
+//     success: boolean;
+//     paymentId: string;
+//     qrCode: string;
+//     status: string;
+//     error?: string;
+// }
 
 /**
  * PIX Payment Action Executor

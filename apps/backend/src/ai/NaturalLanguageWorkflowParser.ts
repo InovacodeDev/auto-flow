@@ -1,4 +1,4 @@
-import { IntelligentPromptSystem } from "./IntelligentPromptSystem";
+// import { IntelligentPromptSystem } from "./IntelligentPromptSystem"; // TODO: Implementar integração
 
 /**
  * Parser para converter instruções em português para estruturas de workflow
@@ -58,7 +58,8 @@ export interface ParserContext {
 }
 
 class NaturalLanguageWorkflowParser {
-    private promptSystem: IntelligentPromptSystem;
+    // private aiService: AIService; // TODO: Implementar quando AIService estiver disponível
+    // private promptSystem: IntelligentPromptSystem; // TODO: Implement prompt system integration
 
     // Regex patterns para reconhecimento de entidades
     private timePatterns = [
@@ -93,7 +94,8 @@ class NaturalLanguageWorkflowParser {
     ];
 
     constructor() {
-        this.promptSystem = new IntelligentPromptSystem();
+        // TODO: Implementar inicialização correta dos serviços
+        // this.promptSystem = new IntelligentPromptSystem();
     }
 
     /**

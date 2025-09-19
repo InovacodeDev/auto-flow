@@ -65,13 +65,17 @@ export class PIXService {
 
     constructor() {
         const accessToken = process.env["MERCADO_PAGO_ACCESS_TOKEN"];
+        const isDevelopment = process.env["NODE_ENV"] === "development";
 
-        if (!accessToken) {
+        if (!accessToken && !isDevelopment) {
             throw new Error("MERCADO_PAGO_ACCESS_TOKEN é obrigatório");
         }
 
+        // Em desenvolvimento, usar token de teste ou mock
+        const token = accessToken || "TEST_TOKEN_DEVELOPMENT";
+
         this.mercadopago = new MercadoPagoConfig({
-            accessToken,
+            accessToken: token,
             options: {
                 timeout: 5000,
                 idempotencyKey: this.generateIdempotencyKey(),
@@ -89,12 +93,10 @@ export class PIXService {
         try {
             console.log("Criando pagamento PIX:", request);
 
-            const paymentData = {
+            const paymentData: any = {
                 transaction_amount: request.amount,
                 description: request.description,
                 payment_method_id: "pix",
-                external_reference: request.externalReference,
-                notification_url: request.notificationUrl,
                 payer: {
                     email: request.payerEmail,
                     first_name: request.payerName,
@@ -110,6 +112,14 @@ export class PIXService {
                     created_at: new Date().toISOString(),
                 },
             };
+
+            // Adiciona propriedades opcionais apenas se definidas
+            if (request.externalReference) {
+                paymentData.external_reference = request.externalReference;
+            }
+            if (request.notificationUrl) {
+                paymentData.notification_url = request.notificationUrl;
+            }
 
             const payment = await this.payment.create({ body: paymentData });
 
@@ -255,16 +265,22 @@ export class PIXService {
         try {
             console.log("Criando pagamento recorrente:", request);
 
-            const preApprovalData = {
+            const autoRecurring: any = {
+                frequency: 1,
+                frequency_type: request.frequency,
+                transaction_amount: request.amount,
+                currency_id: "BRL",
+                start_date: request.startDate.toISOString(),
+            };
+
+            // Adiciona end_date apenas se definida
+            if (request.endDate) {
+                autoRecurring.end_date = request.endDate.toISOString();
+            }
+
+            const preApprovalData: any = {
                 reason: request.description,
-                auto_recurring: {
-                    frequency: 1,
-                    frequency_type: request.frequency,
-                    transaction_amount: request.amount,
-                    currency_id: "BRL",
-                    start_date: request.startDate.toISOString(),
-                    end_date: request.endDate?.toISOString(),
-                },
+                auto_recurring: autoRecurring,
                 payer_email: request.payerEmail,
                 back_url: process.env["FRONTEND_URL"] || "https://autoflow.com.br",
                 status: "pending",

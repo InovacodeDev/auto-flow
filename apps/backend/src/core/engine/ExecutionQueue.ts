@@ -1,5 +1,6 @@
 import { WorkflowEngine } from "./WorkflowEngine";
-import { WorkflowDefinition, ExecutionContext } from "./types";
+import { WorkflowDefinition } from "./types";
+// import { ExecutionContext } from "./types"; // TODO: Implementar quando necessário
 
 /**
  * ExecutionQueue - Sistema de fila para execução de workflows

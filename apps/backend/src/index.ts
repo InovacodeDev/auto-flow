@@ -1,3 +1,8 @@
+import dotenv from "dotenv";
+
+// Carrega variáveis de ambiente
+dotenv.config();
+
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";

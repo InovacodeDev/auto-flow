@@ -6,7 +6,14 @@ import {
     PIXRecurringPaymentRequest,
 } from "../integrations/pix/PIXService";
 
-const pixService = new PIXService();
+let pixService: PIXService | null = null;
+
+function getPIXService(): PIXService {
+    if (!pixService) {
+        pixService = new PIXService();
+    }
+    return pixService;
+}
 
 interface CreatePaymentBody {
     amount: number;
@@ -110,7 +117,7 @@ async function pixRoutes(fastify: FastifyInstance) {
                 const { amount, description, payerEmail, payerName, payerDocument, externalReference } = request.body;
 
                 // Validação de documento brasileiro se fornecido
-                if (payerDocument && !pixService.validateBrazilianDocument(payerDocument)) {
+                if (payerDocument && !getPIXService().validateBrazilianDocument(payerDocument)) {
                     return reply.status(400).send({
                         success: false,
                         error: "CPF ou CNPJ inválido",
@@ -127,15 +134,15 @@ async function pixRoutes(fastify: FastifyInstance) {
                     ...(externalReference && { externalReference }),
                 };
 
-                const payment = await pixService.createPIXPayment(pixRequest);
-                const paymentLink = pixService.generatePaymentLink(payment.id);
+                const payment = await getPIXService().createPIXPayment(pixRequest);
+                const paymentLink = getPIXService().generatePaymentLink(payment.id);
 
                 return reply.send({
                     success: true,
                     data: {
                         ...payment,
                         paymentLink,
-                        formattedAmount: pixService.formatCurrency(payment.amount),
+                        formattedAmount: getPIXService().formatCurrency(payment.amount),
                     },
                 });
             } catch (error) {
@@ -194,7 +201,7 @@ async function pixRoutes(fastify: FastifyInstance) {
             try {
                 const { paymentId } = request.params;
 
-                const payment = await pixService.getPaymentStatus(paymentId);
+                const payment = await getPIXService().getPaymentStatus(paymentId);
 
                 if (!payment) {
                     return reply.status(404).send({
@@ -207,7 +214,7 @@ async function pixRoutes(fastify: FastifyInstance) {
                     success: true,
                     data: {
                         ...payment,
-                        formattedAmount: pixService.formatCurrency(payment.amount),
+                        formattedAmount: getPIXService().formatCurrency(payment.amount),
                     },
                 });
             } catch (error) {
@@ -266,7 +273,7 @@ async function pixRoutes(fastify: FastifyInstance) {
                 console.log("Recebendo webhook PIX:", request.body);
 
                 const webhookData: PIXWebhookData = request.body;
-                const result = await pixService.processWebhook(webhookData);
+                const result = await getPIXService().processWebhook(webhookData);
 
                 console.log("Webhook processado:", result);
 
@@ -393,7 +400,7 @@ async function pixRoutes(fastify: FastifyInstance) {
                     ...(maxAmount && { maxAmount }),
                 };
 
-                const recurring = await pixService.createRecurringPayment(recurringRequest);
+                const recurring = await getPIXService().createRecurringPayment(recurringRequest);
 
                 return reply.send({
                     success: true,
