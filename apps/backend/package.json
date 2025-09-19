@@ -31,6 +31,7 @@
         "drizzle-orm": "^0.28.6",
         "fastify": "^4.21.0",
         "jsonwebtoken": "^9.0.2",
+        "mercadopago": "^2.9.0",
         "openai": "^4.104.0",
         "pg": "^8.11.2",
         "postgres": "^3.3.5",

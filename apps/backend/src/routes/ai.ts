@@ -1,281 +1,280 @@
-import { FastifyPluginAsync } from "fastify";
-import AIService, { OrganizationContext } from "../ai/AIService";
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { AIConversationalService } from "../ai/AIConversationalService";
 
-// Instância global do AIService
-let aiService: AIService;
+// Request/Response types
+interface StartConversationRequest {
+    userId: string;
+    organizationId: string;
+    industry?: string;
+}
 
-export const aiRoutes: FastifyPluginAsync = async (fastify) => {
-    // Inicializar AIService se não estiver inicializado
-    if (!aiService) {
-        try {
-            aiService = new AIService();
-            await aiService.validateConfiguration();
-            fastify.log.info("AIService inicializado com sucesso");
-        } catch (error) {
-            fastify.log.error(`Erro ao inicializar AIService: ${error}`);
-            // Continue sem IA se não conseguir configurar
-        }
-    }
+interface ProcessMessageRequest {
+    sessionId: string;
+    message: string;
+}
 
-    // POST /api/ai/chat - Chat conversacional
-    fastify.post(
-        "/chat",
+interface GetSuggestionsRequest {
+    sessionId: string;
+    type: "workflow" | "integration" | "optimization";
+}
+
+interface WorkflowGenerationRequest {
+    prompt: string;
+    organizationId: string;
+    userId: string;
+    context?: {
+        industry?: string;
+        existingWorkflows?: string[];
+        integrations?: string[];
+    };
+}
+
+// Global AI service instance
+const aiService = new AIConversationalService();
+
+// Event listeners for AI service (placeholder)
+// TODO: Implement proper event handling when AIConversationalService supports events
+
+export async function aiRoutes(fastify: FastifyInstance) {
+    // Start new conversation
+    fastify.post<{ Body: StartConversationRequest }>(
+        "/start-conversation",
         {
             schema: {
-                tags: ["ai"],
                 body: {
                     type: "object",
-                    required: ["message"],
+                    required: ["userId", "organizationId"],
                     properties: {
-                        message: { type: "string", minLength: 1 },
-                        organizationContext: {
-                            type: "object",
-                            properties: {
-                                businessType: { type: "string" },
-                                existingWorkflows: { type: "array", items: { type: "string" } },
-                                availableIntegrations: { type: "array", items: { type: "string" } },
-                                commonPatterns: { type: "array", items: { type: "string" } },
-                            },
-                        },
+                        userId: { type: "string" },
+                        organizationId: { type: "string" },
+                        industry: { type: "string" },
                     },
                 },
                 response: {
                     200: {
                         type: "object",
                         properties: {
-                            success: { type: "boolean" },
-                            data: {
-                                type: "object",
-                                properties: {
-                                    response: { type: "string" },
-                                    workflowGenerated: { type: "object" },
-                                    suggestions: { type: "array", items: { type: "string" } },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        async (request, reply) => {
-            if (!aiService) {
-                return reply.status(503).send({
-                    success: false,
-                    error: "Serviço de IA não está disponível",
-                });
-            }
-
-            try {
-                const { message, organizationContext } = request.body as any;
-
-                // TODO: Extrair userId e organizationId do token JWT
-                const userId = "temp-user-id";
-                const organizationId = "temp-org-id";
-
-                // Construir contexto organizacional
-                const context: OrganizationContext = {
-                    id: organizationId,
-                    existingWorkflows: organizationContext?.existingWorkflows || [],
-                    availableIntegrations: organizationContext?.availableIntegrations || [
-                        "WhatsApp Business",
-                        "PIX",
-                        "Email",
-                        "Webhook",
-                    ],
-                    businessType: organizationContext?.businessType,
-                    commonPatterns: organizationContext?.commonPatterns || [],
-                };
-
-                const result = await aiService.processUserMessage(userId, organizationId, message, context);
-
-                return {
-                    success: true,
-                    data: result,
-                };
-            } catch (error) {
-                fastify.log.error(`Erro no chat AI: ${error}`);
-                return reply.status(500).send({
-                    success: false,
-                    error: "Erro interno do servidor",
-                });
-            }
-        }
-    );
-
-    // GET /api/ai/chat/history - Histórico de conversa
-    fastify.get(
-        "/chat/history",
-        {
-            schema: {
-                tags: ["ai"],
-                response: {
-                    200: {
-                        type: "object",
-                        properties: {
-                            success: { type: "boolean" },
-                            data: {
-                                type: "object",
-                                properties: {
-                                    messages: {
-                                        type: "array",
-                                        items: {
-                                            type: "object",
-                                            properties: {
-                                                id: { type: "string" },
-                                                role: { type: "string" },
-                                                content: { type: "string" },
-                                                timestamp: { type: "string" },
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        async (_request, reply) => {
-            if (!aiService) {
-                return reply.status(503).send({
-                    success: false,
-                    error: "Serviço de IA não está disponível",
-                });
-            }
-
-            try {
-                // TODO: Extrair userId e organizationId do token JWT
-                const userId = "temp-user-id";
-                const organizationId = "temp-org-id";
-
-                const messages = aiService.getConversationHistory(userId, organizationId);
-
-                return {
-                    success: true,
-                    data: { messages },
-                };
-            } catch (error) {
-                fastify.log.error(`Erro ao buscar histórico: ${error}`);
-                return reply.status(500).send({
-                    success: false,
-                    error: "Erro interno do servidor",
-                });
-            }
-        }
-    );
-
-    // DELETE /api/ai/chat/history - Limpar histórico
-    fastify.delete(
-        "/chat/history",
-        {
-            schema: {
-                tags: ["ai"],
-                response: {
-                    200: {
-                        type: "object",
-                        properties: {
-                            success: { type: "boolean" },
+                            sessionId: { type: "string" },
                             message: { type: "string" },
                         },
                     },
                 },
             },
         },
-        async (_request, reply) => {
-            if (!aiService) {
-                return reply.status(503).send({
-                    success: false,
-                    error: "Serviço de IA não está disponível",
-                });
-            }
-
+        async (request: FastifyRequest<{ Body: StartConversationRequest }>, reply: FastifyReply) => {
             try {
-                // TODO: Extrair userId e organizationId do token JWT
-                const userId = "temp-user-id";
-                const organizationId = "temp-org-id";
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { userId, organizationId, industry } = request.body;
 
-                aiService.clearConversationHistory(userId, organizationId);
+                // Initialize conversation with AI service
+                const suggestions = await aiService.getIntelligentSuggestions(userId);
+                const sessionId = `conv_${userId}_${Date.now()}`;
 
-                return {
-                    success: true,
-                    message: "Histórico de conversa limpo com sucesso",
-                };
+                return reply.send({
+                    sessionId,
+                    message: `Olá! Sou o Alex, seu assistente de automação. Como posso ajudá-lo a otimizar seus processos hoje?`,
+                    suggestions,
+                });
             } catch (error) {
-                fastify.log.error(`Erro ao limpar histórico: ${error}`);
+                console.error("Error starting conversation:", error);
                 return reply.status(500).send({
-                    success: false,
-                    error: "Erro interno do servidor",
+                    error: "Failed to start conversation",
+                    message: "Não foi possível iniciar a conversa. Tente novamente.",
                 });
             }
         }
     );
 
-    // POST /api/ai/create-workflow (backward compatibility)
-    fastify.post(
-        "/create-workflow",
+    // Process user message
+    fastify.post<{ Body: ProcessMessageRequest }>(
+        "/message",
         {
             schema: {
-                tags: ["ai"],
                 body: {
                     type: "object",
-                    required: ["message"],
+                    required: ["sessionId", "message"],
                     properties: {
-                        message: { type: "string", minLength: 10 },
-                        context: {
-                            type: "object",
-                            properties: {
-                                industry: { type: "string" },
-                                businessSize: { type: "string" },
-                                currentTools: { type: "array", items: { type: "string" } },
+                        sessionId: { type: "string" },
+                        message: { type: "string", minLength: 1 },
+                    },
+                },
+                response: {
+                    200: {
+                        type: "object",
+                        properties: {
+                            id: { type: "string" },
+                            role: { type: "string" },
+                            content: { type: "string" },
+                            timestamp: { type: "string" },
+                            metadata: {
+                                type: "object",
+                                properties: {
+                                    workflowGenerated: { type: "boolean" },
+                                    suggestionType: { type: "string" },
+                                },
                             },
                         },
                     },
                 },
             },
         },
-        async (request) => {
-            // Redirect para novo endpoint de chat
-            const { message, context } = request.body as any;
-
-            if (!aiService) {
-                return { message: "Serviço de IA não está disponível" };
-            }
-
+        async (request: FastifyRequest<{ Body: ProcessMessageRequest }>, reply: FastifyReply) => {
             try {
-                const userId = "temp-user-id";
-                const organizationId = "temp-org-id";
+                const { sessionId, message } = request.body;
 
-                const organizationContext: OrganizationContext = {
-                    id: organizationId,
-                    existingWorkflows: [],
-                    availableIntegrations: ["WhatsApp Business", "PIX", "Email"],
-                    businessType: context?.industry,
-                    commonPatterns: [],
-                };
+                // Extract userId from sessionId (format: conv_userId_timestamp)
+                const userId = sessionId.split("_")[1] || sessionId;
 
-                const result = await aiService.processUserMessage(userId, organizationId, message, organizationContext);
+                const response = await aiService.processMessage(userId, message);
 
-                return {
-                    message: result.response,
-                    workflowGenerated: result.workflowGenerated,
-                    suggestions: result.suggestions,
-                };
+                return reply.send({
+                    id: `msg_${Date.now()}`,
+                    role: "assistant",
+                    content: response.message,
+                    timestamp: new Date().toISOString(),
+                    metadata: {
+                        workflowGenerated: !!response.workflowGenerated,
+                        confidence: response.confidence,
+                        suggestions: response.suggestions,
+                        nextSteps: response.nextSteps,
+                    },
+                });
             } catch (error) {
-                return { message: "Erro ao processar solicitação de IA" };
+                console.error("Error processing message:", error);
+                return reply.status(500).send({
+                    error: "Failed to process message",
+                    message: "Não foi possível processar sua mensagem. Tente novamente.",
+                });
             }
         }
     );
 
-    // POST /api/ai/optimize-workflow
-    fastify.post(
-        "/optimize-workflow",
+    // Generate workflow from natural language
+    fastify.post<{ Body: WorkflowGenerationRequest }>(
+        "/generate-workflow",
         {
             schema: {
-                tags: ["ai"],
+                body: {
+                    type: "object",
+                    required: ["prompt", "organizationId", "userId"],
+                    properties: {
+                        prompt: { type: "string", minLength: 1 },
+                        organizationId: { type: "string" },
+                        userId: { type: "string" },
+                        context: {
+                            type: "object",
+                            properties: {
+                                industry: { type: "string" },
+                                existingWorkflows: {
+                                    type: "array",
+                                    items: { type: "string" },
+                                },
+                                integrations: {
+                                    type: "array",
+                                    items: { type: "string" },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
-        async () => {
-            return { message: "Otimizar workflow via IA - em desenvolvimento" };
+        async (request: FastifyRequest<{ Body: WorkflowGenerationRequest }>, reply: FastifyReply) => {
+            try {
+                const { prompt, organizationId, userId, context } = request.body;
+
+                // Start a temporary session for workflow generation
+                const sessionId = await aiService.startConversation(userId, organizationId, context?.industry);
+
+                // Generate workflow
+                const response = await aiService.generateWorkflowFromPrompt(sessionId, prompt);
+
+                // Clean up session
+                aiService.endConversation(sessionId);
+
+                return reply.send({
+                    workflow: response,
+                    message: "Workflow gerado com sucesso!",
+                });
+            } catch (error) {
+                console.error("Error generating workflow:", error);
+                return reply.status(500).send({
+                    error: "Failed to generate workflow",
+                    message: "Não foi possível gerar o workflow. Verifique sua solicitação e tente novamente.",
+                });
+            }
         }
     );
-};
+
+    // Get intelligent suggestions
+    fastify.post<{ Body: GetSuggestionsRequest }>(
+        "/suggestions",
+        {
+            schema: {
+                body: {
+                    type: "object",
+                    required: ["sessionId", "type"],
+                    properties: {
+                        sessionId: { type: "string" },
+                        type: {
+                            type: "string",
+                            enum: ["workflow", "integration", "optimization"],
+                        },
+                    },
+                },
+                response: {
+                    200: {
+                        type: "object",
+                        properties: {
+                            suggestions: {
+                                type: "array",
+                                items: { type: "string" },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        async (request: FastifyRequest<{ Body: GetSuggestionsRequest }>, reply: FastifyReply) => {
+            try {
+                const { sessionId, type } = request.body;
+
+                const suggestions = await aiService.getSuggestions(sessionId, type);
+
+                return reply.send({ suggestions });
+            } catch (error) {
+                console.error("Error getting suggestions:", error);
+                return reply.status(500).send({
+                    error: "Failed to get suggestions",
+                    suggestions: [],
+                });
+            }
+        }
+    );
+
+    // Health check for AI service
+    fastify.get(
+        "/health",
+        {
+            schema: {
+                response: {
+                    200: {
+                        type: "object",
+                        properties: {
+                            status: { type: "string" },
+                            aiService: { type: "string" },
+                            openaiConfigured: { type: "boolean" },
+                        },
+                    },
+                },
+            },
+        },
+        async (_request: FastifyRequest, reply: FastifyReply) => {
+            return reply.send({
+                status: "healthy",
+                aiService: "operational",
+                openaiConfigured: !!process.env["OPENAI_API_KEY"],
+            });
+        }
+    );
+}
