@@ -161,6 +161,36 @@ export interface ERPOrder {
     status?: string;
 }
 
+// CRM specific types
+export interface CRMConfig {
+    apiKey: string;
+    clientId?: string;
+    clientSecret?: string;
+    baseUrl?: string;
+}
+
+export interface CRMContact {
+    id?: string;
+    email: string;
+    name: string;
+    phone?: string;
+    jobTitle?: string;
+    company?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    tags?: string[];
+    customFields?: Record<string, any>;
+}
+
+export interface CRMEvent {
+    type: string;
+    identifier: string;
+    contactEmail: string;
+    data?: Record<string, any>;
+    timestamp?: Date;
+}
+
 // AI Assistant types
 export interface AIPromptTemplate {
     id: string;
