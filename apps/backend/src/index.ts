@@ -13,6 +13,8 @@ import { analyticsRoutes } from "./routes/analytics";
 import whatsappRoutes from "./routes/whatsapp";
 import pixRoutes from "./routes/pix";
 import crmRoutes from "./routes/crm";
+import erpRoutes from "./routes/erp";
+import integrationsUnifiedRoutes from "./routes/integrations-unified";
 
 const server = Fastify({
     logger: process.env["NODE_ENV"] !== "production",
@@ -56,6 +58,8 @@ async function start() {
                     { name: "whatsapp", description: "WhatsApp Business API integration" },
                     { name: "pix", description: "PIX payment integration with Mercado Pago" },
                     { name: "crm", description: "CRM integrations (RD Station, Pipedrive, HubSpot)" },
+                    { name: "erp", description: "ERP integrations (Omie, ContaAzul, Bling)" },
+                    { name: "integrations-unified", description: "Unified integrations dashboard and monitoring" },
                 ],
             },
         });
@@ -77,6 +81,8 @@ async function start() {
         await server.register(whatsappRoutes, { prefix: "/api/whatsapp" });
         await server.register(pixRoutes, { prefix: "/api/pix" });
         await server.register(crmRoutes, { prefix: "/api/crm" });
+        await server.register(erpRoutes, { prefix: "/api/erp" });
+        await server.register(integrationsUnifiedRoutes, { prefix: "/api/integrations-unified" });
 
         // Health check
         server.get("/health", async () => {
