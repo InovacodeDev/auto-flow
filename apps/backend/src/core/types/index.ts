@@ -229,6 +229,67 @@ export interface AutomationMetrics {
     successRate: number;
 }
 
+// Analytics types
+export interface WorkflowExecution {
+    id: string;
+    workflowId: string;
+    organizationId: string;
+    status: "success" | "failed" | "running" | "canceled";
+    startTime: Date;
+    endTime?: Date;
+    duration?: number; // em milliseconds
+    triggeredBy: string;
+    actionsExecuted: number;
+    errors?: string[];
+    metadata?: Record<string, any>;
+}
+
+export interface WorkflowMetrics {
+    workflowId: string;
+    organizationId: string;
+    totalExecutions: number;
+    successfulExecutions: number;
+    failedExecutions: number;
+    successRate: number;
+    avgDuration: number;
+    executionsLast24h: number;
+    executionsLast7d: number;
+    lastExecution: Date | null;
+    timeSaved: number;
+    updatedAt: Date;
+}
+
+export interface ROICalculation {
+    timeSavings: number; // horas economizadas
+    costSavings: number; // economia em reais
+    revenueImpact: number; // impacto na receita
+    totalROI: number; // ROI total
+    efficiency: number; // percentual de eficiência
+    period: string; // período da análise
+    calculatedAt: Date;
+}
+
+export interface PerformanceReport {
+    organizationId: string;
+    period: {
+        startDate: Date;
+        endDate: Date;
+    };
+    summary: {
+        totalExecutions: number;
+        successRate: number;
+        avgExecutionTime: number;
+        totalTimeSaved: number;
+        totalCostSavings: number;
+    };
+    workflowBreakdown: any;
+    timeAnalysis: any;
+    errorAnalysis: any;
+    integrationUsage: any;
+    recommendations: string[];
+    generatedAt: Date;
+}
+
 export interface ROIReport {
     totalROI: number;
     timeSavings: number;

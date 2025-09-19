@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initializeAuth } from "./stores/authStore";
+import { FloatingHelpButton } from "./components/help/FloatingHelpButton";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -87,6 +88,9 @@ function App() {
                         </div>
                     </div>
                 </main>
+
+                {/* Floating Help Button */}
+                <FloatingHelpButton context="dashboard" />
             </div>
         </QueryClientProvider>
     );

@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile optimizations */
+@import "./styles/mobile.css";
+
 /* AutoFlow Custom Styles - Material Expressive Design */
 :root {
     --primary: #1976d2;
