@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initializeAuth } from "./stores/authStore";
 import { FloatingHelpButton } from "./components/help/FloatingHelpButton";
+import Sidebar from "./components/layout/Sidebar";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -11,6 +12,9 @@ function App() {
     useEffect(() => {
         initializeAuth();
     }, []);
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+    const toggleSidebar = () => setSidebarOpen((s) => !s);
 
     return (
         <QueryClientProvider client={queryClient}>
@@ -19,26 +23,31 @@ function App() {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex justify-between items-center h-16">
                             <div className="flex items-center">
+                                <button
+                                    onClick={toggleSidebar}
+                                    className="mr-3 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:bg-gray-100"
+                                    aria-label="Open menu"
+                                >
+                                    {/* Hamburger icon */}
+                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M4 6h16M4 12h16M4 18h16"
+                                        />
+                                    </svg>
+                                </button>
                                 <h1 className="text-2xl font-bold text-gray-900">AutoFlow</h1>
                                 <span className="ml-2 text-sm text-gray-500">Beta</span>
                             </div>
-                            <nav className="flex space-x-8">
-                                <a href="#" className="text-gray-600 hover:text-gray-900">
-                                    Dashboard
-                                </a>
-                                <a href="#" className="text-gray-600 hover:text-gray-900">
-                                    Workflows
-                                </a>
-                                <a href="#" className="text-gray-600 hover:text-gray-900">
-                                    Integrações
-                                </a>
-                                <a href="#" className="text-gray-600 hover:text-gray-900">
-                                    Analytics
-                                </a>
-                            </nav>
+                            <div />
                         </div>
                     </div>
                 </header>
+                {/* Sidebar */}
+                <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
                 <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                     <div className="px-4 py-6 sm:px-0">
                         <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 flex items-center justify-center">

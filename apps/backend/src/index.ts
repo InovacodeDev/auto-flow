@@ -12,6 +12,7 @@ import rateLimit from "@fastify/rate-limit";
 
 import { authRoutes } from "./routes/auth";
 import { workflowRoutes } from "./routes/workflows";
+import workflowBuilderRoutes from "./routes/workflow-builder";
 import { integrationRoutes } from "./routes/integrations";
 import { aiRoutes } from "./routes/ai";
 import { analyticsRoutes } from "./routes/analytics";
@@ -80,6 +81,7 @@ async function start() {
         // Register routes
         await server.register(authRoutes, { prefix: "/api/auth" });
         await server.register(workflowRoutes, { prefix: "/api/workflows" });
+        await server.register(workflowBuilderRoutes);
         await server.register(integrationRoutes, { prefix: "/api/integrations" });
         await server.register(aiRoutes, { prefix: "/api/ai" });
         await server.register(analyticsRoutes, { prefix: "/api/analytics" });

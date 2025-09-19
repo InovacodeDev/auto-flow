@@ -3,7 +3,7 @@ import IntegrationManager from "../components/integrations/IntegrationManager";
 
 const IntegrationsPage: React.FC = () => {
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="p-6">
             <IntegrationManager />
         </div>
     );

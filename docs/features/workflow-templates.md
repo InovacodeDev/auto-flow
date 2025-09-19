@@ -252,6 +252,36 @@ const createCustomTemplate = (currentNodes, currentEdges) => {
 };
 ```
 
+## API Endpoints (Workflow Builder)
+
+O backend expõe endpoints mínimos para listar e instanciar templates de workflow através do `BrazilianWorkflowTemplateManager`.
+
+- `GET /api/workflows/templates`
+    - Retorna a lista de templates disponíveis.
+    - Exemplo:
+        ```bash
+        curl http://localhost:3001/api/workflows/templates
+        ```
+
+- `GET /api/workflows/templates/:id`
+    - Retorna o template identificado por `:id`.
+    - Exemplo:
+        ```bash
+        curl http://localhost:3001/api/workflows/templates/pix_payment_template
+        ```
+
+- `POST /api/workflows/templates/:id/instantiate`
+    - Instancia um workflow a partir do template especificado.
+    - Body (JSON): `{ "organizationId": "org123", "userId": "user123", "customizations": { ... } }`
+    - Exemplo:
+        ```bash
+        curl -X POST http://localhost:3001/api/workflows/templates/pix_payment_template/instantiate \
+            -H "Content-Type: application/json" \
+            -d '{"organizationId":"org_test","userId":"user_test","customizations":{"name":"Cobrança PIX - Loja X"}}'
+        ```
+
+Responses will return a JSON object with the instantiated `workflow` on success (HTTP 201) or an error message.
+
 ---
 
 Esta implementação fornece uma base sólida para o sistema de templates, com estrutura extensível para futuras melhorias e integração completa com o sistema de persistência existente.

@@ -15,7 +15,7 @@ const WorkflowBuilder: React.FC = () => {
     };
 
     return (
-        <div className="h-screen bg-gray-50 relative">
+        <div className="relative">
             <WorkflowCanvas
                 workflowId={workflowId}
                 readOnly={false}
