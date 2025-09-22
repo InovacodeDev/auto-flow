@@ -188,6 +188,44 @@ export class AuthMiddleware {
     };
 
     /**
+     * Simple rate limiting by IP address (in-memory)
+     * Useful for endpoints like login to prevent brute force attacks
+     */
+    ipRateLimit = (maxRequests = 5, windowMs = 60000) => {
+        const ipCounts = new Map<string, { count: number; resetTime: number }>();
+
+        return async (request: FastifyRequest, reply: FastifyReply) => {
+            const ip = request.ip || (request.headers["x-forwarded-for"] as string) || "unknown";
+            const now = Date.now();
+            const windowStart = now - windowMs;
+
+            // Clean up old entries
+            for (const [key, value] of ipCounts.entries()) {
+                if (value.resetTime < windowStart) {
+                    ipCounts.delete(key);
+                }
+            }
+
+            let data = ipCounts.get(ip);
+            if (!data || data.resetTime < windowStart) {
+                data = { count: 0, resetTime: now + windowMs };
+                ipCounts.set(ip, data);
+            }
+
+            if (data.count >= maxRequests) {
+                return reply.status(429).send({
+                    error: "TOO_MANY_REQUESTS",
+                    message: "Too many requests from this IP, please try again later",
+                    retryAfter: Math.ceil((data.resetTime - now) / 1000),
+                    timestamp: new Date().toISOString(),
+                });
+            }
+
+            data.count++;
+        };
+    };
+
+    /**
      * Audit logging middleware
      */
     auditLog = (action: string) => {

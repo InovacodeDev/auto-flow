@@ -119,6 +119,7 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
     fastify.post(
         "/login",
         {
+            preHandler: authMiddleware.ipRateLimit(5, 60000),
             schema: {
                 tags: ["auth"],
                 description: "Authenticate user with email and password",
