@@ -159,6 +159,7 @@ package-lock.json
 
 # Auto-generated docs
 docs/generated/
+docs/documentation/
 
 # SSL certificates
 *.key
