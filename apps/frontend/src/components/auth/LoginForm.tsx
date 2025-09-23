@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthEnhanced } from "../../hooks/useAuthEnhanced";
 import type { LoginCredentials } from "../../stores/authStore";
 
 interface LoginSearchParams {
@@ -12,8 +12,8 @@ interface LoginSearchParams {
  */
 export const LoginForm: React.FC = () => {
     const navigate = useNavigate();
-    const searchParams = useSearch({ from: "/login" }) as LoginSearchParams;
-    const { login, isLoading, error, clearError } = useAuth();
+    const searchParams = useSearch({ from: "/auth/login" }) as LoginSearchParams;
+    const { login, isLoading, error, clearError } = useAuthEnhanced();
 
     const [formData, setFormData] = useState<LoginCredentials>({
         email: "",
@@ -60,7 +60,9 @@ export const LoginForm: React.FC = () => {
                             <div className="flex">
                                 <div className="text-red-400 text-xl mr-3">⚠️</div>
                                 <div>
-                                    <h3 className="text-sm font-medium text-red-800">Erro de autenticação</h3>
+                                    <h3 className="text-sm font-medium text-red-800">
+                                        Erro de autenticação
+                                    </h3>
                                     <p className="mt-1 text-sm text-red-700">{error}</p>
                                 </div>
                             </div>
@@ -69,7 +71,10 @@ export const LoginForm: React.FC = () => {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="email"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Email
                             </label>
                             <input
@@ -87,7 +92,10 @@ export const LoginForm: React.FC = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="password"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Senha
                             </label>
                             <div className="relative">
@@ -122,13 +130,19 @@ export const LoginForm: React.FC = () => {
                                     type="checkbox"
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                 />
-                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                                <label
+                                    htmlFor="remember-me"
+                                    className="ml-2 block text-sm text-gray-700"
+                                >
                                     Lembrar de mim
                                 </label>
                             </div>
 
                             <div className="text-sm">
-                                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+                                <a
+                                    href="#"
+                                    className="font-medium text-blue-600 hover:text-blue-500"
+                                >
                                     Esqueceu a senha?
                                 </a>
                             </div>
@@ -153,7 +167,10 @@ export const LoginForm: React.FC = () => {
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-600">
                             Não tem uma conta?{" "}
-                            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                            <Link
+                                to="/auth/register"
+                                className="font-medium text-blue-600 hover:text-blue-500"
+                            >
                                 Registre-se gratuitamente
                             </Link>
                         </p>

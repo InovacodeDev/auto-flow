@@ -8,7 +8,7 @@ This document provides comprehensive guidelines for AI agents working on full st
 
 **Tech Stack:**
 - **Monorepo**: Turborepo (optimized for Vercel deployments)
-- **Backend**: Node.js + Fastify + PostgreSQL + Drizzle ORM
+- **Backend**: Nest.js + Fastify + PostgreSQL + Drizzle ORM
 - **Frontend**: React.js + TanStack Router + Tailwind CSS + Material Expressive design pattern
 
 All modifications must follow these instructions to maintain code quality, consistency, and project standards.

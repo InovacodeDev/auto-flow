@@ -5,6 +5,17 @@ import { ERPIntegrationService } from "../../src/integrations/erp/ERPIntegration
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 global.fetch = mockFetch;
 
+// Helper to create a Response-like mock compatible with fetch usage in service
+function makeMockResponse({ ok = true, status = 200, statusText = 'OK', jsonBody = null, textBody = '' } : { ok?: boolean; status?: number; statusText?: string; jsonBody?: any; textBody?: string }) {
+    return {
+        ok,
+        status,
+        statusText,
+        json: async () => jsonBody,
+        text: async () => (textBody ?? (jsonBody ? JSON.stringify(jsonBody) : '')),
+    } as unknown as Response;
+}
+
 describe("ERPIntegrationService", () => {
     let erpService: ERPIntegrationService;
 
@@ -41,10 +52,7 @@ describe("ERPIntegrationService", () => {
                 estoque: 100,
             };
 
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockResponse,
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: mockResponse }));
 
             const productData = {
                 name: "Produto Teste",
@@ -89,10 +97,7 @@ describe("ERPIntegrationService", () => {
                 estoque: 100,
             };
 
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ produtos: [mockResponse] }),
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { produtos: [mockResponse] } }));
 
             const result = await erpService.findProductBySKU("PROD-001");
 
@@ -106,10 +111,7 @@ describe("ERPIntegrationService", () => {
         });
 
         it("should return null for non-existent product", async () => {
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ produtos: [] }),
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { produtos: [] } }));
 
             const result = await erpService.findProductBySKU("NON-EXISTENT");
 
@@ -124,10 +126,7 @@ describe("ERPIntegrationService", () => {
                 quantidade: 10,
             };
 
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockResponse,
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: mockResponse }));
 
             const result = await erpService.updateStock("PROD-001", 10, "add");
 
@@ -151,10 +150,7 @@ describe("ERPIntegrationService", () => {
                 cnpj_cpf: "12345678901",
             };
 
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockResponse,
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: mockResponse }));
 
             const customerData = {
                 name: "João Silva",
@@ -184,12 +180,7 @@ describe("ERPIntegrationService", () => {
         });
 
         it("should handle customer creation errors", async () => {
-            mockFetch.mockResolvedValueOnce({
-                ok: false,
-                status: 400,
-                statusText: "Bad Request",
-                json: async () => ({ error: "Invalid data" }),
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: false, status: 400, statusText: 'Bad Request', jsonBody: { error: 'Invalid data' } }));
 
             const customerData = {
                 name: "João Silva",
@@ -218,10 +209,7 @@ describe("ERPIntegrationService", () => {
                 status: "pendente",
             };
 
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockResponse,
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: mockResponse }));
 
             const invoiceData = {
                 customerId: "CLI-001",
@@ -256,10 +244,7 @@ describe("ERPIntegrationService", () => {
                 status: "pendente",
             };
 
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockResponse,
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: mockResponse }));
 
             const invoiceData = {
                 customerId: "CLI-001",
@@ -288,10 +273,7 @@ describe("ERPIntegrationService", () => {
                 numero_nf: "NF-001",
             };
 
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockResponse,
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: mockResponse }));
 
             const reconciliationData = {
                 date: new Date("2024-01-15"),
@@ -315,10 +297,7 @@ describe("ERPIntegrationService", () => {
                 lancamento_id: "LANC-002",
             };
 
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockResponse,
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: mockResponse }));
 
             const reconciliationData = {
                 date: new Date("2024-01-15"),
@@ -372,22 +351,10 @@ describe("ERPIntegrationService", () => {
         it("should sync with ERP successfully", async () => {
             // Mock multiple API responses for different entities
             mockFetch
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: async () => ({ produtos: [] }),
-                } as Response)
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: async () => ({ clientes: [] }),
-                } as Response)
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: async () => ({ notas_fiscais: [] }),
-                } as Response)
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: async () => ({ lancamentos: [] }),
-                } as Response);
+                .mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { produtos: [] } }))
+                .mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { clientes: [] } }))
+                .mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { notas_fiscais: [] } }))
+                .mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { lancamentos: [] } }));
 
             const result = await erpService.syncWithERP();
 
@@ -414,12 +381,7 @@ describe("ERPIntegrationService", () => {
 
     describe("Error Handling", () => {
         it("should handle API errors properly", async () => {
-            mockFetch.mockResolvedValueOnce({
-                ok: false,
-                status: 400,
-                statusText: "Bad Request",
-                json: async () => ({ error: "Invalid data" }),
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: false, status: 400, statusText: 'Bad Request', jsonBody: { error: 'Invalid data' } }));
 
             await expect(
                 erpService.createProduct({
@@ -452,10 +414,7 @@ describe("ERPIntegrationService", () => {
     describe("Platform-Specific Tests", () => {
         describe("Omie Integration", () => {
             it("should use correct Omie API endpoints", async () => {
-                mockFetch.mockResolvedValueOnce({
-                    ok: true,
-                    json: async () => ({ codigo_produto: "PROD-001" }),
-                } as Response);
+                mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { codigo_produto: 'PROD-001' } }));
 
                 await erpService.createProduct({
                     name: "Test Product",
@@ -485,10 +444,7 @@ describe("ERPIntegrationService", () => {
             });
 
             it("should use correct ContaAzul API format", async () => {
-                mockFetch.mockResolvedValueOnce({
-                    ok: true,
-                    json: async () => ({ id: "PROD-001" }),
-                } as Response);
+                mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { id: 'PROD-001' } }));
 
                 await erpService.createProduct({
                     name: "Test Product",
@@ -522,10 +478,7 @@ describe("ERPIntegrationService", () => {
             });
 
             it("should use correct Bling API format", async () => {
-                mockFetch.mockResolvedValueOnce({
-                    ok: true,
-                    json: async () => ({ retorno: { produtos: [{ produto: { id: "PROD-001" } }] } }),
-                } as Response);
+                mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { retorno: { produtos: [{ produto: { id: 'PROD-001' } }] } } }));
 
                 await erpService.createProduct({
                     name: "Test Product",
@@ -546,10 +499,7 @@ describe("ERPIntegrationService", () => {
 
     describe("Health Check", () => {
         it("should check ERP service connectivity", async () => {
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ status: "ok" }),
-            } as Response);
+            mockFetch.mockResolvedValueOnce(makeMockResponse({ ok: true, jsonBody: { status: 'ok' } }));
 
             // Test basic connectivity by calling a simple API endpoint
             await erpService.findProductBySKU("test-connectivity");

@@ -7,6 +7,7 @@ import {
     Bars3Icon,
     Cog6ToothIcon,
     DocumentTextIcon,
+    Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 
 interface WorkflowToolbarProps {
@@ -18,6 +19,7 @@ interface WorkflowToolbarProps {
     onToggleInspector: () => void;
     onToggleVersioning?: () => void;
     onOpenTemplates?: () => void;
+    onOpenShowcase?: () => void;
     canExecute: boolean;
     readOnly: boolean;
 }
@@ -30,6 +32,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
     onToggleLibrary,
     onToggleInspector,
     onOpenTemplates,
+    onOpenShowcase,
     canExecute,
     readOnly,
 }) => {
@@ -55,6 +58,17 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
                         >
                             <DocumentTextIcon className="w-4 h-4" />
                             <span>Templates</span>
+                        </button>
+                    )}
+
+                    {onOpenShowcase && (
+                        <button
+                            onClick={onOpenShowcase}
+                            className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors"
+                            title="Galeria de Nós"
+                        >
+                            <Squares2X2Icon className="w-4 h-4" />
+                            <span>Galeria</span>
                         </button>
                     )}
 
@@ -88,7 +102,9 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
 
                 {/* Centro - Título */}
                 <div className="flex-1 text-center">
-                    <h1 className="text-lg font-semibold text-gray-900">Constructor Visual de Workflows</h1>
+                    <h1 className="text-lg font-semibold text-gray-900">
+                        Constructor Visual de Workflows
+                    </h1>
                 </div>
 
                 {/* Lado direito - Controles de visualização */}

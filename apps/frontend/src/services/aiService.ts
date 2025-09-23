@@ -1,6 +1,9 @@
+import React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { axiosClient } from "../lib/axiosClient";
+import { queryKeys } from "../lib/queryClient";
 
-// Tipos para IA Conversacional
+// Types
 export interface ChatMessage {
     id: string;
     role: "user" | "assistant" | "system";
@@ -8,185 +11,267 @@ export interface ChatMessage {
     timestamp: string;
     metadata?: {
         workflowGenerated?: boolean;
-        workflowId?: string;
-        organizationId?: string;
-    };
-}
-
-export interface ChatRequest {
-    message: string;
-    organizationContext?: {
-        businessType?: string;
-        existingWorkflows?: string[];
-        availableIntegrations?: string[];
-        commonPatterns?: string[];
-    };
-}
-
-export interface ChatResponse {
-    success: boolean;
-    data?: {
-        response: string;
-        workflowGenerated?: any; // WorkflowDefinition
+        suggestionType?: string;
+        confidence?: number;
         suggestions?: string[];
+        nextSteps?: string[];
     };
-    error?: string;
 }
 
-export interface ChatHistoryResponse {
-    success: boolean;
-    data?: {
-        messages: ChatMessage[];
+export interface ConversationSession {
+    sessionId: string;
+    userId: string;
+    organizationId: string;
+    industry?: string;
+    messages: ChatMessage[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface StartConversationRequest {
+    userId: string;
+    organizationId: string;
+    industry?: string;
+}
+
+export interface ProcessMessageRequest {
+    sessionId: string;
+    message: string;
+}
+
+export interface WorkflowGenerationRequest {
+    prompt: string;
+    organizationId: string;
+    userId: string;
+    context?: {
+        industry?: string;
+        existingWorkflows?: string[];
+        integrations?: string[];
     };
-    error?: string;
+}
+
+export interface GetSuggestionsRequest {
+    sessionId: string;
+    type: "workflow" | "integration" | "optimization";
+}
+
+export interface AIResponse {
+    id: string;
+    role: "assistant";
+    content: string;
+    timestamp: string;
+    metadata: {
+        workflowGenerated: boolean;
+        confidence?: number;
+        suggestions?: string[];
+        nextSteps?: string[];
+    };
+}
+
+export interface WorkflowGenerationResponse {
+    workflow: {
+        nodes: any[];
+        edges: any[];
+    };
+    message: string;
+}
+
+export interface SuggestionsResponse {
+    suggestions: string[];
+}
+
+export interface AIHealthResponse {
+    status: string;
+    aiService: string;
+    openaiConfigured: boolean;
 }
 
 // API functions
-const sendChatMessage = async (request: ChatRequest): Promise<ChatResponse> => {
-    const response = await fetch("/api/ai/chat", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken") || "mock-token"}`,
-        },
-        body: JSON.stringify(request),
-    });
+const aiApi = {
+    // Iniciar nova conversa
+    async startConversation(data: StartConversationRequest): Promise<{
+        sessionId: string;
+        message: string;
+        suggestions: string[];
+    }> {
+        const response = await axiosClient.post("/ai/start-conversation", data);
+        return response.data;
+    },
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Erro ao enviar mensagem");
-    }
+    // Processar mensagem
+    async processMessage(data: ProcessMessageRequest): Promise<AIResponse> {
+        const response = await axiosClient.post("/ai/message", data);
+        return response.data;
+    },
 
-    return response.json();
+    // Gerar workflow
+    async generateWorkflow(data: WorkflowGenerationRequest): Promise<WorkflowGenerationResponse> {
+        const response = await axiosClient.post("/ai/generate-workflow", data);
+        return response.data;
+    },
+
+    // Obter sugestões
+    async getSuggestions(data: GetSuggestionsRequest): Promise<SuggestionsResponse> {
+        const response = await axiosClient.post("/ai/suggestions", data);
+        return response.data;
+    },
+
+    // Health check
+    async getHealth(): Promise<AIHealthResponse> {
+        const response = await axiosClient.get("/ai/health");
+        return response.data;
+    },
 };
 
-const getChatHistory = async (): Promise<ChatHistoryResponse> => {
-    const response = await fetch("/api/ai/chat/history", {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken") || "mock-token"}`,
-        },
-    });
+// React Query Hooks
 
-    if (!response.ok) {
-        throw new Error("Erro ao buscar histórico de chat");
-    }
-
-    return response.json();
-};
-
-const clearChatHistory = async (): Promise<void> => {
-    const response = await fetch("/api/ai/chat/history", {
-        method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken") || "mock-token"}`,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error("Erro ao limpar histórico");
-    }
-};
-
-// React Query hooks
-
-/**
- * Hook para enviar mensagem de chat para IA
- */
-export const useSendChatMessage = () => {
+export const useStartConversation = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: sendChatMessage,
-        onSuccess: () => {
-            // Invalidar histórico para recarregar
-            queryClient.invalidateQueries({ queryKey: ["chat-history"] });
-        },
-        onError: (error) => {
-            console.error("Erro ao enviar mensagem:", error);
+        mutationFn: aiApi.startConversation,
+        onSuccess: (data) => {
+            // Invalidate conversations list
+            queryClient.invalidateQueries({ queryKey: queryKeys.ai.conversations() });
         },
     });
 };
 
-/**
- * Hook para buscar histórico de chat
- */
-export const useChatHistory = (options: { enabled?: boolean } = {}) => {
+export const useProcessMessage = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: aiApi.processMessage,
+        onSuccess: (data, variables) => {
+            // Invalidate specific conversation
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.ai.conversation(variables.sessionId),
+            });
+        },
+    });
+};
+
+export const useGenerateWorkflow = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: aiApi.generateWorkflow,
+        onSuccess: () => {
+            // Invalidate workflows list
+            queryClient.invalidateQueries({ queryKey: queryKeys.workflows.list() });
+        },
+    });
+};
+
+export const useGetSuggestions = () => {
+    return useMutation({
+        mutationFn: aiApi.getSuggestions,
+    });
+};
+
+export const useAIHealth = () => {
     return useQuery({
-        queryKey: ["chat-history"],
-        queryFn: getChatHistory,
-        enabled: options.enabled !== false,
-        refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5, // 5 minutos
+        queryKey: queryKeys.ai.health(),
+        queryFn: aiApi.getHealth,
+        refetchInterval: 30000, // Refetch every 30 seconds
+        staleTime: 10000, // Consider data stale after 10 seconds
     });
 };
 
-/**
- * Hook para limpar histórico de chat
- */
-export const useClearChatHistory = () => {
-    const queryClient = useQueryClient();
+// Helper hooks for chat functionality
 
-    return useMutation({
-        mutationFn: clearChatHistory,
-        onSuccess: () => {
-            // Invalidar histórico para recarregar
-            queryClient.invalidateQueries({ queryKey: ["chat-history"] });
-        },
-        onError: (error) => {
-            console.error("Erro ao limpar histórico:", error);
-        },
-    });
+export const useChatSession = (sessionId: string | null) => {
+    const [messages, setMessages] = React.useState<ChatMessage[]>([]);
+    const [isTyping, setIsTyping] = React.useState(false);
+
+    const processMessageMutation = useProcessMessage();
+
+    const sendMessage = async (content: string) => {
+        if (!sessionId) return;
+
+        // Add user message immediately
+        const userMessage: ChatMessage = {
+            id: `user_${Date.now()}`,
+            role: "user",
+            content,
+            timestamp: new Date().toISOString(),
+        };
+
+        setMessages((prev) => [...prev, userMessage]);
+        setIsTyping(true);
+
+        try {
+            const response = await processMessageMutation.mutateAsync({
+                sessionId,
+                message: content,
+            });
+
+            // Add assistant response
+            const assistantMessage: ChatMessage = {
+                id: response.id,
+                role: "assistant",
+                content: response.content,
+                timestamp: response.timestamp,
+                metadata: response.metadata,
+            };
+
+            setMessages((prev) => [...prev, assistantMessage]);
+        } catch (error) {
+            console.error("Failed to send message:", error);
+
+            // Add error message
+            const errorMessage: ChatMessage = {
+                id: `error_${Date.now()}`,
+                role: "assistant",
+                content: "Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente.",
+                timestamp: new Date().toISOString(),
+            };
+
+            setMessages((prev) => [...prev, errorMessage]);
+        } finally {
+            setIsTyping(false);
+        }
+    };
+
+    const clearMessages = () => {
+        setMessages([]);
+    };
+
+    return {
+        messages,
+        isTyping,
+        sendMessage,
+        clearMessages,
+        isLoading: processMessageMutation.isPending,
+        error: processMessageMutation.error,
+    };
 };
 
-/**
- * Utility function para formatar mensagens
- */
-export const formatChatMessage = (message: ChatMessage): string => {
-    const date = new Date(message.timestamp);
-    const timeString = date.toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+// Mock data for development
+export const mockConversations: ConversationSession[] = [
+    {
+        sessionId: "conv_1",
+        userId: "user_1",
+        organizationId: "org_1",
+        industry: "ecommerce",
+        messages: [
+            {
+                id: "msg_1",
+                role: "assistant",
+                content:
+                    "Olá! Sou o Alex, seu assistente de automação. Como posso ajudá-lo a otimizar seus processos hoje?",
+                timestamp: new Date(Date.now() - 60000).toISOString(),
+            },
+        ],
+        createdAt: new Date(Date.now() - 60000).toISOString(),
+        updatedAt: new Date(Date.now() - 60000).toISOString(),
+    },
+];
 
-    return `[${timeString}] ${message.role === "user" ? "Você" : "AutoFlow IA"}: ${message.content}`;
-};
-
-/**
- * Utility function para obter sugestões padrão
- */
-export const getDefaultSuggestions = (): string[] => {
-    return [
-        "Como automatizar atendimento via WhatsApp?",
-        "Criar workflow de follow-up de vendas",
-        "Automatizar cobrança com PIX",
-        "Integrar com meu CRM",
-        "Configurar lembretes automáticos",
-        "Workflow para leads de e-commerce",
-        "Automatizar relatórios diários",
-        "Sistema de aprovação de documentos",
-    ];
-};
-
-/**
- * Utility function para detectar se uma mensagem gerou workflow
- */
-export const hasWorkflowGenerated = (message: ChatMessage): boolean => {
-    return message.metadata?.workflowGenerated === true;
-};
-
-/**
- * Utility function para extrair ID do workflow gerado
- */
-export const getGeneratedWorkflowId = (message: ChatMessage): string | null => {
-    return message.metadata?.workflowId || null;
-};
-
-export default {
-    useSendChatMessage,
-    useChatHistory,
-    useClearChatHistory,
-    formatChatMessage,
-    getDefaultSuggestions,
-    hasWorkflowGenerated,
-    getGeneratedWorkflowId,
-};
+export const mockSuggestions = [
+    "Criar workflow para processar pedidos automaticamente",
+    "Integrar com sistema de pagamento PIX",
+    "Configurar notificações por WhatsApp",
+    "Otimizar processo de envio de emails",
+    "Sincronizar dados com CRM",
+];

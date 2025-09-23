@@ -1,104 +1,48 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { WorkflowCanvas, WorkflowListItem, CreateWorkflowRequest, UpdateWorkflowRequest } from "../types/workflow";
-
-const API_BASE = "http://localhost:3001/api";
+import {
+    WorkflowCanvas,
+    WorkflowListItem,
+    CreateWorkflowRequest,
+    UpdateWorkflowRequest,
+} from "../types/workflow";
+import { axiosClient } from "../lib/axiosClient";
+import { queryKeys } from "../lib/queryClient";
 
 // API functions
 const workflowApi = {
     // Lista workflows
     async getWorkflows(): Promise<{ workflows: WorkflowListItem[] }> {
-        const response = await fetch(`${API_BASE}/workflows`, {
-            headers: {
-                Authorization: `Bearer mock-token`, // TODO: Real auth token
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch workflows");
-        }
-
-        return response.json();
+        const response = await axiosClient.get("/workflows");
+        return response.data;
     },
 
     // Get workflow com dados do canvas
     async getWorkflowCanvas(id: string): Promise<WorkflowCanvas> {
-        const response = await fetch(`${API_BASE}/workflows/${id}/canvas`, {
-            headers: {
-                Authorization: `Bearer mock-token`, // TODO: Real auth token
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch workflow");
-        }
-
-        return response.json();
+        const response = await axiosClient.get(`/workflows/${id}/canvas`);
+        return response.data;
     },
 
     // Criar novo workflow
     async createWorkflow(data: CreateWorkflowRequest): Promise<WorkflowCanvas> {
-        const response = await fetch(`${API_BASE}/workflows/canvas`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer mock-token`, // TODO: Real auth token
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to create workflow");
-        }
-
-        return response.json();
+        const response = await axiosClient.post("/workflows/canvas", data);
+        return response.data;
     },
 
     // Atualizar workflow
     async updateWorkflow(id: string, data: UpdateWorkflowRequest): Promise<WorkflowCanvas> {
-        const response = await fetch(`${API_BASE}/workflows/${id}/canvas`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer mock-token`, // TODO: Real auth token
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to update workflow");
-        }
-
-        return response.json();
+        const response = await axiosClient.put(`/workflows/${id}/canvas`, data);
+        return response.data;
     },
 
     // Deletar workflow
     async deleteWorkflow(id: string): Promise<void> {
-        const response = await fetch(`${API_BASE}/workflows/${id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer mock-token`, // TODO: Real auth token
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to delete workflow");
-        }
+        await axiosClient.delete(`/workflows/${id}`);
     },
 
     // Executar workflow
     async executeWorkflow(id: string): Promise<{ executionId: string }> {
-        const response = await fetch(`${API_BASE}/workflows/${id}/execute`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer mock-token`, // TODO: Real auth token
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to execute workflow");
-        }
-
-        return response.json();
+        const response = await axiosClient.post(`/workflows/${id}/execute`);
+        return response.data;
     },
 };
 
@@ -106,7 +50,7 @@ const workflowApi = {
 
 export const useWorkflows = () => {
     return useQuery({
-        queryKey: ["workflows"],
+        queryKey: queryKeys.workflows.list(),
         queryFn: workflowApi.getWorkflows,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
@@ -114,7 +58,7 @@ export const useWorkflows = () => {
 
 export const useWorkflowCanvas = (id: string | undefined) => {
     return useQuery({
-        queryKey: ["workflow", id, "canvas"],
+        queryKey: queryKeys.workflows.detail(id!),
         queryFn: () => workflowApi.getWorkflowCanvas(id!),
         enabled: !!id,
         staleTime: 1 * 60 * 1000, // 1 minute (frequent updates)
@@ -128,7 +72,7 @@ export const useCreateWorkflow = () => {
         mutationFn: workflowApi.createWorkflow,
         onSuccess: () => {
             // Invalidate workflows list
-            queryClient.invalidateQueries({ queryKey: ["workflows"] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.workflows.list() });
         },
     });
 };
@@ -137,11 +81,12 @@ export const useUpdateWorkflow = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ id, ...data }: { id: string } & UpdateWorkflowRequest) => workflowApi.updateWorkflow(id, data),
+        mutationFn: ({ id, ...data }: { id: string } & UpdateWorkflowRequest) =>
+            workflowApi.updateWorkflow(id, data),
         onSuccess: (_, variables) => {
             // Invalidate both the specific workflow and the list
-            queryClient.invalidateQueries({ queryKey: ["workflow", variables.id, "canvas"] });
-            queryClient.invalidateQueries({ queryKey: ["workflows"] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.workflows.detail(variables.id) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.workflows.list() });
         },
     });
 };
@@ -153,7 +98,7 @@ export const useDeleteWorkflow = () => {
         mutationFn: workflowApi.deleteWorkflow,
         onSuccess: () => {
             // Invalidate workflows list
-            queryClient.invalidateQueries({ queryKey: ["workflows"] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.workflows.list() });
         },
     });
 };

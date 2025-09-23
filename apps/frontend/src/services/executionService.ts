@@ -1,173 +1,182 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { axiosClient } from "../lib/axiosClient";
+import { queryKeys } from "../lib/queryClient";
 
-// Tipos para execuções
-export interface WorkflowExecution {
-    id: string;
-    status: "running" | "success" | "failed" | "cancelled";
+// Types
+export interface WorkflowExecutionInput {
+    workflowId: string;
+    triggerData?: Record<string, any>;
+    userId?: string;
+    organizationId?: string;
+    context?: Record<string, any>;
+}
+
+export interface WorkflowExecutionOutput {
+    executionId: string;
+    status: "pending" | "running" | "completed" | "failed" | "cancelled" | "paused";
+    result?: Record<string, any>;
+    error?: string;
     startedAt: string;
     completedAt?: string;
     duration?: number;
-    errorMessage?: string;
 }
 
-export interface ExecutionLog {
+export interface WorkflowLog {
     id: string;
-    nodeId?: string;
-    level: "info" | "warn" | "error" | "debug";
-    component: string;
-    message: string;
-    data?: any;
     timestamp: string;
-}
-
-export interface ExecuteWorkflowRequest {
-    triggerData?: any;
-    triggerType?: "manual" | "webhook" | "schedule";
-}
-
-export interface ExecuteWorkflowResponse {
-    executionId: string;
-    status: string;
+    level: "info" | "warn" | "error" | "debug";
     message: string;
+    nodeId?: string;
+    data?: Record<string, any>;
+}
+
+export interface QueueStats {
+    workflow: {
+        waiting: number;
+        active: number;
+        completed: number;
+        failed: number;
+        delayed: number;
+        paused: number;
+    };
+    node: {
+        waiting: number;
+        active: number;
+        completed: number;
+        failed: number;
+        delayed: number;
+        paused: number;
+    };
 }
 
 // API functions
-const executeWorkflow = async (
-    workflowId: string,
-    request: ExecuteWorkflowRequest
-): Promise<ExecuteWorkflowResponse> => {
-    const response = await fetch(`/api/workflows/${workflowId}/execute`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken") || "mock-token"}`,
-        },
-        body: JSON.stringify(request),
-    });
+const executionApi = {
+    // Executar workflow
+    async executeWorkflow(data: WorkflowExecutionInput): Promise<{ executionId: string }> {
+        const response = await axiosClient.post("/executions/execute", data);
+        return response.data;
+    },
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Erro ao executar workflow");
-    }
+    // Obter status de execução
+    async getExecutionStatus(executionId: string): Promise<{ status: string }> {
+        const response = await axiosClient.get(`/executions/${executionId}/status`);
+        return response.data;
+    },
 
-    return response.json();
+    // Cancelar execução
+    async cancelExecution(executionId: string): Promise<void> {
+        await axiosClient.delete(`/executions/${executionId}`);
+    },
+
+    // Obter logs de execução
+    async getExecutionLogs(executionId: string): Promise<{ logs: WorkflowLog[] }> {
+        const response = await axiosClient.get(`/executions/${executionId}/logs`);
+        return response.data;
+    },
+
+    // Obter estatísticas das filas
+    async getQueueStats(): Promise<{ stats: QueueStats }> {
+        const response = await axiosClient.get("/executions/stats");
+        return response.data;
+    },
+
+    // Limpar filas (apenas desenvolvimento)
+    async clearQueues(): Promise<void> {
+        await axiosClient.delete("/executions/clear");
+    },
+
+    // Health check do serviço
+    async getServiceHealth(): Promise<{ service: any }> {
+        const response = await axiosClient.get("/executions/health");
+        return response.data;
+    },
 };
 
-const fetchWorkflowExecutions = async (
-    workflowId: string,
-    options: {
-        limit?: number;
-        offset?: number;
-        status?: string;
-    } = {}
-): Promise<{ executions: WorkflowExecution[]; total: number }> => {
-    const params = new URLSearchParams();
-    if (options.limit) params.append("limit", options.limit.toString());
-    if (options.offset) params.append("offset", options.offset.toString());
-    if (options.status) params.append("status", options.status);
+// React Query Hooks
 
-    const response = await fetch(`/api/workflows/${workflowId}/executions?${params}`, {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken") || "mock-token"}`,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error("Erro ao buscar execuções");
-    }
-
-    return response.json();
-};
-
-const fetchExecutionLogs = async (
-    executionId: string,
-    options: {
-        limit?: number;
-        offset?: number;
-        level?: string;
-        nodeId?: string;
-    } = {}
-): Promise<{ logs: ExecutionLog[]; total: number }> => {
-    const params = new URLSearchParams();
-    if (options.limit) params.append("limit", options.limit.toString());
-    if (options.offset) params.append("offset", options.offset.toString());
-    if (options.level) params.append("level", options.level);
-    if (options.nodeId) params.append("nodeId", options.nodeId);
-
-    const response = await fetch(`/api/workflows/executions/${executionId}/logs?${params}`, {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken") || "mock-token"}`,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error("Erro ao buscar logs de execução");
-    }
-
-    return response.json();
-};
-
-// React Query hooks
-
-/**
- * Hook para executar um workflow
- */
 export const useExecuteWorkflow = () => {
+    const queryClient = useQueryClient();
+
     return useMutation({
-        mutationFn: ({ workflowId, request }: { workflowId: string; request: ExecuteWorkflowRequest }) =>
-            executeWorkflow(workflowId, request),
-        onSuccess: (data) => {
-            console.log("Workflow executado com sucesso:", data);
-        },
-        onError: (error) => {
-            console.error("Erro ao executar workflow:", error);
+        mutationFn: executionApi.executeWorkflow,
+        onSuccess: () => {
+            // Invalidate executions list
+            queryClient.invalidateQueries({ queryKey: queryKeys.executions.list() });
         },
     });
 };
 
-/**
- * Hook para buscar execuções de um workflow
- */
-export const useWorkflowExecutions = (
-    workflowId: string,
-    options: {
-        limit?: number;
-        offset?: number;
-        status?: string;
-        enabled?: boolean;
-    } = {}
-) => {
+export const useExecutionStatus = (executionId: string | undefined) => {
     return useQuery({
-        queryKey: ["workflow-executions", workflowId, options],
-        queryFn: () => fetchWorkflowExecutions(workflowId, options),
-        enabled: options.enabled !== false && !!workflowId,
-        refetchInterval: 5000, // Atualizar a cada 5 segundos para execuções em andamento
+        queryKey: queryKeys.executions.status(executionId!),
+        queryFn: () => executionApi.getExecutionStatus(executionId!),
+        enabled: !!executionId,
+        refetchInterval: 2000, // Poll every 2 seconds
     });
 };
 
-/**
- * Hook para buscar logs de uma execução
- */
-export const useExecutionLogs = (
-    executionId: string,
-    options: {
-        limit?: number;
-        offset?: number;
-        level?: string;
-        nodeId?: string;
-        enabled?: boolean;
-    } = {}
-) => {
+export const useExecutionLogs = (executionId: string | undefined) => {
     return useQuery({
-        queryKey: ["execution-logs", executionId, options],
-        queryFn: () => fetchExecutionLogs(executionId, options),
-        enabled: options.enabled !== false && !!executionId,
-        refetchInterval: 2000, // Atualizar a cada 2 segundos para logs em tempo real
+        queryKey: queryKeys.executions.logs(executionId!),
+        queryFn: () => executionApi.getExecutionLogs(executionId!),
+        enabled: !!executionId,
+        refetchInterval: 1000, // Poll every second for logs
     });
 };
 
-export default {
-    useExecuteWorkflow,
-    useWorkflowExecutions,
-    useExecutionLogs,
+export const useQueueStats = () => {
+    return useQuery({
+        queryKey: queryKeys.executions.stats(),
+        queryFn: executionApi.getQueueStats,
+        refetchInterval: 5000, // Poll every 5 seconds
+    });
+};
+
+export const useServiceHealth = () => {
+    return useQuery({
+        queryKey: queryKeys.executions.health(),
+        queryFn: executionApi.getServiceHealth,
+        refetchInterval: 10000, // Poll every 10 seconds
+    });
+};
+
+export const useCancelExecution = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: executionApi.cancelExecution,
+        onSuccess: () => {
+            // Invalidate executions queries
+            queryClient.invalidateQueries({ queryKey: queryKeys.executions.list() });
+        },
+    });
+};
+
+export const useClearQueues = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: executionApi.clearQueues,
+        onSuccess: () => {
+            // Invalidate all execution queries
+            queryClient.invalidateQueries({ queryKey: queryKeys.executions.list() });
+        },
+    });
+};
+
+// Hook para monitorar execução em tempo real
+export const useExecutionMonitor = (executionId: string | undefined) => {
+    const statusQuery = useExecutionStatus(executionId);
+    const logsQuery = useExecutionLogs(executionId);
+
+    return {
+        status: statusQuery.data?.status,
+        logs: logsQuery.data?.logs || [],
+        isLoading: statusQuery.isLoading || logsQuery.isLoading,
+        error: statusQuery.error || logsQuery.error,
+        isRunning: statusQuery.data?.status === "running",
+        isCompleted: statusQuery.data?.status === "completed",
+        isFailed: statusQuery.data?.status === "failed",
+        isPending: statusQuery.data?.status === "pending",
+    };
 };

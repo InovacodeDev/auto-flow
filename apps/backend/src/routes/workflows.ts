@@ -8,18 +8,45 @@ import {
     workflowExecutionLogs,
 } from "../core/database/schema";
 import { WorkflowEngine } from "../core/engine/WorkflowEngine";
+import { AuthMiddleware } from "../auth/AuthMiddleware";
 import { WorkflowDefinition } from "../core/engine/types";
 import WorkflowConverter from "../core/engine/WorkflowConverter";
 import { eq, desc, and, sql } from "drizzle-orm";
+import { z } from "zod";
 
 // Initialize workflow engine instance
 const workflowEngine = new WorkflowEngine();
+// Auth middleware
+const authMiddleware = new AuthMiddleware();
 
 export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
+    // Zod schemas
+    const createWorkflowSchema = z.object({
+        name: z.string().min(1),
+        description: z.string().optional(),
+        triggers: z.array(z.any()),
+        actions: z.array(z.any()),
+        conditions: z.array(z.any()).optional(),
+        metadata: z.record(z.any()).optional(),
+    });
+
+    const updateWorkflowSchema = z.object({
+        name: z.string().min(1),
+        description: z.string().optional(),
+    });
+
+    const canvasSaveSchema = z.object({
+        name: z.string().min(1),
+        description: z.string().optional(),
+        canvasData: z.record(z.any()).optional(),
+        nodes: z.array(z.any()),
+        edges: z.array(z.any()),
+    });
     // GET /api/workflows - List workflows for organization
     fastify.get(
         "/",
         {
+            preHandler: authMiddleware.requireUser(),
             schema: {
                 tags: ["workflows"],
                 description: "List all workflows for the organization",
@@ -47,9 +74,10 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
                 },
             },
         },
-        async (_request) => {
-            // TODO: Extract organizationId from JWT token
-            const organizationId = "temp-org-id";
+        async (request) => {
+            // Extract organizationId from JWT token (Fastify jwt stores payload in request.user)
+            const user = (request as any).user as any;
+            const organizationId = user?.organizationId || process.env["DEV_ORG_ID"] || "temp-org-id";
 
             const orgWorkflows = await db
                 .select({
@@ -91,12 +119,17 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
                 },
             },
         },
-        async (request) => {
-            const { name, description, triggers, actions, conditions = [], metadata = {} } = request.body as any;
+        async (request, reply) => {
+            const parsed = createWorkflowSchema.safeParse(request.body);
+            if (!parsed.success) {
+                return reply.status(400).send({ error: "INVALID_PAYLOAD", message: parsed.error.message });
+            }
 
-            // TODO: Extract organizationId and userId from JWT token
-            const organizationId = "temp-org-id";
-            const userId = "temp-user-id";
+            const { name, description, triggers, actions, conditions = [], metadata = {} } = parsed.data as any;
+
+            const user = (request as any).user as any;
+            const organizationId = user?.organizationId || process.env["DEV_ORG_ID"] || "temp-org-id";
+            const userId = user?.userId || process.env["DEV_USER_ID"] || "temp-user-id";
 
             // Create workflow in database
             const [newWorkflow] = await db
@@ -150,8 +183,22 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
                 tags: ["workflows"],
             },
         },
-        async () => {
-            return { message: "Detalhes do workflow - em desenvolvimento" };
+        async (request, reply) => {
+            const user = (request as any).user as any;
+            const organizationId = user?.organizationId || process.env["DEV_ORG_ID"] || "temp-org-id";
+            const { id } = request.params as { id: string };
+
+            const [wf] = await db
+                .select()
+                .from(workflows)
+                .where(and(eq(workflows.id, id), eq(workflows.organizationId, organizationId)))
+                .limit(1);
+
+            if (!wf) {
+                return reply.status(404).send({ error: "NOT_FOUND", message: "Workflow not found" });
+            }
+
+            return reply.status(200).send({ workflow: wf });
         }
     );
 
@@ -163,8 +210,28 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
                 tags: ["workflows"],
             },
         },
-        async () => {
-            return { message: "Atualizar workflow - em desenvolvimento" };
+        async (request, reply) => {
+            const parsed = updateWorkflowSchema.safeParse(request.body);
+            if (!parsed.success) {
+                return reply.status(400).send({ error: "INVALID_PAYLOAD", message: parsed.error.message });
+            }
+
+            const user = (request as any).user as any;
+            const organizationId = user?.organizationId || process.env["DEV_ORG_ID"] || "temp-org-id";
+            const { id } = request.params as { id: string };
+            const body = parsed.data as any;
+
+            const [updated] = await db
+                .update(workflows)
+                .set({ name: body.name, description: body.description, updatedAt: new Date() })
+                .where(and(eq(workflows.id, id), eq(workflows.organizationId, organizationId)))
+                .returning();
+
+            if (!updated) {
+                return reply.status(404).send({ error: "NOT_FOUND", message: "Workflow not found or access denied" });
+            }
+
+            return reply.status(200).send({ workflow: updated });
         }
     );
 
@@ -176,8 +243,20 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
                 tags: ["workflows"],
             },
         },
-        async () => {
-            return { message: "Deletar workflow - em desenvolvimento" };
+        async (request, reply) => {
+            const user = (request as any).user as any;
+            const organizationId = user?.organizationId || process.env["DEV_ORG_ID"] || "temp-org-id";
+            const { id } = request.params as { id: string };
+
+            const result = await db
+                .delete(workflows)
+                .where(and(eq(workflows.id, id), eq(workflows.organizationId, organizationId)));
+
+            // Drizzle returns number of deleted rows in different shapes; attempt to read common properties
+            const deletedCount =
+                (result as any)?.rowCount ?? (result as any)?.length ?? (result as any)?.affectedRows ?? 0;
+
+            return reply.status(200).send({ deleted: deletedCount });
         }
     );
 
@@ -826,10 +905,10 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
                 let queueStats = null;
                 let queueType = "memory";
 
-                // @ts-ignore - Acessar propriedade privada para demonstração
+                // @ts-expect-error - Accessing private property for demonstration
                 if (workflowEngine.workflowQueue) {
                     try {
-                        // @ts-ignore
+                        // @ts-expect-error - accessing property for debug output
                         queueStats = await workflowEngine.workflowQueue.getStats();
                         queueType = "redis";
                     } catch (error) {
