@@ -1,29 +1,24 @@
 import React from "react";
-import {
-    createRootRoute,
-    createRoute,
-    createRouter,
-    RouterProvider,
-    Outlet,
-} from "@tanstack/react-router";
-import Sidebar from "./components/layout/Sidebar";
-import WorkflowBuilder from "./pages/WorkflowBuilder";
-import IntegrationsPage from "./pages/IntegrationsPage";
-import AIChatPage from "./pages/AIChatPage";
-import DashboardPage from "./pages/DashboardPage";
-import WorkflowsPage from "./pages/WorkflowsPage";
-import AnalyticsPage from "./pages/AnalyticsPage";
+import { createRootRoute, createRoute, createRouter, RouterProvider, Outlet } from "@tanstack/react-router";
+import HomePage from "./pages/HomePage";
+import TestPage from "./pages/TestPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import { Sidebar } from "lucide-react";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import { AuthRedirect } from "./components/auth/AuthRedirect";
+import AIChatPage from "./pages/AIChatPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
+import DashboardPage from "./pages/DashboardPage";
+import IntegrationsPage from "./pages/IntegrationsPage";
+import WorkflowBuilder from "./pages/WorkflowBuilder";
+import WorkflowsPage from "./pages/WorkflowsPage";
 
 // Root layout that includes Sidebar and an outlet for child routes
 const RootLayout: React.FC = () => {
     return (
         <ProtectedRoute>
             <div className="min-h-screen bg-white">
-                <Sidebar isOpen={true} onClose={() => {}} />
+                <Sidebar />
                 {/* use margin-left so the fixed sidebar doesn't overlap content */}
                 <main className="min-h-screen ml-0 lg:ml-64">
                     {/* Giant content card: margin 8, light gray background, no shadow, visible border */}
@@ -36,54 +31,98 @@ const RootLayout: React.FC = () => {
     );
 };
 
-// Auth layout for login/register pages (no sidebar)
-const AuthLayout: React.FC = () => {
-    return (
-        <div className="min-h-screen bg-white">
-            <Outlet />
-        </div>
-    );
-};
-
 // Create root route
 const rootRoute = createRootRoute({
-    component: () => <AuthRedirect />,
+    component: () => (
+        <div className="min-h-screen">
+            <Outlet />
+        </div>
+    ),
 });
 
-// Create auth layout route
-const authRoute = createRoute({
+// Create home route
+const homeRoute = createRoute({
     getParentRoute: () => rootRoute,
-    path: "/auth",
-    component: AuthLayout,
+    path: "/",
+    component: HomePage,
+});
+
+// Create login route (direct path, no auth parent)
+const loginRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/login",
+    component: LoginPage,
+});
+
+// Create register route (direct path, no auth parent)
+const registerRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/register",
+    component: RegisterPage,
 });
 
 // Create main app layout route
 const appRoute = createRoute({
     getParentRoute: () => rootRoute,
-    path: "/",
+    path: "/app",
     component: RootLayout,
 });
-
-// Auth routes (no protection needed)
-createRoute({ getParentRoute: () => authRoute, path: "/login", component: LoginPage });
-createRoute({ getParentRoute: () => authRoute, path: "/register", component: RegisterPage });
-
-// Main app routes (protected)
-createRoute({ getParentRoute: () => appRoute, path: "/", component: DashboardPage });
-createRoute({ getParentRoute: () => appRoute, path: "/dashboard", component: DashboardPage });
-createRoute({
+// App routes (protected)
+const dashboardRoute = createRoute({
+    getParentRoute: () => appRoute,
+    path: "/dashboard",
+    component: DashboardPage,
+});
+const workflowBuilderRoute = createRoute({
     getParentRoute: () => appRoute,
     path: "/workflow-builder",
     component: WorkflowBuilder,
 });
-createRoute({ getParentRoute: () => appRoute, path: "/workflows", component: WorkflowsPage });
-createRoute({ getParentRoute: () => appRoute, path: "/integrations", component: IntegrationsPage });
-createRoute({ getParentRoute: () => appRoute, path: "/analytics", component: AnalyticsPage });
-createRoute({ getParentRoute: () => appRoute, path: "/ai-chat", component: AIChatPage });
+const workflowsRoute = createRoute({
+    getParentRoute: () => appRoute,
+    path: "/workflows",
+    component: WorkflowsPage,
+});
+const integrationsRoute = createRoute({
+    getParentRoute: () => appRoute,
+    path: "/integrations",
+    component: IntegrationsPage,
+});
+const analyticsRoute = createRoute({
+    getParentRoute: () => appRoute,
+    path: "/analytics",
+    component: AnalyticsPage,
+});
+const aiChatRoute = createRoute({
+    getParentRoute: () => appRoute,
+    path: "/ai-chat",
+    component: AIChatPage,
+});
+const testRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/test",
+    component: TestPage,
+});
+
+// Build the router tree
+const routeTree = rootRoute.addChildren([
+    homeRoute,
+    loginRoute,
+    registerRoute,
+    appRoute.addChildren([
+        dashboardRoute,
+        workflowBuilderRoute,
+        workflowsRoute,
+        integrationsRoute,
+        analyticsRoute,
+        aiChatRoute,
+    ]),
+    testRoute,
+]);
 
 // Build the router
 export const router = createRouter({
-    routeTree: rootRoute,
+    routeTree,
 });
 
 export const AppRouter: React.FC = () => {

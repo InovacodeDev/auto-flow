@@ -3,7 +3,6 @@ import {
     XMarkIcon,
     BoltIcon,
     PlayIcon,
-    DocumentTextIcon,
     ClockIcon,
     EnvelopeIcon,
     GlobeAltIcon,
@@ -11,19 +10,15 @@ import {
     CalendarIcon,
     CursorArrowRaysIcon,
     BellIcon,
-    DatabaseIcon,
     ChatBubbleLeftRightIcon,
     CloudIcon,
     CurrencyDollarIcon,
     UserIcon,
     ChartBarIcon,
     CogIcon,
-    DocumentArrowDownIcon,
     ShieldCheckIcon,
     ArrowPathIcon,
     ExclamationTriangleIcon,
-    CheckCircleIcon,
-    XCircleIcon,
     QuestionMarkCircleIcon,
     ScaleIcon,
     CpuChipIcon,
@@ -33,7 +28,9 @@ import {
     LinkIcon,
     QueueListIcon,
     EyeIcon,
+    DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
+import { DatabaseIcon } from "lucide-react";
 
 interface NodeDefinition {
     id: string;
@@ -512,7 +509,6 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         inputs: [{ name: "input", type: "any", required: true }],
         outputs: [{ name: "output", type: "any" }],
         config: {
-            name: "Variable",
             name: "var",
             type: "string",
         },

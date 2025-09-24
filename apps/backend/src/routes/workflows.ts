@@ -64,6 +64,7 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
                                         name: { type: "string" },
                                         description: { type: "string" },
                                         status: { type: "string" },
+                                        isTemplate: { type: "boolean" },
                                         createdAt: { type: "string" },
                                         updatedAt: { type: "string" },
                                     },

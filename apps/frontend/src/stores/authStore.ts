@@ -66,12 +66,12 @@ interface AuthState {
 // API functions using axios client
 const authApi = {
     login: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
-        const response = await axiosClient.post("/auth/login", credentials);
+        const response = await axiosClient.post("/login", credentials);
         return response.data;
     },
 
     register: async (data: RegisterData): Promise<{ user: User; tokens: AuthTokens }> => {
-        const response = await axiosClient.post("/auth/register", data);
+        const response = await axiosClient.post("/register", data);
         return response.data;
     },
 

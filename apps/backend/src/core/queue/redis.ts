@@ -1,17 +1,26 @@
-import Redis from "ioredis";
+import Redis, { RedisOptions } from "ioredis";
 
 /**
  * Configuração do Redis para BullMQ
  */
-export const redisConfig = {
-    host: process.env.REDIS_HOST || "localhost",
-    port: parseInt(process.env.REDIS_PORT || "6379"),
-    password: process.env.REDIS_PASSWORD,
-    db: parseInt(process.env.REDIS_DB || "0"),
-    retryDelayOnFailover: 100,
-    maxRetriesPerRequest: 3,
-    lazyConnect: true,
+const createRedisConfig = (): RedisOptions => {
+    const config: RedisOptions = {
+        host: process.env["REDIS_HOST"] || "localhost",
+        port: parseInt(process.env["REDIS_PORT"] || "6379"),
+        db: parseInt(process.env["REDIS_DB"] || "0"),
+        maxRetriesPerRequest: null, // BullMQ requires this to be null
+        lazyConnect: true,
+    };
+
+    // Only add password if it exists
+    if (process.env["REDIS_PASSWORD"]) {
+        config.password = process.env["REDIS_PASSWORD"];
+    }
+
+    return config;
 };
+
+export const redisConfig = createRedisConfig();
 
 /**
  * Instância do Redis para BullMQ

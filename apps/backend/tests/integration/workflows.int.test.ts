@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "@jest/globals";
 import { FastifyInstance } from "fastify";
 import { build } from "../../src/index";
 
@@ -17,18 +17,8 @@ describe("Workflows Integration Tests", () => {
     });
 
     beforeEach(async () => {
-        // Login to get access token
-        const loginResponse = await app.inject({
-            method: "POST",
-            url: "/api/auth/login",
-            payload: {
-                email: "test@example.com",
-                password: "password123",
-            },
-        });
-
-        const loginData = JSON.parse(loginResponse.body);
-        accessToken = loginData.accessToken;
+        // Use mocked token directly to avoid rate limiting
+        accessToken = "test-jwt-token";
     });
 
     describe("POST /api/workflows", () => {
@@ -36,27 +26,25 @@ describe("Workflows Integration Tests", () => {
             const workflowData = {
                 name: "Test Workflow",
                 description: "A test workflow",
-                nodes: [
+                triggers: [
                     {
-                        id: "node_1",
-                        type: "manualTrigger",
-                        position: { x: 100, y: 100 },
-                        data: { label: "Start" },
-                    },
-                    {
-                        id: "node_2",
-                        type: "httpRequestAction",
-                        position: { x: 300, y: 100 },
-                        data: { label: "HTTP Request" },
+                        id: "trigger_1",
+                        type: "manual_trigger",
+                        config: { label: "Start" },
                     },
                 ],
-                edges: [
+                actions: [
                     {
-                        id: "edge_1",
-                        source: "node_1",
-                        target: "node_2",
+                        id: "action_1",
+                        type: "http_request",
+                        config: {
+                            url: "https://api.example.com",
+                            method: "GET",
+                        },
                     },
                 ],
+                conditions: [],
+                metadata: {},
             };
 
             const response = await app.inject({
@@ -191,38 +179,33 @@ describe("Workflows Integration Tests", () => {
             const updateData = {
                 name: "Updated Workflow",
                 description: "An updated test workflow",
-                nodes: [
+                triggers: [
                     {
-                        id: "node_1",
-                        type: "manualTrigger",
-                        position: { x: 100, y: 100 },
-                        data: { label: "Start" },
-                    },
-                    {
-                        id: "node_2",
-                        type: "httpRequestAction",
-                        position: { x: 300, y: 100 },
-                        data: { label: "HTTP Request" },
-                    },
-                    {
-                        id: "node_3",
-                        type: "emailAction",
-                        position: { x: 500, y: 100 },
-                        data: { label: "Send Email" },
+                        id: "trigger_1",
+                        type: "manual_trigger",
+                        config: { label: "Start" },
                     },
                 ],
-                edges: [
+                actions: [
                     {
-                        id: "edge_1",
-                        source: "node_1",
-                        target: "node_2",
+                        id: "action_1",
+                        type: "http_request",
+                        config: {
+                            url: "https://api.example.com",
+                            method: "GET",
+                        },
                     },
                     {
-                        id: "edge_2",
-                        source: "node_2",
-                        target: "node_3",
+                        id: "action_2",
+                        type: "email",
+                        config: {
+                            to: "test@example.com",
+                            subject: "Test Email",
+                        },
                     },
                 ],
+                conditions: [],
+                metadata: {},
             };
 
             const response = await app.inject({
@@ -238,8 +221,8 @@ describe("Workflows Integration Tests", () => {
             const data = JSON.parse(response.body);
             expect(data.name).toBe(updateData.name);
             expect(data.description).toBe(updateData.description);
-            expect(data.nodes).toHaveLength(3);
-            expect(data.edges).toHaveLength(2);
+            expect(data.triggers).toHaveLength(1);
+            expect(data.actions).toHaveLength(2);
         });
 
         it("should return 400 for invalid update data", async () => {
@@ -295,7 +278,8 @@ describe("Workflows Integration Tests", () => {
 
             expect(response.statusCode).toBe(200);
             const data = JSON.parse(response.body);
-            expect(data).toHaveProperty("message");
+            expect(data).toHaveProperty("deleted");
+            expect(data.deleted).toBeGreaterThan(0);
         });
 
         it("should return 404 for non-existent workflow", async () => {

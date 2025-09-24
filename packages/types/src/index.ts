@@ -8,7 +8,7 @@ export const WorkflowTriggerSchema = z.object({
     id: z.string(),
     type: z.enum(["whatsapp_received", "webhook", "schedule", "manual", "email_received"]),
     name: z.string(),
-    config: z.record(z.any()),
+    config: z.record(z.string(), z.any()),
     enabled: z.boolean().default(true),
 });
 
@@ -16,7 +16,7 @@ export const WorkflowActionSchema = z.object({
     id: z.string(),
     type: z.enum(["send_whatsapp", "send_email", "api_call", "save_data", "webhook_call"]),
     name: z.string(),
-    config: z.record(z.any()),
+    config: z.record(z.string(), z.any()),
     enabled: z.boolean().default(true),
 });
 
@@ -56,8 +56,8 @@ export const IntegrationConfigSchema = z.object({
     id: z.string(),
     name: z.string(),
     type: z.enum(["whatsapp", "email", "crm", "erp", "ecommerce", "webhook"]),
-    credentials: z.record(z.string()),
-    settings: z.record(z.any()),
+    credentials: z.record(z.string(), z.string()),
+    settings: z.record(z.string(), z.any()),
     isActive: z.boolean().default(true),
 });
 
@@ -69,7 +69,7 @@ export const WhatsAppMessageSchema = z.object({
     message: z.string(),
     timestamp: z.date(),
     messageType: z.enum(["text", "image", "audio", "document"]),
-    metadata: z.record(z.any()).optional(),
+    metadata: z.record(z.string(), z.any()).optional(),
 });
 
 // ============================================================================
@@ -94,7 +94,7 @@ export const OrganizationSchema = z.object({
     industry: z.string(),
     size: z.enum(["micro", "small", "medium", "large"]),
     plan: z.enum(["free", "starter", "professional", "enterprise"]),
-    settings: z.record(z.any()),
+    settings: z.record(z.string(), z.any()),
     createdAt: z.date(),
 });
 

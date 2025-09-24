@@ -17,6 +17,7 @@ module.exports = {
             isolatedModules: true,
         },
     },
+    setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"],
     moduleNameMapper: {
         "^@/(.*)$": "<rootDir>/src/$1",
         "^@/types(.*)$": "<rootDir>/../../../packages/types/src$1",

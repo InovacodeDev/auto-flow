@@ -275,3 +275,43 @@ export const mockSuggestions = [
     "Otimizar processo de envio de emails",
     "Sincronizar dados com CRM",
 ];
+
+// Additional exports needed by AIChat component
+export const useSendChatMessage = () => {
+    return useMutation({
+        mutationFn: (message: string) => {
+            // Mock implementation
+            return Promise.resolve({
+                id: Date.now().toString(),
+                role: "assistant" as const,
+                content: `Recebi sua mensagem: "${message}". Como posso ajudá-lo?`,
+                timestamp: new Date().toISOString(),
+            });
+        },
+    });
+};
+
+export const useChatHistory = () => {
+    return useQuery({
+        queryKey: ["chatHistory"],
+        queryFn: () => Promise.resolve(mockConversations[0]?.messages || []),
+    });
+};
+
+export const useClearChatHistory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: () => Promise.resolve(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["chatHistory"] });
+        },
+    });
+};
+
+export const getDefaultSuggestions = () => {
+    return mockSuggestions;
+};
+
+export const hasWorkflowGenerated = (messages: ChatMessage[]) => {
+    return messages.some((msg) => msg.metadata?.workflowGenerated);
+};

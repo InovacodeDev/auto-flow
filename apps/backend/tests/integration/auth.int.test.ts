@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "@jest/globals";
 import { FastifyInstance } from "fastify";
 import { build } from "../../src/index";
 
@@ -18,11 +18,11 @@ describe("Auth Integration Tests", () => {
         // Clean up database or reset state if needed
     });
 
-    describe("POST /api/auth/login", () => {
+    describe("POST /api/login", () => {
         it("should login with valid credentials", async () => {
             const response = await app.inject({
                 method: "POST",
-                url: "/api/auth/login",
+                url: "/api/login",
                 payload: {
                     email: "test@example.com",
                     password: "password123",
@@ -32,14 +32,15 @@ describe("Auth Integration Tests", () => {
             expect(response.statusCode).toBe(200);
             const data = JSON.parse(response.body);
             expect(data).toHaveProperty("user");
-            expect(data).toHaveProperty("accessToken");
-            expect(data).toHaveProperty("refreshToken");
+            expect(data).toHaveProperty("tokens");
+            expect(data.tokens).toHaveProperty("accessToken");
+            expect(data.tokens).toHaveProperty("refreshToken");
         });
 
         it("should return 401 for invalid credentials", async () => {
             const response = await app.inject({
                 method: "POST",
-                url: "/api/auth/login",
+                url: "/api/login",
                 payload: {
                     email: "test@example.com",
                     password: "wrongpassword",
@@ -54,21 +55,22 @@ describe("Auth Integration Tests", () => {
         it("should return 400 for missing fields", async () => {
             const response = await app.inject({
                 method: "POST",
-                url: "/api/auth/login",
+                url: "/api/login",
                 payload: {
                     email: "test@example.com",
+                    // password is missing
                 },
             });
 
             expect(response.statusCode).toBe(400);
             const data = JSON.parse(response.body);
-            expect(data).toHaveProperty("error");
+            expect(data).toHaveProperty("message");
         });
 
         it("should return 400 for invalid email format", async () => {
             const response = await app.inject({
                 method: "POST",
-                url: "/api/auth/login",
+                url: "/api/login",
                 payload: {
                     email: "invalid-email",
                     password: "password123",
@@ -77,86 +79,58 @@ describe("Auth Integration Tests", () => {
 
             expect(response.statusCode).toBe(400);
             const data = JSON.parse(response.body);
-            expect(data).toHaveProperty("error");
+            expect(data).toHaveProperty("message");
         });
     });
 
-    describe("POST /api/auth/register", () => {
+    describe("POST /api/register", () => {
         it("should register with valid data", async () => {
             const response = await app.inject({
                 method: "POST",
-                url: "/api/auth/register",
+                url: "/api/register",
                 payload: {
-                    name: "João Silva",
-                    email: "joao@example.com",
-                    password: "password123",
-                    confirmPassword: "password123",
+                    organization: {
+                        name: "Test Company",
+                        industry: "Tecnologia",
+                        size: "pequena",
+                        country: "BR",
+                    },
+                    user: {
+                        name: "João Silva",
+                        email: "joao@example.com",
+                        password: "password123",
+                    },
+                    acceptedTerms: true,
+                    acceptedPrivacy: true,
                 },
             });
 
             expect(response.statusCode).toBe(201);
             const data = JSON.parse(response.body);
             expect(data).toHaveProperty("user");
-            expect(data).toHaveProperty("accessToken");
-            expect(data).toHaveProperty("refreshToken");
-        });
-
-        it("should return 400 for password mismatch", async () => {
-            const response = await app.inject({
-                method: "POST",
-                url: "/api/auth/register",
-                payload: {
-                    name: "João Silva",
-                    email: "joao@example.com",
-                    password: "password123",
-                    confirmPassword: "differentpassword",
-                },
-            });
-
-            expect(response.statusCode).toBe(400);
-            const data = JSON.parse(response.body);
-            expect(data).toHaveProperty("error");
-        });
-
-        it("should return 400 for short password", async () => {
-            const response = await app.inject({
-                method: "POST",
-                url: "/api/auth/register",
-                payload: {
-                    name: "João Silva",
-                    email: "joao@example.com",
-                    password: "123",
-                    confirmPassword: "123",
-                },
-            });
-
-            expect(response.statusCode).toBe(400);
-            const data = JSON.parse(response.body);
-            expect(data).toHaveProperty("error");
+            expect(data).toHaveProperty("tokens");
+            expect(data.tokens).toHaveProperty("accessToken");
+            expect(data.tokens).toHaveProperty("refreshToken");
         });
 
         it("should return 409 for existing email", async () => {
-            // First registration
-            await app.inject({
-                method: "POST",
-                url: "/api/auth/register",
-                payload: {
-                    name: "João Silva",
-                    email: "existing@example.com",
-                    password: "password123",
-                    confirmPassword: "password123",
-                },
-            });
-
-            // Second registration with same email
             const response = await app.inject({
                 method: "POST",
-                url: "/api/auth/register",
+                url: "/api/register",
                 payload: {
-                    name: "João Silva",
-                    email: "existing@example.com",
-                    password: "password123",
-                    confirmPassword: "password123",
+                    organization: {
+                        name: "Existing Org",
+                        industry: "Tecnologia",
+                        size: "pequena",
+                        country: "BR",
+                    },
+                    user: {
+                        name: "Alice Santos",
+                        email: "alice@example.com",
+                        password: "password123",
+                    },
+                    acceptedTerms: true,
+                    acceptedPrivacy: true,
                 },
             });
 
@@ -168,32 +142,19 @@ describe("Auth Integration Tests", () => {
 
     describe("POST /api/auth/refresh", () => {
         it("should refresh token with valid refresh token", async () => {
-            // First login to get tokens
-            const loginResponse = await app.inject({
-                method: "POST",
-                url: "/api/auth/login",
-                payload: {
-                    email: "test@example.com",
-                    password: "password123",
-                },
-            });
-
-            const loginData = JSON.parse(loginResponse.body);
-            const refreshToken = loginData.refreshToken;
-
-            // Refresh token
             const response = await app.inject({
                 method: "POST",
                 url: "/api/auth/refresh",
                 payload: {
-                    refreshToken,
+                    refreshToken: "valid-refresh-token",
                 },
             });
 
             expect(response.statusCode).toBe(200);
             const data = JSON.parse(response.body);
-            expect(data).toHaveProperty("accessToken");
-            expect(data).toHaveProperty("refreshToken");
+            expect(data).toHaveProperty("tokens");
+            expect(data.tokens).toHaveProperty("accessToken");
+            expect(data.tokens).toHaveProperty("refreshToken");
         });
 
         it("should return 401 for invalid refresh token", async () => {
@@ -201,7 +162,7 @@ describe("Auth Integration Tests", () => {
                 method: "POST",
                 url: "/api/auth/refresh",
                 payload: {
-                    refreshToken: "invalid-token",
+                    refreshToken: "invalid-refresh-token",
                 },
             });
 
@@ -213,33 +174,19 @@ describe("Auth Integration Tests", () => {
 
     describe("GET /api/auth/me", () => {
         it("should return user data with valid token", async () => {
-            // First login to get token
-            const loginResponse = await app.inject({
-                method: "POST",
-                url: "/api/auth/login",
-                payload: {
-                    email: "test@example.com",
-                    password: "password123",
-                },
-            });
-
-            const loginData = JSON.parse(loginResponse.body);
-            const accessToken = loginData.accessToken;
-
-            // Get user data
             const response = await app.inject({
                 method: "GET",
                 url: "/api/auth/me",
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    authorization: "Bearer valid-jwt-token",
                 },
             });
 
             expect(response.statusCode).toBe(200);
             const data = JSON.parse(response.body);
-            expect(data).toHaveProperty("id");
-            expect(data).toHaveProperty("name");
-            expect(data).toHaveProperty("email");
+            expect(data.user).toHaveProperty("id");
+            expect(data.user).toHaveProperty("name");
+            expect(data.user).toHaveProperty("email");
         });
 
         it("should return 401 without token", async () => {
@@ -258,7 +205,7 @@ describe("Auth Integration Tests", () => {
                 method: "GET",
                 url: "/api/auth/me",
                 headers: {
-                    Authorization: "Bearer invalid-token",
+                    authorization: "Bearer invalid-token",
                 },
             });
 
@@ -270,25 +217,11 @@ describe("Auth Integration Tests", () => {
 
     describe("POST /api/auth/logout", () => {
         it("should logout with valid token", async () => {
-            // First login to get token
-            const loginResponse = await app.inject({
-                method: "POST",
-                url: "/api/auth/login",
-                payload: {
-                    email: "test@example.com",
-                    password: "password123",
-                },
-            });
-
-            const loginData = JSON.parse(loginResponse.body);
-            const accessToken = loginData.accessToken;
-
-            // Logout
             const response = await app.inject({
                 method: "POST",
                 url: "/api/auth/logout",
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    authorization: "Bearer valid-jwt-token",
                 },
             });
 

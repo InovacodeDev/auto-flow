@@ -149,9 +149,7 @@ export const RegisterForm: React.FC = () => {
                             <div className="flex">
                                 <div className="text-red-400 text-xl mr-3">⚠️</div>
                                 <div>
-                                    <h3 className="text-sm font-medium text-red-800">
-                                        Erro no registro
-                                    </h3>
+                                    <h3 className="text-sm font-medium text-red-800">Erro no registro</h3>
                                     <p className="mt-1 text-sm text-red-700">{error}</p>
                                 </div>
                             </div>
@@ -163,9 +161,7 @@ export const RegisterForm: React.FC = () => {
                             <div className="flex">
                                 <div className="text-red-400 text-xl mr-3">🔒</div>
                                 <div>
-                                    <h3 className="text-sm font-medium text-red-800">
-                                        Problemas com a senha
-                                    </h3>
+                                    <h3 className="text-sm font-medium text-red-800">Problemas com a senha</h3>
                                     <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
                                         {passwordErrors.map((error, index) => (
                                             <li key={index}>{error}</li>
@@ -179,9 +175,7 @@ export const RegisterForm: React.FC = () => {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Informações da Organização */}
                         <div className="border-b border-gray-200 pb-6">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">
-                                Informações da Empresa
-                            </h3>
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">Informações da Empresa</h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="md:col-span-2">
@@ -246,9 +240,7 @@ export const RegisterForm: React.FC = () => {
                                         disabled={isLoading}
                                     >
                                         <option value="micro">Micro (até 9 funcionários)</option>
-                                        <option value="pequena">
-                                            Pequena (10-49 funcionários)
-                                        </option>
+                                        <option value="pequena">Pequena (10-49 funcionários)</option>
                                         <option value="media">Média (50-249 funcionários)</option>
                                     </select>
                                 </div>
@@ -261,10 +253,7 @@ export const RegisterForm: React.FC = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label
-                                        htmlFor="user.name"
-                                        className="block text-sm font-medium text-gray-700 mb-2"
-                                    >
+                                    <label htmlFor="user.name" className="block text-sm font-medium text-gray-700 mb-2">
                                         Nome Completo *
                                     </label>
                                     <input
@@ -412,15 +401,9 @@ export const RegisterForm: React.FC = () => {
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
                                     disabled={isLoading}
                                 />
-                                <label
-                                    htmlFor="acceptedTerms"
-                                    className="ml-2 block text-sm text-gray-700"
-                                >
+                                <label htmlFor="acceptedTerms" className="ml-2 block text-sm text-gray-700">
                                     Aceito os{" "}
-                                    <a
-                                        href="#"
-                                        className="text-blue-600 hover:text-blue-500 underline"
-                                    >
+                                    <a href="#" className="text-blue-600 hover:text-blue-500 underline">
                                         Termos de Uso
                                     </a>{" "}
                                     do AutoFlow *
@@ -437,15 +420,9 @@ export const RegisterForm: React.FC = () => {
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
                                     disabled={isLoading}
                                 />
-                                <label
-                                    htmlFor="acceptedPrivacy"
-                                    className="ml-2 block text-sm text-gray-700"
-                                >
+                                <label htmlFor="acceptedPrivacy" className="ml-2 block text-sm text-gray-700">
                                     Aceito a{" "}
-                                    <a
-                                        href="#"
-                                        className="text-blue-600 hover:text-blue-500 underline"
-                                    >
+                                    <a href="#" className="text-blue-600 hover:text-blue-500 underline">
                                         Política de Privacidade
                                     </a>{" "}
                                     e autorizo o tratamento dos meus dados *
@@ -477,10 +454,7 @@ export const RegisterForm: React.FC = () => {
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-600">
                             Já tem uma conta?{" "}
-                            <Link
-                                to="/auth/login"
-                                className="font-medium text-blue-600 hover:text-blue-500"
-                            >
+                            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
                                 Faça login aqui
                             </Link>
                         </p>

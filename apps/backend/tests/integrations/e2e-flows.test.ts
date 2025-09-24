@@ -15,6 +15,10 @@ describe("End-to-End Integration Tests", () => {
     let erpService: ERPIntegrationService;
 
     beforeEach(() => {
+        // Set environment variables for test
+        process.env.MERCADO_PAGO_ACCESS_TOKEN = "test-mp-token";
+        process.env.NODE_ENV = "development";
+
         // Initialize services with test configurations
         whatsappService = new WhatsAppService({
             apiUrl: "https://graph.facebook.com/v17.0",
@@ -23,13 +27,7 @@ describe("End-to-End Integration Tests", () => {
             webhookSecret: "test-secret",
         });
 
-        pixService = new PIXService({
-            provider: "mercadopago",
-            accessToken: "test-mp-token",
-            publicKey: "test-mp-public-key",
-            environment: "sandbox",
-            webhookSecret: "test-webhook-secret",
-        });
+        pixService = new PIXService();
 
         crmService = new CRMIntegrationService({
             platform: "rdstation",

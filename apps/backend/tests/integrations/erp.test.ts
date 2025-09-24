@@ -145,7 +145,7 @@ describe("ERPIntegrationService", () => {
             expect(result).toMatchObject({
                 id: expect.any(String),
                 productId: "PROD-001",
-                type: "entrada",
+                type: "in",
                 quantity: 10,
                 reason: "Ajuste manual",
             });
@@ -168,7 +168,7 @@ describe("ERPIntegrationService", () => {
                 name: "João Silva",
                 email: "joao@email.com",
                 phone: "(11) 99999-9999",
-                document: "123.456.789-01",
+                document: "11144477735", // Valid CPF for tests
                 address: {
                     street: "Rua das Flores",
                     number: "123",
@@ -203,7 +203,7 @@ describe("ERPIntegrationService", () => {
 
             const customerData = {
                 name: "João Silva",
-                document: "123.456.789-01",
+                document: "11144477735", // Valid CPF for tests
                 address: {
                     street: "Rua das Flores",
                     number: "123",

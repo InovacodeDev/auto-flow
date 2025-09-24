@@ -4,7 +4,7 @@ import {
     GlobeAltIcon,
     EnvelopeIcon,
     DocumentTextIcon,
-    DatabaseIcon,
+    CircleStackIcon,
     ChatBubbleLeftRightIcon,
     CloudIcon,
     CurrencyDollarIcon,
@@ -112,7 +112,7 @@ export const DatabaseActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={DatabaseIcon}
+            icon={CircleStackIcon}
             color="bg-teal-500"
             title="Banco de Dados"
             subtitle={getSubtitle()}

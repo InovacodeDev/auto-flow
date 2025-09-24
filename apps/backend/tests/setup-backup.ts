@@ -1,0 +1,1 @@
+// Backup do setup.ts original para caso precise recuperar

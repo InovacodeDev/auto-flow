@@ -7,7 +7,7 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
     const authService = new AuthService();
     const authMiddleware = new AuthMiddleware();
 
-    // POST /api/auth/register - Register new organization and admin user
+    // POST /api/register - Register new organization and admin user
     fastify.post(
         "/register",
         {
@@ -115,7 +115,7 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
         }
     );
 
-    // POST /api/auth/login - Authenticate user
+    // POST /api/login - Authenticate user
     fastify.post(
         "/login",
         {

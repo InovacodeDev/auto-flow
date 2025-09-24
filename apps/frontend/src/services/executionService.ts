@@ -180,3 +180,28 @@ export const useExecutionMonitor = (executionId: string | undefined) => {
         isPending: statusQuery.data?.status === "pending",
     };
 };
+
+// Hook para listar execuções de workflow
+export const useWorkflowExecutions = (workflowId?: string) => {
+    return useQuery({
+        queryKey: ["workflowExecutions", workflowId],
+        queryFn: () => {
+            // Mock implementation
+            return Promise.resolve([
+                {
+                    executionId: "exec_1",
+                    status: "completed" as const,
+                    startedAt: new Date().toISOString(),
+                    completedAt: new Date().toISOString(),
+                    duration: 1500,
+                },
+                {
+                    executionId: "exec_2",
+                    status: "running" as const,
+                    startedAt: new Date().toISOString(),
+                },
+            ]);
+        },
+        enabled: !!workflowId,
+    });
+};

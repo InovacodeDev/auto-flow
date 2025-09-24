@@ -16,7 +16,7 @@ Sistema de autenticação multi-tenant robusto com suporte a JWT, RBAC (Role-Bas
 
 ### Authentication Endpoints
 
-#### POST `/auth/register`
+#### POST `/register`
 
 Registro de nova organização e usuário administrador.
 
@@ -65,7 +65,7 @@ interface RegisterResponse {
 }
 ```
 
-#### POST `/auth/login`
+#### POST `/login`
 
 Autenticação de usuário existente.
 

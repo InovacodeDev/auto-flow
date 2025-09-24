@@ -11,11 +11,7 @@ interface ProtectedRouteProps {
 /**
  * Componente que protege rotas baseado em autenticação e role
  */
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-    children,
-    requiredRole,
-    fallbackPath = "/auth/login",
-}) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole, fallbackPath = "/login" }) => {
     const { isAuthenticated, user, isLoading } = useAuthEnhanced();
     const location = useLocation();
 
@@ -63,8 +59,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                             <div className="text-red-500 text-5xl mb-4">🚫</div>
                             <h1 className="text-2xl font-bold text-gray-900 mb-2">Acesso Negado</h1>
                             <p className="text-gray-600 mb-6">
-                                Você não tem permissão para acessar esta página. É necessário ter o
-                                papel de <strong>{requiredRole}</strong> ou superior.
+                                Você não tem permissão para acessar esta página. É necessário ter o papel de{" "}
+                                <strong>{requiredRole}</strong> ou superior.
                             </p>
                             <button
                                 onClick={() => window.history.back()}

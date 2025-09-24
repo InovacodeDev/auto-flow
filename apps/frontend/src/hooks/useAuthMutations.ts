@@ -8,7 +8,7 @@ const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost
 // API functions
 const authApi = {
     login: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        const response = await fetch(`${API_BASE_URL}/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -25,7 +25,7 @@ const authApi = {
     },
 
     register: async (data: RegisterData): Promise<{ user: User; tokens: AuthTokens }> => {
-        const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        const response = await fetch(`${API_BASE_URL}/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

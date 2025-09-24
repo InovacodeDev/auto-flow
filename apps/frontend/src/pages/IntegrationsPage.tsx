@@ -10,3 +10,5 @@ export const IntegrationsPage: React.FC = () => {
         </div>
     );
 };
+
+export default IntegrationsPage;

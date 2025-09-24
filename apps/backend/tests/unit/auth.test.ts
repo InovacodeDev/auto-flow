@@ -56,7 +56,7 @@ describe("AuthService.register", () => {
         const authService = new AuthService();
 
         const data: RegisterData = {
-            organization: { name: "Test Org", industry: "saas", size: "micro", country: "BR" },
+            organization: { name: "Existing Org", industry: "saas", size: "micro", country: "BR" },
             user: { name: "Alice", email: "alice@example.com", password: "P@ssw0rd!" },
             acceptedTerms: true,
             acceptedPrivacy: true,

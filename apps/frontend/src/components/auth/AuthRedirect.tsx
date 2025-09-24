@@ -24,6 +24,6 @@ export const AuthRedirect: React.FC = () => {
     if (isAuthenticated) {
         return <Navigate to="/dashboard" replace />;
     } else {
-        return <Navigate to="/auth/login" replace />;
+        return <Navigate to="/login" replace />;
     }
 };

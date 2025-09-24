@@ -2,17 +2,19 @@ import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals
 import request from "supertest";
 import Fastify from "fastify";
 import { authRoutes } from "../../src/routes/auth";
-import { erpRoutes } from "../../src/routes/erp";
-import { integrationsUnifiedRoutes } from "../../src/routes/integrations-unified";
+import erpRoutes from "../../src/routes/erp";
+import integrationsUnifiedRoutes from "../../src/routes/integrations-unified";
 
 // Mock services
 jest.mock("../../src/integrations/erp/ERPIntegrationService");
 jest.mock("../../src/core/integrations/UnifiedIntegrationsService");
 
-const app = Fastify();
-
 describe("API Routes Integration Tests", () => {
+    let app: ReturnType<typeof Fastify>;
+
     beforeEach(async () => {
+        app = Fastify();
+
         // Register routes
         await app.register(authRoutes, { prefix: "/api/auth" });
         await app.register(erpRoutes, { prefix: "/api/erp" });
@@ -27,7 +29,7 @@ describe("API Routes Integration Tests", () => {
 
     describe("Auth Routes", () => {
         it("should handle login request", async () => {
-            const response = await request(app.server).post("/api/auth/login").send({
+            const response = await request(app.server).post("/api/login").send({
                 email: "test@example.com",
                 password: "password123",
             });
@@ -37,7 +39,7 @@ describe("API Routes Integration Tests", () => {
         });
 
         it("should handle register request", async () => {
-            const response = await request(app.server).post("/api/auth/register").send({
+            const response = await request(app.server).post("/api/register").send({
                 email: "test@example.com",
                 password: "password123",
                 name: "Test User",
@@ -48,7 +50,7 @@ describe("API Routes Integration Tests", () => {
         });
 
         it("should handle invalid login", async () => {
-            const response = await request(app.server).post("/api/auth/login").send({
+            const response = await request(app.server).post("/api/login").send({
                 email: "invalid@example.com",
                 password: "wrongpassword",
             });

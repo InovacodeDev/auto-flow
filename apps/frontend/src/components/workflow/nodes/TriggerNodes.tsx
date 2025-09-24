@@ -7,7 +7,7 @@ import {
     CalendarIcon,
     CursorArrowRaysIcon,
     BellIcon,
-    DatabaseIcon,
+    CircleStackIcon,
 } from "@heroicons/react/24/outline";
 import BaseNode, { NodeStatus } from "./BaseNode";
 
@@ -220,7 +220,7 @@ export const DatabaseTriggerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={DatabaseIcon}
+            icon={CircleStackIcon}
             color="bg-teal-500"
             title="Banco de Dados"
             subtitle={getSubtitle()}

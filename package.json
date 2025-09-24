@@ -13,20 +13,20 @@
         "setup": "./dev-setup.sh"
     },
     "devDependencies": {
-        "@turbo/gen": "^2.5.6",
+        "@turbo/gen": "^2.5.8",
         "eslint": "^9.36.0",
         "prettier": "^3.6.2",
-        "turbo": "^2.5.6",
+        "turbo": "^2.5.8",
         "typescript": "^5.9.2"
     },
     "engines": {
-        "node": ">=18",
-        "pnpm": ">=8"
+        "node": ">=22",
+        "pnpm": ">=10"
     },
     "packageManager": "pnpm@10.17.1",
     "workspaces": [
-        "apps/*",
-        "packages/*"
+        "apps/**",
+        "packages/**"
     ],
     "dependencies": {
         "@types/uuid": "^11.0.0",

@@ -181,7 +181,7 @@ describe("Auth Integration Tests", () => {
     it("should login with valid credentials", async () => {
         const response = await app.inject({
             method: "POST",
-            url: "/api/auth/login",
+            url: "/api/login",
             payload: {
                 email: "test@example.com",
                 password: "password123",
@@ -206,7 +206,7 @@ import { page } from "./setup";
 
 describe("Authentication E2E Tests", () => {
     it("should complete login flow", async () => {
-        await page.goto("/auth/login");
+        await page.goto("/login");
         await page.fill('input[placeholder="Email"]', "test@example.com");
         await page.fill('input[placeholder="Senha"]', "password123");
         await page.click('button[type="submit"]');
