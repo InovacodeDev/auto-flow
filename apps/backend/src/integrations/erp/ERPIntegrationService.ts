@@ -488,8 +488,8 @@ export class ERPIntegrationService {
             email: request.email,
             // Prefer full telefone1 if provided by request.phone; otherwise split into ddd/numero
             telefone1: request.phone,
-            telefone1_ddd: request.phone ? request.phone.replace(/\D/g, '').substring(0, 2) : undefined,
-            telefone1_numero: request.phone ? request.phone.replace(/\D/g, '').substring(2) : undefined,
+            telefone1_ddd: request.phone ? request.phone.replace(/\D/g, "").substring(0, 2) : undefined,
+            telefone1_numero: request.phone ? request.phone.replace(/\D/g, "").substring(2) : undefined,
             cnpj_cpf: request.document.replace(/\D/g, ""),
             endereco: request.address.street,
             endereco_numero: request.address.number,
@@ -816,7 +816,11 @@ export class ERPIntegrationService {
             name: data.nome_fantasia || data.razao_social,
             email: data.email,
             // Handle different phone formats returned by various Omie endpoints
-            phone: data.telefone1 || (data.telefone1_ddd && data.telefone1_numero ? `${data.telefone1_ddd}${data.telefone1_numero}` : undefined),
+            phone:
+                data.telefone1 ||
+                (data.telefone1_ddd && data.telefone1_numero
+                    ? `${data.telefone1_ddd}${data.telefone1_numero}`
+                    : undefined),
             document: data.cnpj_cpf,
             documentType: data.cnpj_cpf?.length === 11 ? "CPF" : "CNPJ",
             address: {
