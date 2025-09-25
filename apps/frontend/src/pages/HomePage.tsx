@@ -1,9 +1,6 @@
 import React from "react";
+import { MDiv, fadeUp } from "../lib/motion";
 import { motion } from "framer-motion";
-
-// Workaround: create typed aliases for motion primitives to avoid generic inference issues
-// with the project's TypeScript/react versions. These keep typing loose for UI components.
-const MDiv = motion.div as unknown as any;
 const MH1 = motion.h1 as unknown as any;
 const MP = motion.p as unknown as any;
 const MA = motion.a as unknown as any;
@@ -14,7 +11,7 @@ import { FullLogo } from "../assets/logo";
 
 const HomePage: React.FC = () => {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <MDiv className="h-screen md:min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50" {...fadeUp}>
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,6 +28,9 @@ const HomePage: React.FC = () => {
                             </a>
                             <a href="/pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
                                 Preços
+                            </a>
+                            <a href="/support" className="text-gray-600 hover:text-gray-900 transition-colors">
+                                Suporte
                             </a>
                             <a
                                 href="/login"
@@ -536,7 +536,7 @@ const HomePage: React.FC = () => {
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" className="hover:text-white transition-colors">
+                                    <a href="/support" className="hover:text-white transition-colors">
                                         Suporte
                                     </a>
                                 </li>
@@ -547,22 +547,22 @@ const HomePage: React.FC = () => {
                             <h4 className="font-semibold mb-4">Suporte</h4>
                             <ul className="space-y-2 text-sm text-gray-400">
                                 <li>
-                                    <a href="#" className="hover:text-white transition-colors">
+                                    <a href="/support" className="hover:text-white transition-colors">
                                         Central de Ajuda
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" className="hover:text-white transition-colors">
+                                    <a href="/support" className="hover:text-white transition-colors">
                                         Contato
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" className="hover:text-white transition-colors">
+                                    <a href="/support" className="hover:text-white transition-colors">
                                         WhatsApp
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" className="hover:text-white transition-colors">
+                                    <a href="/support" className="hover:text-white transition-colors">
                                         Status
                                     </a>
                                 </li>
@@ -571,7 +571,7 @@ const HomePage: React.FC = () => {
                     </div>
                 </div>
             </footer>
-        </div>
+        </MDiv>
     );
 };
 

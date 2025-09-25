@@ -1,6 +1,7 @@
 import React from "react";
 import { MaterialIcon } from "../components/ui/MaterialIcon";
 import { FullLogo } from "../assets/logo";
+import { MDiv, fadeUp } from "../lib/motion";
 
 const PricingPage: React.FC = () => {
     const plans = [
@@ -9,7 +10,6 @@ const PricingPage: React.FC = () => {
             price: "R$ 0",
             period: "/mês",
             description: "Perfeito para começar e testar",
-            popular: false,
             features: [
                 { text: "Até 100 execuções/mês", included: true },
                 { text: "3 fluxos ativos", included: true },
@@ -91,7 +91,7 @@ const PricingPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <MDiv className="h-screen md:min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50" {...fadeUp}>
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -111,6 +111,9 @@ const PricingPage: React.FC = () => {
                                 className="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1 transition-colors"
                             >
                                 Preços
+                            </a>
+                            <a href="/support" className="text-gray-600 hover:text-gray-900 transition-colors">
+                                Suporte
                             </a>
                             <a
                                 href="/login"
@@ -340,7 +343,7 @@ const PricingPage: React.FC = () => {
                     </div>
                 </div>
             </section>
-        </div>
+        </MDiv>
     );
 };
 

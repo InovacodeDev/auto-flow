@@ -7,6 +7,7 @@ import RegisterPage from "./pages/RegisterPage";
 import FeaturesPage from "./pages/FeaturesPage";
 import IntegrationsPagePublic from "./pages/IntegrationsPagePublic";
 import PricingPage from "./pages/PricingPage";
+import SupportPage from "./pages/SupportPage";
 import { Sidebar } from "lucide-react";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import AIChatPage from "./pages/AIChatPage";
@@ -145,6 +146,7 @@ const routeTree = rootRoute.addChildren([
         aiChatRoute,
     ]),
     testRoute,
+    createRoute({ getParentRoute: () => rootRoute, path: "/support", component: SupportPage }),
 ]);
 
 // Build the router
