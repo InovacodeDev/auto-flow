@@ -1,4 +1,13 @@
 import React from "react";
+import { motion } from "framer-motion";
+
+// Workaround: create typed aliases for motion primitives to avoid generic inference issues
+// with the project's TypeScript/react versions. These keep typing loose for UI components.
+const MDiv = motion.div as unknown as any;
+const MH1 = motion.h1 as unknown as any;
+const MP = motion.p as unknown as any;
+const MA = motion.a as unknown as any;
+const MButton = motion.button as unknown as any;
 import { MaterialIcon } from "../components/ui/MaterialIcon";
 import CompanyLogo from "../components/ui/CompanyLogo";
 import { FullLogo } from "../assets/logo";
@@ -36,22 +45,42 @@ const HomePage: React.FC = () => {
 
             {/* Hero Section */}
             <section className="pt-20 pb-32 relative overflow-hidden">
-                {/* Background decorations */}
-                <div className="absolute inset-0">
+                {/* Background decorations (animated via framer-motion) */}
+                <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl">
-                        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl animate-pulse"></div>
-                        <div className="absolute top-40 right-10 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                        <MDiv
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 1.2, ease: "easeOut" }}
+                            className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl"
+                        />
+                        <MDiv
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 1.4, ease: "easeOut", delay: 0.1 }}
+                            className="absolute top-40 right-10 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl"
+                        />
                     </div>
                 </div>
 
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="text-center max-w-4xl mx-auto">
-                        <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-8 animate-bounce">
+                        <MDiv
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                            className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-8"
+                        >
                             <MaterialIcon icon="auto_awesome" className="text-blue-800" size={16} />
                             Novo: IA que cria automações conversando com você!
-                        </div>
+                        </MDiv>
 
-                        <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+                        <MH1
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.7, delay: 0.05 }}
+                            className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight"
+                        >
                             Pare de fazer o mesmo
                             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                                 {" "}
@@ -59,16 +88,26 @@ const HomePage: React.FC = () => {
                             </span>
                             <br />
                             todo dia
-                        </h1>
+                        </MH1>
 
-                        <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+                        <MP
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.6, delay: 0.12 }}
+                            className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed"
+                        >
                             AutoFlow automatiza seus processos chatos para você focar no que realmente importa:
                             <span className="font-semibold text-gray-900"> fazer sua empresa crescer</span>
-                        </p>
+                        </MP>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                            <a
+                            <MA
                                 href="/register"
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.98 }}
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.18 }}
                                 className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 hover:shadow-xl inline-flex items-center justify-center gap-2"
                             >
                                 <MaterialIcon icon="rocket_launch" className="text-white" size={20} />
@@ -78,11 +117,18 @@ const HomePage: React.FC = () => {
                                     className="text-white group-hover:translate-x-1 transition-transform"
                                     size={20}
                                 />
-                            </a>
-                            <button className="group border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 inline-flex items-center justify-center gap-2">
+                            </MA>
+                            <MButton
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.22 }}
+                                className="group border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 inline-flex items-center justify-center gap-2"
+                            >
                                 <MaterialIcon icon="play_arrow" className="text-gray-700" size={20} />
                                 Ver Demo (2 min)
-                            </button>
+                            </MButton>
                         </div>
 
                         <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
@@ -365,27 +411,59 @@ const HomePage: React.FC = () => {
             {/* CTA Section */}
             <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-600 relative overflow-hidden">
                 {/* Background decoration */}
-                <div className="absolute inset-0">
+                <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute top-0 left-0 w-full h-full bg-black/10"></div>
-                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
-                    <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-white/5 rounded-full blur-2xl"></div>
+                    <MDiv
+                        initial={{ scale: 0.95, opacity: 0.08 }}
+                        animate={{ scale: 1, opacity: 0.12 }}
+                        transition={{ duration: 1.2 }}
+                        className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"
+                    />
+                    <MDiv
+                        initial={{ scale: 0.95, opacity: 0.04 }}
+                        animate={{ scale: 1, opacity: 0.06 }}
+                        transition={{ duration: 1.4, delay: 0.06 }}
+                        className="absolute -bottom-10 -left-10 w-60 h-60 bg-white/5 rounded-full blur-2xl"
+                    />
                 </div>
 
                 <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative">
-                    <div className="animate-pulse">
+                    <MDiv
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.7 }}
+                        className="mb-6"
+                    >
                         <MaterialIcon icon="auto_awesome" className="text-white mx-auto mb-6 opacity-80" size={64} />
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                    </MDiv>
+
+                    <MH1
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7 }}
+                        className="text-4xl md:text-5xl font-bold text-white mb-6"
+                    >
                         Pare de perder tempo com tarefas repetitivas!
-                    </h2>
-                    <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                    </MH1>
+
+                    <MP
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.06 }}
+                        className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto"
+                    >
                         Mais de <span className="font-bold text-white">5.000 empresários</span> já economizam
                         <span className="font-bold text-white"> 20+ horas por semana</span> com o AutoFlow
-                    </p>
+                    </MP>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                        <a
+                        <MA
                             href="/register"
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.98 }}
+                            initial={{ y: 8, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.5 }}
                             className="group bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-xl inline-flex items-center justify-center gap-2"
                         >
                             Começar Grátis Agora
@@ -394,13 +472,17 @@ const HomePage: React.FC = () => {
                                 className="group-hover:translate-x-1 transition-transform"
                                 size={20}
                             />
-                        </a>
-                        <a
-                            href="/login"
+                        </MA>
+                        <MButton
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5, delay: 0.08 }}
                             className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105"
                         >
                             Já tenho conta
-                        </a>
+                        </MButton>
                     </div>
 
                     <div className="flex items-center justify-center space-x-8 text-sm text-blue-100">

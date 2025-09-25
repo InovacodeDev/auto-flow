@@ -34,6 +34,34 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Subtle layered gradient overlays to give depth to the landing pages */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::before {
+    background:
+        radial-gradient(600px 400px at 10% 10%, rgba(99, 102, 241, 0.06), transparent 20%),
+        radial-gradient(500px 300px at 90% 90%, rgba(59, 130, 246, 0.04), transparent 25%);
+    mix-blend-mode: overlay;
+}
+
+body::after {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(15, 23, 42, 0.02));
+}
+
+/* Ensure main content sits above overlays */
+#root,
+#root > div {
+    position: relative;
+    z-index: 1;
+}
+
 /* ReactFlow Custom Styles */
 .react-flow__node {
     border-radius: 8px;
