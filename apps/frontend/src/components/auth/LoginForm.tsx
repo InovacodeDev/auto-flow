@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useAuthEnhanced } from "../../hooks/useAuthEnhanced";
 import type { LoginCredentials } from "../../stores/authStore";
 import { FullLogo } from "../../assets/logo";
+import { MaterialIcon } from "../ui/MaterialIcon";
 
 interface LoginSearchParams {
     redirect?: string;
@@ -114,7 +115,11 @@ export const LoginForm: React.FC = () => {
                                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                                     disabled={isLoading}
                                 >
-                                    {showPassword ? "🙈" : "👁️"}
+                                    {showPassword ? (
+                                        <MaterialIcon icon="visibility_off" weight={300} size={20} />
+                                    ) : (
+                                        <MaterialIcon icon="visibility" weight={300} size={20} />
+                                    )}
                                 </button>
                             </div>
                         </div>

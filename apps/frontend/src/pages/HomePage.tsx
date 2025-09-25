@@ -426,7 +426,7 @@ const HomePage: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                         <div className="col-span-1 md:col-span-2">
                             <div className="flex items-center mb-4">
-                                <FullLogo className="h-8 w-auto" color="#ffffff" />
+                                <FullLogo className="h-8 w-auto" fill="#6A7282" />
                             </div>
                             <p className="text-gray-400 mb-4 max-w-md">
                                 A plataforma de automação mais completa para PMEs brasileiras. Transforme processos

@@ -1,11 +1,11 @@
 import React from 'react';
 
-export const IconLogo = (props: React.SVGProps<SVGSVGElement>, fill: string = '#111') => {
+export const IconLogo = ({ fill, ...rest }: React.SVGProps<SVGSVGElement> & { fill?: string }) => {
   return (
-    <svg 
-      viewBox="0 0 370 64.60176991150443" 
-      preserveAspectRatio="xMidYMid meet" 
-      {...props}
+    <svg
+      viewBox="0 0 370 64.60176991150443"
+      preserveAspectRatio="xMidYMid meet"
+      {...rest}
     >
       <g 
         id="SvgjsG1177" 
@@ -18,12 +18,12 @@ export const IconLogo = (props: React.SVGProps<SVGSVGElement>, fill: string = '#
   );
 };
 
-export const TextLogo = (props: React.SVGProps<SVGSVGElement>, fill: string = '#111') => {
+export const TextLogo = ({ fill, ...rest }: React.SVGProps<SVGSVGElement> & { fill?: string }) => {
   return (
     <svg 
       viewBox="0 0 370 64.60176991150443" 
       preserveAspectRatio="xMidYMid meet" 
-      {...props}
+      {...rest}
     >
        <g 
         id="SvgjsG1178" 
@@ -36,14 +36,14 @@ export const TextLogo = (props: React.SVGProps<SVGSVGElement>, fill: string = '#
   );
 };
 
-export const FullLogo = (props: React.SVGProps<SVGSVGElement>, fill: string = '#111') => {
+export const FullLogo = ({ fill, ...rest }: React.SVGProps<SVGSVGElement> & { fill?: string }) => {
   return (
     <svg 
       viewBox="0 0 370 64.60176991150443" 
       preserveAspectRatio="xMidYMid meet" 
       className="css-8aabad" 
       id="bdadheea"
-      {...props}
+      {...rest}
     >
       <defs id="SvgjsDefs1176"></defs>
       <g 
