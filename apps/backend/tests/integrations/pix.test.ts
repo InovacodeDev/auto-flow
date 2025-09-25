@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, jest } from "@jest/globals";
+/// <reference types="jest" />
 import { PIXIntegration } from "../../src/integrations/pix/PIXIntegration";
 import { PIXConfig } from "../../src/core/types";
 

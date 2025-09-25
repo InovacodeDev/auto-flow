@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-    ClockIcon,
-    CheckCircleIcon,
-    XCircleIcon,
-    ExclamationTriangleIcon,
-    FunnelIcon,
-    CalendarIcon,
-    ArrowPathIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import { useIntegrationsOperations } from "../../services/integrationsService";
 
 export const IntegrationsOperations: React.FC = () => {
@@ -27,13 +19,13 @@ export const IntegrationsOperations: React.FC = () => {
     const getStatusIcon = (status: string) => {
         switch (status) {
             case "success":
-                return <CheckCircleIcon className="w-4 h-4 text-green-500" />;
+                return <MaterialIcon icon="check_circle" className="text-green-500" size={16} />;
             case "error":
-                return <XCircleIcon className="w-4 h-4 text-red-500" />;
+                return <MaterialIcon icon="cancel" className="text-red-500" size={16} />;
             case "pending":
-                return <ClockIcon className="w-4 h-4 text-yellow-500" />;
+                return <MaterialIcon icon="schedule" className="text-yellow-500" size={16} />;
             default:
-                return <ExclamationTriangleIcon className="w-4 h-4 text-gray-500" />;
+                return <MaterialIcon icon="warning" className="text-gray-500" size={16} />;
         }
     };
 
@@ -82,7 +74,7 @@ export const IntegrationsOperations: React.FC = () => {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="flex items-center space-x-2">
-                    <ArrowPathIcon className="w-6 h-6 animate-spin text-blue-500" />
+                    <MaterialIcon icon="refresh" className="animate-spin text-blue-500" size={24} />
                     <span className="text-gray-600">Carregando operações...</span>
                 </div>
             </div>
@@ -93,10 +85,8 @@ export const IntegrationsOperations: React.FC = () => {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                    <XCircleIcon className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        Erro ao carregar operações
-                    </h3>
+                    <MaterialIcon icon="cancel" className="text-red-500 mx-auto mb-4" size={48} />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Erro ao carregar operações</h3>
                     <p className="text-gray-600">Tente recarregar a página</p>
                 </div>
             </div>
@@ -111,7 +101,7 @@ export const IntegrationsOperations: React.FC = () => {
             <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-2">
-                        <FunnelIcon className="w-5 h-5 text-gray-500" />
+                        <MaterialIcon icon="filter_list" className="text-gray-500" size={20} />
                         <h3 className="text-lg font-medium text-gray-900">Filtros</h3>
                     </div>
                 </div>
@@ -121,9 +111,7 @@ export const IntegrationsOperations: React.FC = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
                         <select
                             value={filters.type || ""}
-                            onChange={(e) =>
-                                setFilters({ ...filters, type: e.target.value || undefined })
-                            }
+                            onChange={(e) => setFilters({ ...filters, type: e.target.value || undefined })}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                             <option value="">Todos os tipos</option>
@@ -135,14 +123,10 @@ export const IntegrationsOperations: React.FC = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Status
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                         <select
                             value={filters.status || ""}
-                            onChange={(e) =>
-                                setFilters({ ...filters, status: e.target.value || undefined })
-                            }
+                            onChange={(e) => setFilters({ ...filters, status: e.target.value || undefined })}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                             <option value="">Todos os status</option>
@@ -153,29 +137,21 @@ export const IntegrationsOperations: React.FC = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Data Início
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Data Início</label>
                         <input
                             type="date"
                             value={filters.startDate || ""}
-                            onChange={(e) =>
-                                setFilters({ ...filters, startDate: e.target.value || undefined })
-                            }
+                            onChange={(e) => setFilters({ ...filters, startDate: e.target.value || undefined })}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Data Fim
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Data Fim</label>
                         <input
                             type="date"
                             value={filters.endDate || ""}
-                            onChange={(e) =>
-                                setFilters({ ...filters, endDate: e.target.value || undefined })
-                            }
+                            onChange={(e) => setFilters({ ...filters, endDate: e.target.value || undefined })}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                     </div>
@@ -186,9 +162,7 @@ export const IntegrationsOperations: React.FC = () => {
             <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h3 className="text-lg font-medium text-gray-900">Histórico de Operações</h3>
-                    <p className="text-sm text-gray-600">
-                        {operations.length} operações encontradas
-                    </p>
+                    <p className="text-sm text-gray-600">{operations.length} operações encontradas</p>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -229,14 +203,10 @@ export const IntegrationsOperations: React.FC = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="text-sm text-gray-900">
-                                            {operation.platform}
-                                        </span>
+                                        <span className="text-sm text-gray-900">{operation.platform}</span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="text-sm text-gray-900">
-                                            {operation.operation}
-                                        </span>
+                                        <span className="text-sm text-gray-900">{operation.operation}</span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
@@ -250,7 +220,11 @@ export const IntegrationsOperations: React.FC = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center text-sm text-gray-900">
-                                            <CalendarIcon className="w-4 h-4 mr-2 text-gray-400" />
+                                            <MaterialIcon
+                                                icon="calendar_today"
+                                                className="mr-2 text-gray-400"
+                                                size={16}
+                                            />
                                             {new Date(operation.timestamp).toLocaleString("pt-BR")}
                                         </div>
                                     </td>
@@ -274,13 +248,9 @@ export const IntegrationsOperations: React.FC = () => {
 
                 {operations.length === 0 && (
                     <div className="text-center py-12">
-                        <ClockIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            Nenhuma operação encontrada
-                        </h3>
-                        <p className="text-gray-600">
-                            Ajuste os filtros ou aguarde novas operações
-                        </p>
+                        <MaterialIcon icon="schedule" className="text-gray-400 mx-auto mb-4" size={48} />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma operação encontrada</h3>
+                        <p className="text-gray-600">Ajuste os filtros ou aguarde novas operações</p>
                     </div>
                 )}
             </div>

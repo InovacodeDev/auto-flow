@@ -1,19 +1,5 @@
 import React from "react";
 import { NodeProps } from "reactflow";
-import {
-    ClockIcon,
-    ArrowPathIcon,
-    DocumentDuplicateIcon,
-    CpuChipIcon,
-    VariableIcon,
-    CalculatorIcon,
-    LinkIcon,
-    QueueListIcon,
-    ChartBarIcon,
-    CogIcon,
-    ShieldCheckIcon,
-    EyeIcon,
-} from "@heroicons/react/24/outline";
 import BaseNode, { NodeStatus } from "./BaseNode";
 
 // Delay Node
@@ -34,7 +20,7 @@ export const DelayNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ClockIcon}
+            icon="schedule"
             color="bg-gray-500"
             title="Aguardar"
             subtitle={getSubtitle()}
@@ -64,7 +50,7 @@ export const DataTransformNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ArrowPathIcon}
+            icon="refresh"
             color="bg-blue-500"
             title="Transformar Dados"
             subtitle={getSubtitle()}
@@ -97,7 +83,7 @@ export const CloneNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={DocumentDuplicateIcon}
+            icon="content_copy"
             color="bg-green-500"
             title="Clonar"
             subtitle={getSubtitle()}
@@ -131,7 +117,7 @@ export const CodeExecutionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CpuChipIcon}
+            icon="memory"
             color="bg-purple-500"
             title="Executar Código"
             subtitle={getSubtitle()}
@@ -168,7 +154,7 @@ export const VariableNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={VariableIcon}
+            icon="code"
             color="bg-orange-500"
             title="Variável"
             subtitle={getSubtitle()}
@@ -198,7 +184,7 @@ export const CalculatorNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CalculatorIcon}
+            icon="calculate"
             color="bg-teal-500"
             title="Calculadora"
             subtitle={getSubtitle()}
@@ -232,7 +218,7 @@ export const UrlBuilderNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={LinkIcon}
+            icon="link"
             color="bg-cyan-500"
             title="Construtor de URL"
             subtitle={getSubtitle()}
@@ -267,7 +253,7 @@ export const QueueNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={QueueListIcon}
+            icon="queue"
             color="bg-indigo-500"
             title="Fila"
             subtitle={getSubtitle()}
@@ -304,7 +290,7 @@ export const AggregatorNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ChartBarIcon}
+            icon="bar_chart"
             color="bg-pink-500"
             title="Agregador"
             subtitle={getSubtitle()}
@@ -340,7 +326,7 @@ export const LoggerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={EyeIcon}
+            icon="visibility"
             color="bg-gray-600"
             title="Logger"
             subtitle={getSubtitle()}
@@ -376,7 +362,7 @@ export const ConfigurationNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CogIcon}
+            icon="settings"
             color="bg-slate-500"
             title="Configuração"
             subtitle={getSubtitle()}
@@ -406,7 +392,7 @@ export const SecurityNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ShieldCheckIcon}
+            icon="verified_user"
             color="bg-red-600"
             title="Segurança"
             subtitle={getSubtitle()}

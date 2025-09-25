@@ -14,6 +14,7 @@
     },
     "devDependencies": {
         "@turbo/gen": "^2.5.8",
+        "@types/jest": "^29.5.3",
         "eslint": "^9.36.0",
         "prettier": "^3.6.2",
         "turbo": "^2.5.8",
@@ -30,6 +31,7 @@
     ],
     "dependencies": {
         "@types/uuid": "^11.0.0",
+        "react-logos": "0.1.0",
         "uuid": "^13.0.0"
     }
 }

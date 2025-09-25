@@ -9,6 +9,8 @@ export interface WorkflowExecutionInput {
     userId?: string;
     organizationId?: string;
     context?: Record<string, any>;
+    // optional legacy request shape used by some UI callsites
+    request?: any;
 }
 
 export interface WorkflowExecutionOutput {
@@ -21,6 +23,16 @@ export interface WorkflowExecutionOutput {
     duration?: number;
 }
 
+// Public type used by UI components: include `id` alias and a friendly status set
+export interface WorkflowExecution {
+    id: string;
+    status: "pending" | "running" | "success" | "failed" | "cancelled" | "paused";
+    startedAt: string;
+    completedAt?: string;
+    duration?: number;
+    errorMessage?: string;
+}
+
 export interface WorkflowLog {
     id: string;
     timestamp: string;
@@ -28,6 +40,7 @@ export interface WorkflowLog {
     message: string;
     nodeId?: string;
     data?: Record<string, any>;
+    component?: string;
 }
 
 export interface QueueStats {
@@ -106,7 +119,7 @@ export const useExecuteWorkflow = () => {
     });
 };
 
-export const useExecutionStatus = (executionId: string | undefined) => {
+export const useExecutionStatus = (executionId: string | undefined | null) => {
     return useQuery({
         queryKey: queryKeys.executions.status(executionId!),
         queryFn: () => executionApi.getExecutionStatus(executionId!),
@@ -115,13 +128,14 @@ export const useExecutionStatus = (executionId: string | undefined) => {
     });
 };
 
-export const useExecutionLogs = (executionId: string | undefined) => {
-    return useQuery({
+export const useExecutionLogs = (executionId?: string | null, options?: any) => {
+    return useQuery<{ logs: WorkflowLog[] }>({
         queryKey: queryKeys.executions.logs(executionId!),
         queryFn: () => executionApi.getExecutionLogs(executionId!),
-        enabled: !!executionId,
+        enabled: options?.enabled ?? !!executionId,
         refetchInterval: 1000, // Poll every second for logs
-    });
+        ...(options || {}),
+    } as any);
 };
 
 export const useQueueStats = () => {
@@ -165,7 +179,7 @@ export const useClearQueues = () => {
 };
 
 // Hook para monitorar execução em tempo real
-export const useExecutionMonitor = (executionId: string | undefined) => {
+export const useExecutionMonitor = (executionId: string | undefined | null) => {
     const statusQuery = useExecutionStatus(executionId);
     const logsQuery = useExecutionLogs(executionId);
 
@@ -182,26 +196,29 @@ export const useExecutionMonitor = (executionId: string | undefined) => {
 };
 
 // Hook para listar execuções de workflow
-export const useWorkflowExecutions = (workflowId?: string) => {
-    return useQuery({
+export const useWorkflowExecutions = (workflowId?: string, options?: any) => {
+    return useQuery<{ executions: WorkflowExecution[] }>({
         queryKey: ["workflowExecutions", workflowId],
-        queryFn: () => {
-            // Mock implementation
-            return Promise.resolve([
-                {
-                    executionId: "exec_1",
-                    status: "completed" as const,
-                    startedAt: new Date().toISOString(),
-                    completedAt: new Date().toISOString(),
-                    duration: 1500,
-                },
-                {
-                    executionId: "exec_2",
-                    status: "running" as const,
-                    startedAt: new Date().toISOString(),
-                },
-            ]);
+        queryFn: async () => {
+            // Mock implementation — return shape expected by the UI (executions array)
+            return Promise.resolve({
+                executions: [
+                    {
+                        id: "exec_1",
+                        status: "success",
+                        startedAt: new Date().toISOString(),
+                        completedAt: new Date().toISOString(),
+                        duration: 1500,
+                    },
+                    {
+                        id: "exec_2",
+                        status: "running",
+                        startedAt: new Date().toISOString(),
+                    },
+                ],
+            });
         },
-        enabled: !!workflowId,
-    });
+        enabled: options?.enabled ?? !!workflowId,
+        ...(options || {}),
+    } as any);
 };

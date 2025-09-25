@@ -192,7 +192,7 @@ export const useLogoutMutation = () => {
  * Hook para refresh token com TanStack Query
  */
 export const useRefreshTokenMutation = () => {
-    const { setTokens, setUser, setLoading } = useAuthStore();
+    const { setTokens, setUser: _setUser, setLoading } = useAuthStore();
 
     return useMutation({
         mutationFn: (refreshToken: string) => authApi.refreshToken(refreshToken),
@@ -200,7 +200,7 @@ export const useRefreshTokenMutation = () => {
             setTokens(data.tokens);
             setLoading(false);
         },
-        onError: (error) => {
+        onError: (_error) => {
             setLoading(false);
             // Refresh failed, logout user
             useAuthStore.setState({
@@ -216,12 +216,11 @@ export const useRefreshTokenMutation = () => {
 /**
  * Hook para buscar perfil do usuário com TanStack Query
  */
-export const useUserProfileQuery = (accessToken: string | null, enabled: boolean = true) => {
+export const useUserProfileQuery = (accessToken: string | null) => {
     return useMutation({
         mutationFn: () => {
             if (!accessToken) throw new Error("No access token");
             return authApi.getMe(accessToken);
         },
-        enabled: enabled && !!accessToken,
     });
 };

@@ -1,19 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-    PaperAirplaneIcon,
-    SparklesIcon,
-    TrashIcon,
-    ChatBubbleLeftRightIcon,
-    XMarkIcon,
-    ClockIcon,
-    CheckCircleIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import {
     useSendChatMessage,
     useChatHistory,
     useClearChatHistory,
     getDefaultSuggestions,
-    hasWorkflowGenerated,
+    ChatMessage,
 } from "../../services/aiService";
 
 interface AIChatProps {
@@ -28,10 +20,10 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, onWorkflowGener
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const sendMessage = useSendChatMessage();
-    const { data: historyData, isLoading: historyLoading } = useChatHistory({ enabled: isOpen });
+    const { data: historyData, isLoading: historyLoading } = useChatHistory();
     const clearHistory = useClearChatHistory();
 
-    const messages = historyData?.data?.messages || [];
+    const messages: ChatMessage[] = (historyData || []) as ChatMessage[];
 
     // Auto scroll to bottom
     useEffect(() => {
@@ -45,25 +37,18 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, onWorkflowGener
         setMessage("");
 
         try {
-            const response = await sendMessage.mutateAsync({
-                message: messageText,
-                organizationContext: {
-                    businessType: "PME", // TODO: Get from user context
-                    availableIntegrations: ["WhatsApp Business", "PIX", "Email", "Webhook"],
-                    existingWorkflows: [], // TODO: Get from API
-                    commonPatterns: [],
-                },
-            });
+            // useSendChatMessage expects a string message (mutationFn signature)
+            const response = await sendMessage.mutateAsync(messageText);
 
-            // Update suggestions if provided
-            if (response.data?.suggestions) {
-                setSuggestions(response.data.suggestions);
+            // Update suggestions if provided in metadata
+            if ((response as any).metadata?.suggestions) {
+                setSuggestions((response as any).metadata.suggestions as string[]);
             }
 
-            // Handle workflow generation
-            if (response.data?.workflowGenerated && onWorkflowGenerated) {
-                const workflowId = response.data.workflowGenerated.id;
-                onWorkflowGenerated(workflowId);
+            // Handle workflow generation if metadata contains an optional workflow id
+            if ((response as any).metadata?.workflowGenerated && onWorkflowGenerated) {
+                const workflowId = (response as any).metadata?.workflowId || (response as any).workflowId;
+                if (workflowId) onWorkflowGenerated(workflowId);
             }
         } catch (error) {
             console.error("Erro ao enviar mensagem:", error);
@@ -109,7 +94,7 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, onWorkflowGener
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <SparklesIcon className="w-5 h-5 text-white" />
+                                <MaterialIcon icon="auto_awesome" className="text-white" size={20} />
                             </div>
                             <div>
                                 <h2 className="text-xl font-bold text-gray-900">AutoFlow IA Assistant</h2>
@@ -123,14 +108,14 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, onWorkflowGener
                                 className="p-2 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
                                 title="Limpar histórico"
                             >
-                                <TrashIcon className="w-5 h-5" />
+                                <MaterialIcon icon="delete" size={20} />
                             </button>
                             <button
                                 onClick={onClose}
                                 className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
                                 title="Fechar"
                             >
-                                <XMarkIcon className="w-5 h-5" />
+                                <MaterialIcon icon="close" size={20} />
                             </button>
                         </div>
                     </div>
@@ -144,7 +129,7 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, onWorkflowGener
                         </div>
                     ) : messages.length === 0 ? (
                         <div className="text-center py-8">
-                            <ChatBubbleLeftRightIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                            <MaterialIcon icon="smart_toy" className="mx-auto mb-4 text-gray-300" size={64} />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Bem-vindo ao AutoFlow IA!</h3>
                             <p className="text-gray-600 mb-6">
                                 Descreva o que você gostaria de automatizar e eu ajudo você a criar o workflow perfeito.
@@ -181,9 +166,13 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, onWorkflowGener
                                         >
                                             {formatTimestamp(msg.timestamp)}
                                         </span>
-                                        {hasWorkflowGenerated(msg) && (
+                                        {msg.metadata?.workflowGenerated && (
                                             <div className="flex items-center space-x-1">
-                                                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                                                <MaterialIcon
+                                                    icon="check_circle"
+                                                    className="text-green-500"
+                                                    size={16}
+                                                />
                                                 <span className="text-xs text-green-600 font-medium">
                                                     Workflow Gerado
                                                 </span>
@@ -198,7 +187,7 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, onWorkflowGener
                         <div className="flex justify-start">
                             <div className="bg-gray-100 border rounded-lg px-4 py-2 max-w-xs">
                                 <div className="flex items-center space-x-2">
-                                    <ClockIcon className="w-4 h-4 text-gray-500 animate-spin" />
+                                    <MaterialIcon icon="schedule" className="text-gray-500 animate-spin" size={16} />
                                     <span className="text-sm text-gray-600">AutoFlow IA está pensando...</span>
                                 </div>
                             </div>
@@ -244,7 +233,7 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, onWorkflowGener
                             disabled={!message.trim() || sendMessage.isPending}
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
                         >
-                            <PaperAirplaneIcon className="w-4 h-4" />
+                            <MaterialIcon icon="send" size={16} />
                             <span className="hidden sm:inline">Enviar</span>
                         </button>
                     </div>

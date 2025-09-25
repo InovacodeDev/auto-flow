@@ -1,15 +1,5 @@
 import React from "react";
 import { NodeProps } from "reactflow";
-import {
-    FunnelIcon,
-    ExclamationTriangleIcon,
-    CheckCircleIcon,
-    XCircleIcon,
-    QuestionMarkCircleIcon,
-    ScaleIcon,
-    CpuChipIcon,
-    DocumentCheckIcon,
-} from "@heroicons/react/24/outline";
 import BaseNode, { NodeStatus } from "./BaseNode";
 
 // Basic Condition Node
@@ -30,7 +20,7 @@ export const ConditionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={FunnelIcon}
+            icon="filter_list"
             color="bg-yellow-500"
             title="Condição"
             subtitle={getSubtitle()}
@@ -66,7 +56,7 @@ export const SwitchNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ScaleIcon}
+            icon="balance"
             color="bg-indigo-500"
             title="Switch"
             subtitle={getSubtitle()}
@@ -100,7 +90,7 @@ export const ValidationNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={DocumentCheckIcon}
+            icon="task_alt"
             color="bg-green-500"
             title="Validação"
             subtitle={getSubtitle()}
@@ -137,7 +127,7 @@ export const ErrorHandlerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ExclamationTriangleIcon}
+            icon="warning"
             color="bg-red-500"
             title="Tratamento de Erro"
             subtitle={getSubtitle()}
@@ -174,7 +164,7 @@ export const RetryNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CpuChipIcon}
+            icon="memory"
             color="bg-purple-500"
             title="Tentar Novamente"
             subtitle={getSubtitle()}
@@ -210,7 +200,7 @@ export const GateNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={QuestionMarkCircleIcon}
+            icon="help"
             color="bg-gray-500"
             title="Portão"
             subtitle={getSubtitle()}

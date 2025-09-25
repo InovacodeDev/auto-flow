@@ -1,11 +1,5 @@
 import React from "react";
-import {
-    LightBulbIcon,
-    SparklesIcon,
-    CogIcon,
-    ChartBarIcon,
-    ArrowRightIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 
 interface SuggestionsPanelProps {
     onSuggestionClick: (suggestion: string) => void;
@@ -17,7 +11,7 @@ export const SuggestionsPanel: React.FC<SuggestionsPanelProps> = ({ onSuggestion
             id: "workflow-1",
             title: "Criar workflow de vendas",
             description: "Automatize o processo de vendas desde o lead até o fechamento",
-            icon: SparklesIcon,
+            icon: "auto_awesome",
             color: "bg-blue-500",
             textColor: "text-blue-600",
             bgColor: "bg-blue-50",
@@ -27,7 +21,7 @@ export const SuggestionsPanel: React.FC<SuggestionsPanelProps> = ({ onSuggestion
             id: "integration-1",
             title: "Integrar com WhatsApp",
             description: "Configure notificações automáticas via WhatsApp Business",
-            icon: CogIcon,
+            icon: "settings",
             color: "bg-green-500",
             textColor: "text-green-600",
             bgColor: "bg-green-50",
@@ -37,7 +31,7 @@ export const SuggestionsPanel: React.FC<SuggestionsPanelProps> = ({ onSuggestion
             id: "optimization-1",
             title: "Otimizar processos",
             description: "Analise e melhore a eficiência dos seus workflows",
-            icon: ChartBarIcon,
+            icon: "bar_chart",
             color: "bg-purple-500",
             textColor: "text-purple-600",
             bgColor: "bg-purple-50",
@@ -47,7 +41,7 @@ export const SuggestionsPanel: React.FC<SuggestionsPanelProps> = ({ onSuggestion
             id: "workflow-2",
             title: "Automatizar emails",
             description: "Configure envio automático de emails de follow-up",
-            icon: SparklesIcon,
+            icon: "auto_awesome",
             color: "bg-orange-500",
             textColor: "text-orange-600",
             bgColor: "bg-orange-50",
@@ -70,7 +64,7 @@ export const SuggestionsPanel: React.FC<SuggestionsPanelProps> = ({ onSuggestion
                 {/* Quick Actions */}
                 <div>
                     <div className="flex items-center space-x-2 mb-3">
-                        <LightBulbIcon className="w-5 h-5 text-gray-600" />
+                        <MaterialIcon icon="lightbulb" className="text-gray-600" size={20} />
                         <h3 className="text-sm font-medium text-gray-900">Ações Rápidas</h3>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -89,10 +83,8 @@ export const SuggestionsPanel: React.FC<SuggestionsPanelProps> = ({ onSuggestion
                 {/* Detailed Suggestions */}
                 <div>
                     <div className="flex items-center space-x-2 mb-3">
-                        <SparklesIcon className="w-5 h-5 text-gray-600" />
-                        <h3 className="text-sm font-medium text-gray-900">
-                            Sugestões Inteligentes
-                        </h3>
+                        <MaterialIcon icon="auto_awesome" className="text-gray-600" size={20} />
+                        <h3 className="text-sm font-medium text-gray-900">Sugestões Inteligentes</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {suggestions.map((suggestion) => (
@@ -105,7 +97,7 @@ export const SuggestionsPanel: React.FC<SuggestionsPanelProps> = ({ onSuggestion
                                     <div
                                         className={`p-2 rounded-lg ${suggestion.color} group-hover:scale-110 transition-transform`}
                                     >
-                                        <suggestion.icon className="w-5 h-5 text-white" />
+                                        <MaterialIcon icon={suggestion.icon} className="text-white" size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h4
@@ -113,11 +105,13 @@ export const SuggestionsPanel: React.FC<SuggestionsPanelProps> = ({ onSuggestion
                                         >
                                             {suggestion.title}
                                         </h4>
-                                        <p className="text-xs text-gray-600 mt-1">
-                                            {suggestion.description}
-                                        </p>
+                                        <p className="text-xs text-gray-600 mt-1">{suggestion.description}</p>
                                     </div>
-                                    <ArrowRightIcon className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                                    <MaterialIcon
+                                        icon="arrow_forward"
+                                        className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                                        size={16}
+                                    />
                                 </div>
                             </button>
                         ))}

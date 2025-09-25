@@ -1,16 +1,5 @@
 import React, { useState } from "react";
-import {
-    ChartBarIcon,
-    CloudIcon,
-    ExclamationTriangleIcon,
-    CheckCircleIcon,
-    XCircleIcon,
-    ClockIcon,
-    ArrowPathIcon,
-    EyeIcon,
-    ArrowDownTrayIcon,
-    TrashIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import {
     useIntegrationsOverview,
     useIntegrationsHealth,
@@ -88,7 +77,7 @@ export const IntegrationsDashboard: React.FC = () => {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="flex items-center space-x-2">
-                    <ArrowPathIcon className="w-6 h-6 animate-spin text-blue-500" />
+                    <MaterialIcon icon="refresh" className="animate-spin text-blue-500" size={24} />
                     <span className="text-gray-600">Carregando dashboard...</span>
                 </div>
             </div>
@@ -99,7 +88,7 @@ export const IntegrationsDashboard: React.FC = () => {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                    <XCircleIcon className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                    <MaterialIcon icon="cancel" className="text-red-500 mx-auto mb-4" size={48} />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Erro ao carregar dashboard</h3>
                     <p className="text-gray-600">Tente recarregar a página</p>
                 </div>
@@ -121,7 +110,11 @@ export const IntegrationsDashboard: React.FC = () => {
                         disabled={syncMutation.isPending}
                         className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                     >
-                        <ArrowPathIcon className={`w-4 h-4 mr-2 ${syncMutation.isPending ? "animate-spin" : ""}`} />
+                        <MaterialIcon
+                            icon="refresh"
+                            className={`mr-2 ${syncMutation.isPending ? "animate-spin" : ""}`}
+                            size={16}
+                        />
                         Sincronizar Todas
                     </button>
                     <button
@@ -129,7 +122,7 @@ export const IntegrationsDashboard: React.FC = () => {
                         disabled={exportMutation.isPending}
                         className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                     >
-                        <ArrowDownTrayIcon className="w-4 h-4 mr-2" />
+                        <MaterialIcon icon="download" className="mr-2" size={16} />
                         Exportar
                     </button>
                     <button
@@ -137,7 +130,7 @@ export const IntegrationsDashboard: React.FC = () => {
                         disabled={cleanupMutation.isPending}
                         className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50"
                     >
-                        <TrashIcon className="w-4 h-4 mr-2" />
+                        <MaterialIcon icon="delete" className="mr-2" size={16} />
                         Limpar Dados
                     </button>
                 </div>
@@ -147,10 +140,10 @@ export const IntegrationsDashboard: React.FC = () => {
             <div className="border-b border-gray-200">
                 <nav className="-mb-px flex space-x-8">
                     {[
-                        { id: "overview", name: "Visão Geral", icon: ChartBarIcon },
-                        { id: "integrations", name: "Integrações", icon: CloudIcon },
-                        { id: "operations", name: "Operações", icon: ClockIcon },
-                        { id: "alerts", name: "Alertas", icon: ExclamationTriangleIcon },
+                        { id: "overview", name: "Visão Geral", icon: "bar_chart" },
+                        { id: "integrations", name: "Integrações", icon: "cloud" },
+                        { id: "operations", name: "Operações", icon: "schedule" },
+                        { id: "alerts", name: "Alertas", icon: "warning" },
                     ].map((tab) => (
                         <button
                             key={tab.id}
@@ -161,7 +154,7 @@ export const IntegrationsDashboard: React.FC = () => {
                                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                             }`}
                         >
-                            <tab.icon className="w-4 h-4 mr-2" />
+                            <MaterialIcon icon={tab.icon} className="mr-2" size={16} />
                             {tab.name}
                         </button>
                     ))}
@@ -191,7 +184,7 @@ export const IntegrationsDashboard: React.FC = () => {
                         </div>
                         {filteredIntegrations.length === 0 && (
                             <div className="text-center py-12">
-                                <CloudIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                                <MaterialIcon icon="cloud" className="text-gray-400 mx-auto mb-4" size={48} />
                                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                                     Nenhuma integração encontrada
                                 </h3>

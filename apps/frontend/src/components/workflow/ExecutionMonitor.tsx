@@ -1,20 +1,6 @@
-import React, { useState, useEffect } from "react";
-import {
-    PlayIcon,
-    StopIcon,
-    ClockIcon,
-    CheckCircleIcon,
-    XCircleIcon,
-    ExclamationTriangleIcon,
-    EyeIcon,
-    TrashIcon,
-} from "@heroicons/react/24/outline";
-import {
-    useExecuteWorkflow,
-    useExecutionMonitor,
-    useCancelExecution,
-} from "../../services/executionService";
-import { useWorkflowCanvas } from "../../hooks/useWorkflowCanvas";
+import React, { useState } from "react";
+import { MaterialIcon } from "../ui/MaterialIcon";
+import { useExecuteWorkflow, useExecutionMonitor, useCancelExecution } from "../../services/executionService";
 
 interface ExecutionMonitorProps {
     workflowId?: string;
@@ -22,18 +8,13 @@ interface ExecutionMonitorProps {
     onClose: () => void;
 }
 
-export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
-    workflowId,
-    isOpen,
-    onClose,
-}) => {
+export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({ workflowId, isOpen, onClose }) => {
     const [executionId, setExecutionId] = useState<string | null>(null);
     const [showLogs, setShowLogs] = useState(false);
 
     const executeWorkflowMutation = useExecuteWorkflow();
     const cancelExecutionMutation = useCancelExecution();
-    const { status, logs, isLoading, isRunning, isCompleted, isFailed, isPending } =
-        useExecutionMonitor(executionId);
+    const { status, logs, isLoading, isRunning, isCompleted, isFailed, isPending } = useExecutionMonitor(executionId);
 
     const handleExecute = async () => {
         if (!workflowId) return;
@@ -69,11 +50,11 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
     };
 
     const getStatusIcon = () => {
-        if (isLoading) return <ClockIcon className="w-5 h-5 animate-spin text-blue-500" />;
-        if (isCompleted) return <CheckCircleIcon className="w-5 h-5 text-green-500" />;
-        if (isFailed) return <XCircleIcon className="w-5 h-5 text-red-500" />;
-        if (isRunning) return <PlayIcon className="w-5 h-5 text-blue-500" />;
-        if (isPending) return <ClockIcon className="w-5 h-5 text-yellow-500" />;
+        if (isLoading) return <MaterialIcon icon="schedule" className="animate-spin text-blue-500" size={20} />;
+        if (isCompleted) return <MaterialIcon icon="check_circle" className="text-green-500" size={20} />;
+        if (isFailed) return <MaterialIcon icon="cancel" className="text-red-500" size={20} />;
+        if (isRunning) return <MaterialIcon icon="play_arrow" className="text-blue-500" size={20} />;
+        if (isPending) return <MaterialIcon icon="schedule" className="text-yellow-500" size={20} />;
         return null;
     };
 
@@ -93,14 +74,14 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
                     <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-                        <PlayIcon className="w-6 h-6 mr-2 text-blue-500" />
+                        <MaterialIcon icon="play_arrow" className="mr-2 text-blue-500" size={24} />
                         Monitor de Execução
                     </h2>
                     <button
                         onClick={handleClose}
                         className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
                     >
-                        <XMarkIcon className="w-6 h-6" />
+                        <MaterialIcon icon="close" size={24} />
                     </button>
                 </div>
 
@@ -110,10 +91,8 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                         /* Start Execution */
                         <div className="text-center">
                             <div className="mb-6">
-                                <PlayIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                    Executar Workflow
-                                </h3>
+                                <MaterialIcon icon="play_arrow" className="text-gray-400 mx-auto mb-4" size={64} />
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">Executar Workflow</h3>
                                 <p className="text-gray-600">
                                     Clique no botão abaixo para iniciar a execução do workflow
                                 </p>
@@ -126,12 +105,12 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                             >
                                 {executeWorkflowMutation.isPending ? (
                                     <>
-                                        <ClockIcon className="w-5 h-5 mr-2 animate-spin" />
+                                        <MaterialIcon icon="schedule" className="mr-2 animate-spin" size={20} />
                                         Iniciando...
                                     </>
                                 ) : (
                                     <>
-                                        <PlayIcon className="w-5 h-5 mr-2" />
+                                        <MaterialIcon icon="play_arrow" className="mr-2" size={20} />
                                         Executar Workflow
                                     </>
                                 )}
@@ -143,9 +122,7 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                             {/* Status */}
                             <div className="bg-gray-50 rounded-lg p-4">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-lg font-medium text-gray-900">
-                                        Status da Execução
-                                    </h3>
+                                    <h3 className="text-lg font-medium text-gray-900">Status da Execução</h3>
                                     <div className="flex items-center space-x-2">
                                         {getStatusIcon()}
                                         <span
@@ -174,7 +151,7 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                                     onClick={() => setShowLogs(!showLogs)}
                                     className="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
                                 >
-                                    <EyeIcon className="w-4 h-4 mr-2" />
+                                    <MaterialIcon icon="visibility" className="mr-2" size={16} />
                                     {showLogs ? "Ocultar" : "Mostrar"} Logs
                                 </button>
 
@@ -184,7 +161,7 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                                         disabled={cancelExecutionMutation.isPending}
                                         className="flex items-center px-4 py-2 text-red-700 bg-red-100 rounded-lg hover:bg-red-200 disabled:opacity-50"
                                     >
-                                        <StopIcon className="w-4 h-4 mr-2" />
+                                        <MaterialIcon icon="stop" className="mr-2" size={16} />
                                         Cancelar
                                     </button>
                                 )}
@@ -194,7 +171,7 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                                         onClick={() => setExecutionId(null)}
                                         className="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
                                     >
-                                        <TrashIcon className="w-4 h-4 mr-2" />
+                                        <MaterialIcon icon="delete" className="mr-2" size={16} />
                                         Nova Execução
                                     </button>
                                 )}
@@ -203,24 +180,15 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                             {/* Logs */}
                             {showLogs && (
                                 <div className="bg-gray-900 rounded-lg p-4">
-                                    <h4 className="text-white font-medium mb-3">
-                                        Logs de Execução
-                                    </h4>
+                                    <h4 className="text-white font-medium mb-3">Logs de Execução</h4>
                                     <div className="space-y-2 max-h-64 overflow-y-auto">
                                         {logs.length === 0 ? (
-                                            <p className="text-gray-400 text-sm">
-                                                Nenhum log disponível
-                                            </p>
+                                            <p className="text-gray-400 text-sm">Nenhum log disponível</p>
                                         ) : (
                                             logs.map((log) => (
-                                                <div
-                                                    key={log.id}
-                                                    className="flex items-start space-x-3 text-sm"
-                                                >
+                                                <div key={log.id} className="flex items-start space-x-3 text-sm">
                                                     <span className="text-gray-500 font-mono text-xs">
-                                                        {new Date(
-                                                            log.timestamp
-                                                        ).toLocaleTimeString()}
+                                                        {new Date(log.timestamp).toLocaleTimeString()}
                                                     </span>
                                                     <span
                                                         className={`font-medium ${
@@ -235,13 +203,9 @@ export const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                                                     >
                                                         [{log.level.toUpperCase()}]
                                                     </span>
-                                                    <span className="text-white">
-                                                        {log.message}
-                                                    </span>
+                                                    <span className="text-white">{log.message}</span>
                                                     {log.nodeId && (
-                                                        <span className="text-gray-500">
-                                                            (Node: {log.nodeId})
-                                                        </span>
+                                                        <span className="text-gray-500">(Node: {log.nodeId})</span>
                                                     )}
                                                 </div>
                                             ))

@@ -1,13 +1,5 @@
 import React from "react";
-import {
-    ChartBarIcon,
-    CheckCircleIcon,
-    XCircleIcon,
-    ClockIcon,
-    CurrencyDollarIcon,
-    ArrowUpIcon,
-    ArrowDownIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import { IntegrationStats, IntegrationOverview } from "../../services/integrationsService";
 
 interface IntegrationsStatsProps {
@@ -22,28 +14,28 @@ export const IntegrationsStats: React.FC<IntegrationsStatsProps> = ({ stats, ove
         {
             name: "Total de Integrações",
             value: overview.summary.totalIntegrations,
-            icon: ChartBarIcon,
+            icon: "bar_chart",
             color: "text-blue-600",
             bgColor: "bg-blue-100",
         },
         {
             name: "Integrações Ativas",
             value: overview.summary.activeIntegrations,
-            icon: CheckCircleIcon,
+            icon: "check_circle",
             color: "text-green-600",
             bgColor: "bg-green-100",
         },
         {
             name: "Com Erro",
             value: overview.summary.errorIntegrations,
-            icon: XCircleIcon,
+            icon: "cancel",
             color: "text-red-600",
             bgColor: "bg-red-100",
         },
         {
             name: "Configurando",
             value: overview.summary.configuringIntegrations,
-            icon: ClockIcon,
+            icon: "schedule",
             color: "text-yellow-600",
             bgColor: "bg-yellow-100",
         },
@@ -53,7 +45,7 @@ export const IntegrationsStats: React.FC<IntegrationsStatsProps> = ({ stats, ove
         {
             name: "Operações Mensais",
             value: stats.monthlyOperations.toLocaleString(),
-            icon: ChartBarIcon,
+            icon: "bar_chart",
             color: "text-blue-600",
             bgColor: "bg-blue-100",
             trend: "+12%",
@@ -62,7 +54,7 @@ export const IntegrationsStats: React.FC<IntegrationsStatsProps> = ({ stats, ove
         {
             name: "Taxa de Sucesso",
             value: `${stats.successRate}%`,
-            icon: CheckCircleIcon,
+            icon: "check_circle",
             color: "text-green-600",
             bgColor: "bg-green-100",
             trend: "+2.1%",
@@ -71,7 +63,7 @@ export const IntegrationsStats: React.FC<IntegrationsStatsProps> = ({ stats, ove
         {
             name: "Receita Total",
             value: `R$ ${stats.totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`,
-            icon: CurrencyDollarIcon,
+            icon: "attach_money",
             color: "text-emerald-600",
             bgColor: "bg-emerald-100",
             trend: "+8.5%",
@@ -80,7 +72,7 @@ export const IntegrationsStats: React.FC<IntegrationsStatsProps> = ({ stats, ove
         {
             name: "Tempo Médio de Resposta",
             value: `${overview.metrics.avgResponseTime}ms`,
-            icon: ClockIcon,
+            icon: "schedule",
             color: "text-purple-600",
             bgColor: "bg-purple-100",
             trend: "-15ms",
@@ -135,7 +127,7 @@ export const IntegrationsStats: React.FC<IntegrationsStatsProps> = ({ stats, ove
                     <div key={stat.name} className="bg-white rounded-lg shadow p-6">
                         <div className="flex items-center">
                             <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                                <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                                <MaterialIcon icon={stat.icon} className={stat.color} size={24} />
                             </div>
                             <div className="ml-4">
                                 <p className="text-sm font-medium text-gray-600">{stat.name}</p>
@@ -153,22 +145,18 @@ export const IntegrationsStats: React.FC<IntegrationsStatsProps> = ({ stats, ove
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <div className={`p-3 rounded-lg ${metric.bgColor}`}>
-                                    <metric.icon className={`w-6 h-6 ${metric.color}`} />
+                                    <MaterialIcon icon={metric.icon} className={metric.color} size={24} />
                                 </div>
                                 <div className="ml-4">
-                                    <p className="text-sm font-medium text-gray-600">
-                                        {metric.name}
-                                    </p>
-                                    <p className="text-2xl font-bold text-gray-900">
-                                        {metric.value}
-                                    </p>
+                                    <p className="text-sm font-medium text-gray-600">{metric.name}</p>
+                                    <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
                                 </div>
                             </div>
                             <div className="flex items-center">
                                 {metric.trendUp ? (
-                                    <ArrowUpIcon className="w-4 h-4 text-green-500 mr-1" />
+                                    <MaterialIcon icon="trending_up" className="text-green-500 mr-1" size={16} />
                                 ) : (
-                                    <ArrowDownIcon className="w-4 h-4 text-red-500 mr-1" />
+                                    <MaterialIcon icon="trending_down" className="text-red-500 mr-1" size={16} />
                                 )}
                                 <span
                                     className={`text-sm font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}
@@ -189,14 +177,10 @@ export const IntegrationsStats: React.FC<IntegrationsStatsProps> = ({ stats, ove
                         <div key={type.name} className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <div className={`w-3 h-3 rounded-full ${type.color} mr-3`} />
-                                <span className="text-sm font-medium text-gray-700">
-                                    {type.name}
-                                </span>
+                                <span className="text-sm font-medium text-gray-700">{type.name}</span>
                             </div>
                             <div className="flex items-center space-x-3">
-                                <span className="text-sm text-gray-600">
-                                    {type.count} integrações
-                                </span>
+                                <span className="text-sm text-gray-600">{type.count} integrações</span>
                                 <div className="w-24 bg-gray-200 rounded-full h-2">
                                     <div
                                         className={`h-2 rounded-full ${type.color}`}

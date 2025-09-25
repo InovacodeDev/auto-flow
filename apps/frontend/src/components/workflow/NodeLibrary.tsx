@@ -1,43 +1,12 @@
 import React from "react";
-import {
-    XMarkIcon,
-    BoltIcon,
-    PlayIcon,
-    ClockIcon,
-    EnvelopeIcon,
-    GlobeAltIcon,
-    FunnelIcon,
-    CalendarIcon,
-    CursorArrowRaysIcon,
-    BellIcon,
-    ChatBubbleLeftRightIcon,
-    CloudIcon,
-    CurrencyDollarIcon,
-    UserIcon,
-    ChartBarIcon,
-    CogIcon,
-    ShieldCheckIcon,
-    ArrowPathIcon,
-    ExclamationTriangleIcon,
-    QuestionMarkCircleIcon,
-    ScaleIcon,
-    CpuChipIcon,
-    DocumentCheckIcon,
-    VariableIcon,
-    CalculatorIcon,
-    LinkIcon,
-    QueueListIcon,
-    EyeIcon,
-    DocumentDuplicateIcon,
-} from "@heroicons/react/24/outline";
-import { DatabaseIcon } from "lucide-react";
+import { MaterialIcon } from "../ui/MaterialIcon";
 
 interface NodeDefinition {
     id: string;
     name: string;
     description: string;
     category: "trigger" | "action" | "condition" | "utility";
-    icon: React.ComponentType<{ className?: string }>;
+    icon: string;
     color: string;
     inputs: Array<{ name: string; type: string; required: boolean }>;
     outputs: Array<{ name: string; type: string }>;
@@ -51,7 +20,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Trigger Manual",
         description: "Inicia o workflow manualmente via botão ou API",
         category: "trigger",
-        icon: PlayIcon,
+        icon: "play_arrow",
         color: "bg-green-500",
         inputs: [],
         outputs: [{ name: "output", type: "any" }],
@@ -65,7 +34,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Webhook",
         description: "Recebe dados via requisição HTTP POST",
         category: "trigger",
-        icon: GlobeAltIcon,
+        icon: "public",
         color: "bg-blue-500",
         inputs: [],
         outputs: [{ name: "data", type: "object" }],
@@ -80,7 +49,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Agendamento",
         description: "Executa em horários programados (cron)",
         category: "trigger",
-        icon: ClockIcon,
+        icon: "clock",
         color: "bg-purple-500",
         inputs: [],
         outputs: [{ name: "timestamp", type: "string" }],
@@ -95,7 +64,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Calendário",
         description: "Dispara quando eventos do calendário ocorrem",
         category: "trigger",
-        icon: CalendarIcon,
+        icon: "calendar",
         color: "bg-indigo-500",
         inputs: [],
         outputs: [{ name: "event", type: "object" }],
@@ -110,7 +79,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Formulário",
         description: "Dispara quando formulário é submetido",
         category: "trigger",
-        icon: CursorArrowRaysIcon,
+        icon: "form",
         color: "bg-orange-500",
         inputs: [],
         outputs: [{ name: "submission", type: "object" }],
@@ -124,7 +93,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Notificação",
         description: "Dispara quando notificação é recebida",
         category: "trigger",
-        icon: BellIcon,
+        icon: "bell",
         color: "bg-pink-500",
         inputs: [],
         outputs: [{ name: "notification", type: "object" }],
@@ -138,7 +107,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Banco de Dados",
         description: "Dispara quando mudanças ocorrem no banco",
         category: "trigger",
-        icon: DatabaseIcon,
+        icon: "database",
         color: "bg-teal-500",
         inputs: [],
         outputs: [{ name: "record", type: "object" }],
@@ -155,7 +124,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Requisição HTTP",
         description: "Faz chamada para API externa",
         category: "action",
-        icon: GlobeAltIcon,
+        icon: "globe",
         color: "bg-orange-500",
         inputs: [
             { name: "url", type: "string", required: true },
@@ -178,7 +147,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Enviar Email",
         description: "Envia email através do provedor configurado",
         category: "action",
-        icon: EnvelopeIcon,
+        icon: "email",
         color: "bg-red-500",
         inputs: [
             { name: "to", type: "string", required: true },
@@ -197,7 +166,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Salvar no Banco",
         description: "Armazena dados no banco de dados",
         category: "action",
-        icon: DatabaseIcon,
+        icon: "storage",
         color: "bg-teal-500",
         inputs: [{ name: "data", type: "object", required: true }],
         outputs: [{ name: "id", type: "string" }],
@@ -212,7 +181,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Enviar WhatsApp",
         description: "Envia mensagem via WhatsApp Business API",
         category: "action",
-        icon: ChatBubbleLeftRightIcon,
+        icon: "chat",
         color: "bg-green-600",
         inputs: [
             { name: "to", type: "string", required: true },
@@ -229,7 +198,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Armazenamento",
         description: "Upload/download de arquivos na nuvem",
         category: "action",
-        icon: CloudIcon,
+        icon: "cloud",
         color: "bg-blue-600",
         inputs: [
             { name: "file", type: "object", required: true },
@@ -247,7 +216,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Processar Pagamento",
         description: "Processa pagamentos via gateway",
         category: "action",
-        icon: CurrencyDollarIcon,
+        icon: "currency_exchange",
         color: "bg-emerald-500",
         inputs: [
             { name: "amount", type: "number", required: true },
@@ -265,7 +234,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Gerenciar Usuário",
         description: "Cria, atualiza ou remove usuários",
         category: "action",
-        icon: UserIcon,
+        icon: "person",
         color: "bg-indigo-500",
         inputs: [
             { name: "userData", type: "object", required: true },
@@ -282,7 +251,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Rastrear Analytics",
         description: "Envia eventos para sistema de analytics",
         category: "action",
-        icon: ChartBarIcon,
+        icon: "bar_chart",
         color: "bg-purple-500",
         inputs: [
             { name: "event", type: "string", required: true },
@@ -299,7 +268,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Enviar Notificação",
         description: "Envia notificações push, SMS ou email",
         category: "action",
-        icon: BellIcon,
+        icon: "notifications",
         color: "bg-pink-500",
         inputs: [
             { name: "user", type: "object", required: true },
@@ -318,7 +287,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Condição IF",
         description: "Avalia condição e direciona fluxo",
         category: "condition",
-        icon: FunnelIcon,
+        icon: "filter_list",
         color: "bg-yellow-500",
         inputs: [{ name: "input", type: "any", required: true }],
         outputs: [
@@ -336,7 +305,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Switch/Case",
         description: "Direciona fluxo baseado em múltiplas condições",
         category: "condition",
-        icon: ScaleIcon,
+        icon: "balance",
         color: "bg-indigo-500",
         inputs: [{ name: "input", type: "any", required: true }],
         outputs: [
@@ -354,7 +323,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Validação",
         description: "Valida dados e direciona fluxo baseado no resultado",
         category: "condition",
-        icon: DocumentCheckIcon,
+        icon: "task_alt",
         color: "bg-green-500",
         inputs: [
             { name: "input", type: "object", required: true },
@@ -374,7 +343,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Tratamento de Erro",
         description: "Captura e trata erros no workflow",
         category: "condition",
-        icon: ExclamationTriangleIcon,
+        icon: "warning",
         color: "bg-red-500",
         inputs: [
             { name: "input", type: "any", required: true },
@@ -394,7 +363,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Tentar Novamente",
         description: "Tenta executar ação novamente em caso de falha",
         category: "condition",
-        icon: CpuChipIcon,
+        icon: "memory",
         color: "bg-purple-500",
         inputs: [
             { name: "input", type: "any", required: true },
@@ -415,7 +384,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Portão",
         description: "Controla se o fluxo deve continuar",
         category: "condition",
-        icon: QuestionMarkCircleIcon,
+        icon: "help",
         color: "bg-gray-500",
         inputs: [
             { name: "input", type: "any", required: true },
@@ -434,7 +403,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Aguardar",
         description: "Pausa a execução por tempo determinado",
         category: "utility",
-        icon: ClockIcon,
+        icon: "schedule",
         color: "bg-gray-500",
         inputs: [{ name: "input", type: "any", required: false }],
         outputs: [{ name: "output", type: "any" }],
@@ -449,7 +418,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Transformar Dados",
         description: "Transforma dados de um formato para outro",
         category: "utility",
-        icon: ArrowPathIcon,
+        icon: "change_circle",
         color: "bg-blue-500",
         inputs: [
             { name: "input", type: "object", required: true },
@@ -466,7 +435,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Clonar",
         description: "Cria múltiplas cópias dos dados",
         category: "utility",
-        icon: DocumentDuplicateIcon,
+        icon: "file_copy",
         color: "bg-green-500",
         inputs: [{ name: "input", type: "any", required: true }],
         outputs: [
@@ -484,7 +453,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Executar Código",
         description: "Executa código JavaScript personalizado",
         category: "utility",
-        icon: CpuChipIcon,
+        icon: "memory",
         color: "bg-purple-500",
         inputs: [
             { name: "input", type: "object", required: true },
@@ -504,7 +473,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Variável",
         description: "Armazena e recupera valores de variáveis",
         category: "utility",
-        icon: VariableIcon,
+        icon: "variable",
         color: "bg-orange-500",
         inputs: [{ name: "input", type: "any", required: true }],
         outputs: [{ name: "output", type: "any" }],
@@ -518,7 +487,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Calculadora",
         description: "Executa operações matemáticas",
         category: "utility",
-        icon: CalculatorIcon,
+        icon: "calculate",
         color: "bg-teal-500",
         inputs: [
             { name: "a", type: "number", required: true },
@@ -536,7 +505,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Construtor de URL",
         description: "Constrói URLs dinamicamente",
         category: "utility",
-        icon: LinkIcon,
+        icon: "link",
         color: "bg-cyan-500",
         inputs: [
             { name: "baseUrl", type: "string", required: true },
@@ -554,7 +523,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Fila",
         description: "Gerencia filas de processamento",
         category: "utility",
-        icon: QueueListIcon,
+        icon: "queue",
         color: "bg-indigo-500",
         inputs: [
             { name: "input", type: "any", required: true },
@@ -575,7 +544,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Agregador",
         description: "Agrega dados de múltiplas fontes",
         category: "utility",
-        icon: ChartBarIcon,
+        icon: "bar_chart",
         color: "bg-pink-500",
         inputs: [
             { name: "input", type: "array", required: true },
@@ -596,7 +565,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Logger",
         description: "Registra logs durante a execução",
         category: "utility",
-        icon: EyeIcon,
+        icon: "visibility",
         color: "bg-gray-600",
         inputs: [
             { name: "input", type: "any", required: true },
@@ -616,7 +585,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Configuração",
         description: "Gerencia configurações do workflow",
         category: "utility",
-        icon: CogIcon,
+        icon: "settings",
         color: "bg-slate-500",
         inputs: [{ name: "input", type: "any", required: false }],
         outputs: [{ name: "config", type: "object" }],
@@ -629,7 +598,7 @@ const NODE_DEFINITIONS: NodeDefinition[] = [
         name: "Segurança",
         description: "Aplica operações de segurança aos dados",
         category: "utility",
-        icon: ShieldCheckIcon,
+        icon: "shield",
         color: "bg-red-600",
         inputs: [
             { name: "input", type: "any", required: true },
@@ -688,7 +657,7 @@ export const NodeLibrary: React.FC<NodeLibraryProps> = ({ onAddNode, onClose }) 
                     onClick={onClose}
                     className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
                 >
-                    <XMarkIcon className="w-5 h-5" />
+                    <MaterialIcon icon="close" size={20} />
                 </button>
             </div>
 
@@ -699,13 +668,11 @@ export const NodeLibrary: React.FC<NodeLibraryProps> = ({ onAddNode, onClose }) 
 
                     return (
                         <div key={categoryKey}>
-                            <h3 className={`text-sm font-medium ${category.color} mb-3`}>
-                                {category.name}
-                            </h3>
+                            <h3 className={`text-sm font-medium ${category.color} mb-3`}>{category.name}</h3>
 
                             <div className="space-y-2">
                                 {nodes.map((node) => {
-                                    const IconComponent = node.icon;
+                                    const iconName = node.icon;
 
                                     return (
                                         <button
@@ -714,10 +681,8 @@ export const NodeLibrary: React.FC<NodeLibraryProps> = ({ onAddNode, onClose }) 
                                             className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors group"
                                         >
                                             <div className="flex items-start space-x-3">
-                                                <div
-                                                    className={`p-2 ${node.color} text-white rounded-lg`}
-                                                >
-                                                    <IconComponent className="w-4 h-4" />
+                                                <div className={`p-2 ${node.color} text-white rounded-lg`}>
+                                                    <MaterialIcon icon={iconName} size={16} />
                                                 </div>
 
                                                 <div className="flex-1 min-w-0">
@@ -741,12 +706,12 @@ export const NodeLibrary: React.FC<NodeLibraryProps> = ({ onAddNode, onClose }) 
             {/* Footer com dica */}
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-blue-50 border-t border-blue-200">
                 <div className="flex items-start space-x-2">
-                    <BoltIcon className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <MaterialIcon icon="bolt" className="text-blue-500 mt-0.5 flex-shrink-0" size={20} />
                     <div>
                         <p className="text-sm font-medium text-blue-900">Dica</p>
                         <p className="text-xs text-blue-700">
-                            Clique em um node para adicioná-lo ao canvas. Conecte-os arrastando das
-                            saídas para as entradas.
+                            Clique em um node para adicioná-lo ao canvas. Conecte-os arrastando das saídas para as
+                            entradas.
                         </p>
                     </div>
                 </div>

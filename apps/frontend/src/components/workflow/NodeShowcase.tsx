@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Node } from "reactflow";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import { nodeTypes } from "./nodeTypes";
 
 interface NodeShowcaseProps {
@@ -208,9 +208,7 @@ export const NodeShowcase: React.FC<NodeShowcaseProps> = ({ isOpen, onClose, onA
 
     // Filtrar nós por categoria
     const filteredNodes =
-        selectedCategory === "all"
-            ? demoNodes
-            : demoNodes.filter((node) => node.category === selectedCategory);
+        selectedCategory === "all" ? demoNodes : demoNodes.filter((node) => node.category === selectedCategory);
 
     const handleAddNode = (node: (typeof demoNodes)[0]) => {
         onAddNode(node.category, {
@@ -230,7 +228,7 @@ export const NodeShowcase: React.FC<NodeShowcaseProps> = ({ isOpen, onClose, onA
                         onClick={onClose}
                         className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
                     >
-                        <XMarkIcon className="w-6 h-6" />
+                        <MaterialIcon icon="close" className="text-gray-400" size={24} />
                     </button>
                 </div>
 
@@ -277,7 +275,8 @@ export const NodeShowcase: React.FC<NodeShowcaseProps> = ({ isOpen, onClose, onA
                                 >
                                     {/* Node Preview */}
                                     <div className="mb-3 transform scale-75 origin-top-left">
-                                        <NodeComponent {...demoNode} selected={false} />
+                                        {/* demoNode may lack some runtime props expected by the node wrapper; cast to any for preview */}
+                                        <NodeComponent {...(demoNode as any)} selected={false} />
                                     </div>
 
                                     {/* Node Info */}
@@ -285,9 +284,7 @@ export const NodeShowcase: React.FC<NodeShowcaseProps> = ({ isOpen, onClose, onA
                                         <h3 className="font-medium text-gray-900 group-hover:text-blue-600">
                                             {node.name}
                                         </h3>
-                                        <p className="text-sm text-gray-600 mt-1">
-                                            {node.description}
-                                        </p>
+                                        <p className="text-sm text-gray-600 mt-1">{node.description}</p>
                                         <div className="mt-2">
                                             <span
                                                 className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
@@ -300,11 +297,7 @@ export const NodeShowcase: React.FC<NodeShowcaseProps> = ({ isOpen, onClose, onA
                                                             : "bg-gray-100 text-gray-700"
                                                 }`}
                                             >
-                                                {
-                                                    categories[
-                                                        node.category as keyof typeof categories
-                                                    ].name
-                                                }
+                                                {categories[node.category as keyof typeof categories].name}
                                             </span>
                                         </div>
                                     </div>
@@ -317,8 +310,7 @@ export const NodeShowcase: React.FC<NodeShowcaseProps> = ({ isOpen, onClose, onA
                 {/* Footer */}
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
                     <p className="text-sm text-gray-600">
-                        Clique em um nó para adicioná-lo ao canvas. Use a biblioteca lateral para
-                        mais opções.
+                        Clique em um nó para adicioná-lo ao canvas. Use a biblioteca lateral para mais opções.
                     </p>
                 </div>
             </div>

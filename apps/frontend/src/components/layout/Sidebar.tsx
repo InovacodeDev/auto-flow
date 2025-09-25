@@ -1,13 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import {
-    HomeIcon,
-    Squares2X2Icon,
-    ServerIcon,
-    ChartBarIcon,
-    PuzzlePieceIcon,
-    BoltIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
+import { FullLogo } from "../../assets/logo";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -15,12 +9,12 @@ interface SidebarProps {
 }
 
 const items = [
-    { id: "dashboard", label: "Dashboard", to: "/dashboard", Icon: HomeIcon },
-    { id: "workflows", label: "Workflows", to: "/workflows", Icon: Squares2X2Icon },
-    { id: "integrations", label: "Integrações", to: "/integrations", Icon: ServerIcon },
-    { id: "analytics", label: "Analytics", to: "/analytics", Icon: ChartBarIcon },
-    { id: "builder", label: "Constructor Visual", to: "/workflow-builder", Icon: PuzzlePieceIcon },
-    { id: "ai", label: "AI Chat", to: "/ai-chat", Icon: BoltIcon },
+    { id: "dashboard", label: "Dashboard", to: "/dashboard", icon: "home" },
+    { id: "workflows", label: "Workflows", to: "/workflows", icon: "hub" },
+    { id: "integrations", label: "Integrações", to: "/integrations", icon: "integration_instructions" },
+    { id: "analytics", label: "Analytics", to: "/analytics", icon: "analytics" },
+    { id: "builder", label: "Constructor Visual", to: "/workflow-builder", icon: "account_tree" },
+    { id: "ai", label: "AI Chat", to: "/ai-chat", icon: "smart_toy" },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
@@ -57,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             aria-label="Main navigation"
         >
             <div className="h-16 flex items-center px-4 border-b">
-                <h2 className="text-lg font-semibold">AutoFlow</h2>
+                <FullLogo className="h-6 w-auto" color="#1f2937" />
             </div>
             <nav className="p-4">
                 <ul className="space-y-2">
@@ -76,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                                     }`}
                                 >
                                     {/* Icon */}
-                                    <item.Icon className="h-5 w-5 mr-3 text-gray-500" aria-hidden="true" />
+                                    <MaterialIcon icon={item.icon} className="mr-3 text-gray-500" size={20} />
                                     <span>{item.label}</span>
                                 </Link>
                             </li>

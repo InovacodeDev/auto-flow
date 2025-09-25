@@ -4,6 +4,9 @@ import HomePage from "./pages/HomePage";
 import TestPage from "./pages/TestPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import FeaturesPage from "./pages/FeaturesPage";
+import IntegrationsPagePublic from "./pages/IntegrationsPagePublic";
+import PricingPage from "./pages/PricingPage";
 import { Sidebar } from "lucide-react";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import AIChatPage from "./pages/AIChatPage";
@@ -61,6 +64,27 @@ const registerRoute = createRoute({
     component: RegisterPage,
 });
 
+// Create features route
+const featuresRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/features",
+    component: FeaturesPage,
+});
+
+// Create integrations route
+const integrationsPublicRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/integrations",
+    component: IntegrationsPagePublic,
+});
+
+// Create pricing route
+const pricingRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/pricing",
+    component: PricingPage,
+});
+
 // Create main app layout route
 const appRoute = createRoute({
     getParentRoute: () => rootRoute,
@@ -109,6 +133,9 @@ const routeTree = rootRoute.addChildren([
     homeRoute,
     loginRoute,
     registerRoute,
+    featuresRoute,
+    integrationsPublicRoute,
+    pricingRoute,
     appRoute.addChildren([
         dashboardRoute,
         workflowBuilderRoute,

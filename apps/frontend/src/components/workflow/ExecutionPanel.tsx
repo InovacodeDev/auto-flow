@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-    PlayIcon,
-    ClockIcon,
-    CheckCircleIcon,
-    XCircleIcon,
-    ExclamationTriangleIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import {
     useExecuteWorkflow,
     useWorkflowExecutions,
@@ -50,15 +44,15 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = ({ workflowId, isOp
     const getStatusIcon = (status: string) => {
         switch (status) {
             case "running":
-                return <ClockIcon className="w-5 h-5 text-blue-500 animate-spin" />;
+                return <MaterialIcon icon="schedule" className="text-blue-500 animate-spin" size={20} />;
             case "success":
-                return <CheckCircleIcon className="w-5 h-5 text-green-500" />;
+                return <MaterialIcon icon="check_circle" className="text-green-500" size={20} />;
             case "failed":
-                return <XCircleIcon className="w-5 h-5 text-red-500" />;
+                return <MaterialIcon icon="cancel" className="text-red-500" size={20} />;
             case "cancelled":
-                return <ExclamationTriangleIcon className="w-5 h-5 text-yellow-500" />;
+                return <MaterialIcon icon="warning" className="text-yellow-500" size={20} />;
             default:
-                return <ClockIcon className="w-5 h-5 text-gray-500" />;
+                return <MaterialIcon icon="schedule" className="text-gray-500" size={20} />;
         }
     };
 
@@ -106,7 +100,7 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = ({ workflowId, isOp
                                 disabled={executeWorkflow.isPending}
                                 className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                <PlayIcon className="w-4 h-4" />
+                                <MaterialIcon icon="play_arrow" size={16} />
                                 <span>{executeWorkflow.isPending ? "Executando..." : "Executar Agora"}</span>
                             </button>
                             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -179,7 +173,7 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = ({ workflowId, isOp
                                 </div>
                             ) : (
                                 <div className="text-center py-8 text-gray-500">
-                                    <PlayIcon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                                    <MaterialIcon icon="play_arrow" className="mx-auto mb-3 text-gray-300" size={48} />
                                     <p>Nenhuma execução encontrada</p>
                                     <p className="text-sm">Execute o workflow para ver o histórico</p>
                                 </div>
@@ -275,7 +269,7 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = ({ workflowId, isOp
                         ) : (
                             <div className="flex items-center justify-center h-full text-gray-500">
                                 <div className="text-center">
-                                    <ClockIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                                    <MaterialIcon icon="schedule" className="mx-auto mb-4 text-gray-300" size={64} />
                                     <p>Selecione uma execução para ver os logs</p>
                                 </div>
                             </div>

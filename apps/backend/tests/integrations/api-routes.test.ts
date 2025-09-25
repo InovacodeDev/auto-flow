@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
+/// <reference types="jest" />
 import request from "supertest";
 import Fastify from "fastify";
 import { authRoutes } from "../../src/routes/auth";

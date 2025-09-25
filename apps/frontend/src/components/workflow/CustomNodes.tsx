@@ -1,18 +1,10 @@
 import React from "react";
 import { Handle, Position, NodeProps } from "reactflow";
-import {
-    PlayIcon,
-    GlobeAltIcon,
-    ClockIcon,
-    EnvelopeIcon,
-    DocumentTextIcon,
-    FunnelIcon,
-    BoltIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 
 // Base Node Component
 interface BaseNodeProps extends NodeProps {
-    icon: React.ComponentType<{ className?: string }>;
+    icon: string;
     color: string;
     title: string;
     subtitle?: string;
@@ -23,7 +15,7 @@ interface BaseNodeProps extends NodeProps {
 const BaseNode: React.FC<BaseNodeProps> = ({
     data,
     selected,
-    icon: Icon,
+    icon,
     color,
     title,
     subtitle,
@@ -38,7 +30,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         >
             {/* Header */}
             <div className={`flex items-center space-x-2 p-3 ${color} text-white rounded-t-lg`}>
-                <Icon className="w-4 h-4" />
+                <MaterialIcon icon={icon} size={16} />
                 <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{data?.name || title}</p>
                     {subtitle && <p className="text-xs opacity-90 truncate">{subtitle}</p>}
@@ -110,11 +102,11 @@ export const TriggerNode = ({ ...props }: NodeProps) => {
     const getIcon = () => {
         switch (props.data?.nodeType) {
             case "webhook_trigger":
-                return GlobeAltIcon;
+                return "public";
             case "schedule_trigger":
-                return ClockIcon;
+                return "schedule";
             default:
-                return PlayIcon;
+                return "play_arrow";
         }
     };
 
@@ -146,13 +138,13 @@ export const ActionNode = ({ ...props }: NodeProps) => {
     const getIcon = () => {
         switch (props.data?.nodeType) {
             case "http_request":
-                return GlobeAltIcon;
+                return "public";
             case "send_email":
-                return EnvelopeIcon;
+                return "email";
             case "database_save":
-                return DocumentTextIcon;
+                return "description";
             default:
-                return BoltIcon;
+                return "bolt";
         }
     };
 
@@ -187,7 +179,7 @@ export const ConditionNode = ({ ...props }: NodeProps) => {
     return (
         <BaseNode
             {...props}
-            icon={FunnelIcon}
+            icon="filter_list"
             color="bg-yellow-500"
             title="Condição"
             subtitle={props.data?.condition ? "IF/ELSE" : "Sem condição"}
@@ -205,9 +197,9 @@ export const UtilityNode: React.FC<NodeProps> = (props) => {
     const getIcon = () => {
         switch (props.data?.nodeType) {
             case "delay":
-                return ClockIcon;
+                return "schedule";
             default:
-                return BoltIcon;
+                return "bolt";
         }
     };
 

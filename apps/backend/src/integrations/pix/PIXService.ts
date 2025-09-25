@@ -35,6 +35,9 @@ export interface PIXWebhookData {
     action: string;
     data: {
         id: string;
+        status?: string;
+        external_reference?: string;
+        transaction_amount?: number;
     };
 }
 
@@ -155,6 +158,11 @@ export class PIXService {
         }
     }
 
+    // Backwards-compatible alias for older tests
+    async createPayment(request: PIXPaymentRequest): Promise<PIXPaymentResponse> {
+        return this.createPIXPayment(request);
+    }
+
     /**
      * Consulta o status de um pagamento PIX
      */
@@ -195,6 +203,7 @@ export class PIXService {
         paymentId: string;
         status: string;
         processedAt: Date;
+        processed: boolean;
     }> {
         try {
             console.log("Processando webhook PIX:", webhookData);
@@ -221,6 +230,7 @@ export class PIXService {
                 paymentId,
                 status: paymentDetails.status,
                 processedAt: new Date(),
+                processed: true,
             };
         } catch (error) {
             console.error("Erro ao processar webhook:", error);

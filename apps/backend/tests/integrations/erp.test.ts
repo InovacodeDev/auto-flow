@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
+/// <reference types="jest" />
 import { ERPIntegrationService } from "../../src/integrations/erp/ERPIntegrationService";
 
 // Mock fetch

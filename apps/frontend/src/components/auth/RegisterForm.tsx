@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuthEnhanced } from "../../hooks/useAuthEnhanced";
 import type { RegisterData } from "../../stores/authStore";
+import { FullLogo } from "../../assets/logo";
 
 /**
  * Componente de registro do AutoFlow
@@ -139,7 +140,11 @@ export const RegisterForm: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl w-full space-y-8">
                 <div className="text-center">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">AutoFlow</h1>
+                    <Link to="/" className="inline-block hover:opacity-80 transition-opacity">
+                        <div className="flex justify-center mb-2">
+                            <FullLogo className="h-12 w-auto" color="#1f2937" />
+                        </div>
+                    </Link>
                     <h2 className="text-xl text-gray-600 mb-8">Crie sua conta gratuitamente</h2>
                 </div>
 

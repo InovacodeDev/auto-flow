@@ -1,16 +1,11 @@
 import React, { useState } from "react";
-import {
-    ChatBubbleLeftRightIcon,
-    PlusIcon,
-    TrashIcon,
-    ClockIcon,
-    SparklesIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import { ConversationSession } from "../../services/aiService";
 
 interface ConversationHistoryProps {
     conversations: ConversationSession[];
-    activeConversationId?: string;
+    // allow null because callers may pass null when nothing is selected
+    activeConversationId?: string | null;
     onSelectConversation: (conversationId: string) => void;
     onNewConversation: () => void;
     onDeleteConversation: (conversationId: string) => void;
@@ -60,7 +55,7 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
 
     const getConversationIcon = (conversation: ConversationSession) => {
         const hasWorkflow = conversation.messages.some((msg) => msg.metadata?.workflowGenerated);
-        return hasWorkflow ? SparklesIcon : ChatBubbleLeftRightIcon;
+        return hasWorkflow ? "auto_awesome" : "chat";
     };
 
     return (
@@ -74,7 +69,7 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
                         className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                         title="Nova conversa"
                     >
-                        <PlusIcon className="w-5 h-5" />
+                        <MaterialIcon icon="add" className="text-current" size={20} />
                     </button>
                 </div>
             </div>
@@ -83,7 +78,7 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
             <div className="flex-1 overflow-y-auto">
                 {conversations.length === 0 ? (
                     <div className="p-4 text-center">
-                        <ChatBubbleLeftRightIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <MaterialIcon icon="chat" className="text-gray-400 mx-auto mb-3" size={48} />
                         <p className="text-sm text-gray-600 mb-4">Nenhuma conversa ainda</p>
                         <button
                             onClick={onNewConversation}
@@ -97,7 +92,7 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
                         {conversations.map((conversation) => {
                             const isActive = conversation.sessionId === activeConversationId;
                             const isHovered = hoveredConversation === conversation.sessionId;
-                            const IconComponent = getConversationIcon(conversation);
+                            const iconName = getConversationIcon(conversation);
 
                             return (
                                 <div
@@ -108,9 +103,7 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
                                             : "hover:bg-gray-50 border border-transparent"
                                     }`}
                                     onClick={() => onSelectConversation(conversation.sessionId)}
-                                    onMouseEnter={() =>
-                                        setHoveredConversation(conversation.sessionId)
-                                    }
+                                    onMouseEnter={() => setHoveredConversation(conversation.sessionId)}
                                     onMouseLeave={() => setHoveredConversation(null)}
                                 >
                                     <div className="flex items-start space-x-3">
@@ -119,10 +112,10 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
                                                 isActive ? "bg-blue-100" : "bg-gray-100"
                                             }`}
                                         >
-                                            <IconComponent
-                                                className={`w-4 h-4 ${
-                                                    isActive ? "text-blue-600" : "text-gray-600"
-                                                }`}
+                                            <MaterialIcon
+                                                icon={iconName}
+                                                className={`${isActive ? "text-blue-600" : "text-gray-600"}`}
+                                                size={16}
                                             />
                                         </div>
 
@@ -133,10 +126,7 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
                                                         isActive ? "text-blue-900" : "text-gray-900"
                                                     }`}
                                                 >
-                                                    Conversa{" "}
-                                                    {conversation.sessionId
-                                                        .split("_")[2]
-                                                        ?.slice(-4) || "Nova"}
+                                                    Conversa {conversation.sessionId.split("_")[2]?.slice(-4) || "Nova"}
                                                 </h3>
                                                 <div className="flex items-center space-x-2">
                                                     <span className="text-xs text-gray-500">
@@ -146,14 +136,16 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                onDeleteConversation(
-                                                                    conversation.sessionId
-                                                                );
+                                                                onDeleteConversation(conversation.sessionId);
                                                             }}
                                                             className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                                                             title="Excluir conversa"
                                                         >
-                                                            <TrashIcon className="w-3 h-3" />
+                                                            <MaterialIcon
+                                                                icon="delete"
+                                                                className="text-current"
+                                                                size={12}
+                                                            />
                                                         </button>
                                                     )}
                                                 </div>
@@ -169,17 +161,19 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
 
                                             <div className="flex items-center space-x-2 mt-2">
                                                 <div className="flex items-center space-x-1 text-xs text-gray-500">
-                                                    <ClockIcon className="w-3 h-3" />
-                                                    <span>
-                                                        {conversation.messages.length} mensagens
-                                                    </span>
+                                                    <MaterialIcon icon="schedule" className="text-current" size={12} />
+                                                    <span>{conversation.messages.length} mensagens</span>
                                                 </div>
 
                                                 {conversation.messages.some(
                                                     (msg) => msg.metadata?.workflowGenerated
                                                 ) && (
                                                     <div className="flex items-center space-x-1 text-xs text-green-600">
-                                                        <SparklesIcon className="w-3 h-3" />
+                                                        <MaterialIcon
+                                                            icon="auto_awesome"
+                                                            className="text-current"
+                                                            size={12}
+                                                        />
                                                         <span>Workflow</span>
                                                     </div>
                                                 )}

@@ -27,7 +27,7 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
         triggers: z.array(z.any()),
         actions: z.array(z.any()),
         conditions: z.array(z.any()).optional(),
-        metadata: z.record(z.any()).optional(),
+        metadata: z.record(z.string(), z.any()).optional(),
     });
 
     const updateWorkflowSchema = z.object({
@@ -35,13 +35,7 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
         description: z.string().optional(),
     });
 
-    const canvasSaveSchema = z.object({
-        name: z.string().min(1),
-        description: z.string().optional(),
-        canvasData: z.record(z.any()).optional(),
-        nodes: z.array(z.any()),
-        edges: z.array(z.any()),
-    });
+    // Canvas schema removed (not currently used). If needed, reintroduce when canvas save endpoint is implemented.
     // GET /api/workflows - List workflows for organization
     fastify.get(
         "/",
@@ -307,6 +301,13 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
                             message: { type: "string" },
                         },
                     },
+                    500: {
+                        type: "object",
+                        properties: {
+                            error: { type: "string" },
+                            message: { type: "string" },
+                        },
+                    },
                 },
             },
         },
@@ -405,7 +406,7 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
                 };
             } catch (error) {
                 fastify.log.error(`Erro ao executar workflow: ${error}`);
-                return reply.status(500).send({
+                return reply.code(500).send({
                     error: "EXECUTION_ERROR",
                     message: error instanceof Error ? error.message : "Erro interno do servidor",
                 });
@@ -720,7 +721,8 @@ export const workflowRoutes: FastifyPluginAsync = async (fastify) => {
             const organizationId = "temp-org-id";
 
             // Base query
-            let query = db
+            // Drizzle types are narrow here; cast to any for flexible query building
+            let query: any = db
                 .select({
                     id: workflowExecutions.id,
                     status: workflowExecutions.status,

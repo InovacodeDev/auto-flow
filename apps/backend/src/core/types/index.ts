@@ -314,7 +314,7 @@ export class AutoFlowError extends Error {
 export const WorkflowTriggerSchema = z.object({
     id: z.string(),
     type: z.enum(["whatsapp_received", "webhook", "schedule", "manual", "email_received", "form_submitted"]),
-    config: z.record(z.any()),
+    config: z.record(z.string(), z.any()),
     enabled: z.boolean(),
 });
 
@@ -329,7 +329,7 @@ export const WorkflowActionSchema = z.object({
         "delay",
         "condition_check",
     ]),
-    config: z.record(z.any()),
+    config: z.record(z.string(), z.any()),
     position: z.object({
         x: z.number(),
         y: z.number(),
@@ -357,5 +357,5 @@ export const AutoFlowWorkflowSchema = z.object({
             language: z.literal("pt-BR"),
             industry: z.string(),
         })
-        .and(z.record(z.any())),
+        .and(z.record(z.string(), z.any())),
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { SparklesIcon } from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 
 export const TypingIndicator: React.FC = () => {
     return (
@@ -7,7 +7,7 @@ export const TypingIndicator: React.FC = () => {
             <div className="flex items-start space-x-3 max-w-3xl">
                 {/* Avatar */}
                 <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gray-50 border border-gray-200">
-                    <SparklesIcon className="w-5 h-5 text-purple-600" />
+                    <MaterialIcon icon="auto_awesome" className="text-purple-600" size={20} />
                 </div>
 
                 {/* Typing Animation */}

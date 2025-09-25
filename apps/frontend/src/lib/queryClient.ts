@@ -53,8 +53,7 @@ export const queryKeys = {
         health: () => [...queryKeys.integrations.all, "health"] as const,
         stats: () => [...queryKeys.integrations.all, "stats"] as const,
         overview: () => [...queryKeys.integrations.all, "overview"] as const,
-        operations: (filters?: any) =>
-            [...queryKeys.integrations.all, "operations", filters] as const,
+        operations: (filters?: any) => [...queryKeys.integrations.all, "operations", filters] as const,
     },
     analytics: {
         all: ["analytics"] as const,
@@ -101,7 +100,7 @@ export const prefetchUserProfile = async (accessToken: string) => {
         queryKey: queryKeys.auth.profile(),
         queryFn: async () => {
             const response = await fetch(
-                `${import.meta.env.VITE_API_URL || "http://localhost:3001/api"}/auth/me`,
+                `${(import.meta as any).env?.VITE_API_URL || "http://localhost:3001/api"}/auth/me`,
                 {
                     method: "GET",
                     headers: {

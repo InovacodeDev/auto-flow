@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import WorkflowCanvas from "../components/workflow/WorkflowCanvas";
 import AIChat from "../components/ai-chat/AIChat";
-import { SparklesIcon } from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../components/ui/MaterialIcon";
 
 const WorkflowBuilder: React.FC = () => {
     // Para teste, vamos usar um ID fixo
@@ -30,7 +30,7 @@ const WorkflowBuilder: React.FC = () => {
                 className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center justify-center z-40"
                 title="Assistente IA - Crie workflows com linguagem natural"
             >
-                <SparklesIcon className="w-6 h-6" />
+                <MaterialIcon icon="auto_awesome" className="text-white" size={24} />
             </button>
 
             {/* Chat da IA */}

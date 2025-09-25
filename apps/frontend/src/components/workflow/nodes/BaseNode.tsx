@@ -1,11 +1,6 @@
 import React from "react";
 import { Handle, Position, NodeProps } from "reactflow";
-import {
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    ClockIcon,
-    XCircleIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../../ui/MaterialIcon";
 
 export interface NodeStatus {
     status: "idle" | "running" | "success" | "error" | "warning";
@@ -13,7 +8,7 @@ export interface NodeStatus {
 }
 
 export interface BaseNodeProps extends NodeProps {
-    icon: React.ComponentType<{ className?: string }>;
+    icon: string;
     color: string;
     title: string;
     subtitle?: string;
@@ -28,7 +23,7 @@ export interface BaseNodeProps extends NodeProps {
 const BaseNode: React.FC<BaseNodeProps> = ({
     data,
     selected,
-    icon: Icon,
+    icon,
     color,
     title,
     subtitle,
@@ -44,13 +39,13 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
         switch (status.status) {
             case "running":
-                return <ClockIcon className="w-3 h-3 text-blue-500 animate-spin" />;
+                return <MaterialIcon icon="schedule" className="text-blue-500 animate-spin" size={12} />;
             case "success":
-                return <CheckCircleIcon className="w-3 h-3 text-green-500" />;
+                return <MaterialIcon icon="check_circle" className="text-green-500" size={12} />;
             case "error":
-                return <XCircleIcon className="w-3 h-3 text-red-500" />;
+                return <MaterialIcon icon="cancel" className="text-red-500" size={12} />;
             case "warning":
-                return <ExclamationTriangleIcon className="w-3 h-3 text-yellow-500" />;
+                return <MaterialIcon icon="warning" className="text-yellow-500" size={12} />;
             default:
                 return null;
         }
@@ -81,21 +76,17 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         >
             {/* Header */}
             <div className={`flex items-center space-x-2 p-3 ${color} text-white rounded-t-lg`}>
-                <Icon className="w-4 h-4" />
+                <MaterialIcon icon={icon} size={16} />
                 <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{data?.name || title}</p>
                     {subtitle && <p className="text-xs opacity-90 truncate">{subtitle}</p>}
                 </div>
-                {showStatus && status && (
-                    <div className="flex items-center space-x-1">{getStatusIcon()}</div>
-                )}
+                {showStatus && status && <div className="flex items-center space-x-1">{getStatusIcon()}</div>}
             </div>
 
             {/* Content */}
             <div className="p-3">
-                {data?.description && (
-                    <p className="text-xs text-gray-600 mb-2 line-clamp-2">{data.description}</p>
-                )}
+                {data?.description && <p className="text-xs text-gray-600 mb-2 line-clamp-2">{data.description}</p>}
 
                 {/* Configuration Summary */}
                 {data?.config && (
@@ -117,9 +108,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
                 {/* Status Message */}
                 {status?.message && (
-                    <div className="text-xs text-gray-600 bg-gray-100 p-2 rounded">
-                        {status.message}
-                    </div>
+                    <div className="text-xs text-gray-600 bg-gray-100 p-2 rounded">{status.message}</div>
                 )}
 
                 {/* Configuration Indicator */}

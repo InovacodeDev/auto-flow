@@ -72,6 +72,7 @@ export interface CreateActivityRequest {
     description?: string;
     contactId?: string;
     dealId?: string;
+    leadId?: string; // backward-compatibility alias used by some tests
     dueDate?: Date;
 }
 
@@ -177,6 +178,18 @@ export class CRMIntegrationService {
         }
     }
 
+    // Backwards-compatible alias: some tests call createLead
+    async createLead(request: any): Promise<CRMDeal | CRMContact> {
+        // If request looks like a contact, forward to createContact
+        if (request && request.email && request.name) {
+            const contact = await this.createContact(request as CreateContactRequest);
+            return contact;
+        }
+
+        // Otherwise, treat as deal
+        return this.createDeal(request as CreateDealRequest);
+    }
+
     /**
      * Atualizar status da oportunidade
      */
@@ -225,6 +238,13 @@ export class CRMIntegrationService {
                 `Falha ao criar atividade: ${error instanceof Error ? error.message : "Erro desconhecido"}`
             );
         }
+    }
+
+    // Backwards-compatibility: updateOpportunity maps to updateDealStatus
+    async updateOpportunity(dealId: string, payload: { status?: string; stage?: string }): Promise<CRMDeal> {
+        const status = payload.status as any;
+        const stage = payload.stage as any;
+        return this.updateDealStatus(dealId, status || "open", stage);
     }
 
     /**

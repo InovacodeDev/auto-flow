@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useAuthEnhanced } from "../../hooks/useAuthEnhanced";
 import type { LoginCredentials } from "../../stores/authStore";
+import { FullLogo } from "../../assets/logo";
 
 interface LoginSearchParams {
     redirect?: string;
@@ -50,7 +51,11 @@ export const LoginForm: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
             <div className="max-w-md w-full space-y-8 p-8">
                 <div className="text-center">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">AutoFlow</h1>
+                    <Link to="/" className="inline-block hover:opacity-80 transition-opacity">
+                        <div className="flex justify-center mb-2">
+                            <FullLogo className="h-12 w-auto" color="#1f2937" />
+                        </div>
+                    </Link>
                     <h2 className="text-xl text-gray-600 mb-8">Entre na sua conta</h2>
                 </div>
 

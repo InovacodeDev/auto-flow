@@ -1,8 +1,7 @@
-import React, { useCallback, useState, useRef, useEffect } from "react";
+import React, { useCallback, useState } from "react";
 import ReactFlow, {
     Node,
     Edge,
-    Connection,
     Controls,
     MiniMap,
     Background,
@@ -38,11 +37,7 @@ interface WorkflowCanvasProps {
     onSave?: (nodes: Node[], edges: Edge[]) => void;
 }
 
-const WorkflowCanvasInner: React.FC<WorkflowCanvasProps> = ({
-    workflowId,
-    readOnly = false,
-    onSave,
-}) => {
+const WorkflowCanvasInner: React.FC<WorkflowCanvasProps> = ({ workflowId, readOnly = false, onSave }) => {
     const reactFlowInstance = useReactFlow();
     const [isHelpOpen, setIsHelpOpen] = useState(false);
     const [isShowcaseOpen, setIsShowcaseOpen] = useState(false);
@@ -53,8 +48,6 @@ const WorkflowCanvasInner: React.FC<WorkflowCanvasProps> = ({
         nodes,
         edges,
         selectedNode,
-        workflowName,
-        setWorkflowName,
         isLibraryOpen,
         setIsLibraryOpen,
         isInspectorOpen,
@@ -74,10 +67,7 @@ const WorkflowCanvasInner: React.FC<WorkflowCanvasProps> = ({
         saveWorkflow,
         clearCanvas,
         loadTemplate,
-        isLoading,
-        error,
         isSaving,
-        saveError,
         canExecute,
         hasChanges,
     } = useWorkflowCanvas(workflowId);
@@ -127,9 +117,7 @@ const WorkflowCanvasInner: React.FC<WorkflowCanvasProps> = ({
 
             <div className="flex h-full pt-16">
                 {/* Biblioteca de nodes */}
-                {isLibraryOpen && (
-                    <NodeLibrary onAddNode={addNode} onClose={() => setIsLibraryOpen(false)} />
-                )}
+                {isLibraryOpen && <NodeLibrary onAddNode={addNode} onClose={() => setIsLibraryOpen(false)} />}
 
                 {/* Canvas principal */}
                 <div className="flex-1 relative">
@@ -164,18 +152,10 @@ const WorkflowCanvasInner: React.FC<WorkflowCanvasProps> = ({
                         />
 
                         {/* Background pattern */}
-                        <Background
-                            variant={BackgroundVariant.Dots}
-                            gap={20}
-                            size={1}
-                            color="#d1d5db"
-                        />
+                        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#d1d5db" />
 
                         {/* Panel de informações */}
-                        <Panel
-                            position="top-center"
-                            className="bg-white px-4 py-2 rounded-lg shadow-md border"
-                        >
+                        <Panel position="top-center" className="bg-white px-4 py-2 rounded-lg shadow-md border">
                             <div className="flex items-center space-x-4 text-sm text-gray-600">
                                 <span>Nodes: {nodes.length}</span>
                                 <span>Conexões: {edges.length}</span>
@@ -184,15 +164,8 @@ const WorkflowCanvasInner: React.FC<WorkflowCanvasProps> = ({
                         </Panel>
 
                         {/* Status do workflow */}
-                        <Panel
-                            position="top-left"
-                            className="bg-white px-4 py-2 rounded-lg shadow-md border"
-                        >
-                            <WorkflowStatus
-                                status="draft"
-                                hasChanges={hasChanges}
-                                isSaving={isSaving}
-                            />
+                        <Panel position="top-left" className="bg-white px-4 py-2 rounded-lg shadow-md border">
+                            <WorkflowStatus status="draft" hasChanges={hasChanges} isSaving={isSaving} />
                         </Panel>
                     </ReactFlow>
                 </div>
@@ -234,11 +207,7 @@ const WorkflowCanvasInner: React.FC<WorkflowCanvasProps> = ({
             <WorkflowHelp isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
 
             {/* Galeria de nós */}
-            <NodeShowcase
-                isOpen={isShowcaseOpen}
-                onClose={() => setIsShowcaseOpen(false)}
-                onAddNode={addNode}
-            />
+            <NodeShowcase isOpen={isShowcaseOpen} onClose={() => setIsShowcaseOpen(false)} onAddNode={addNode} />
 
             {/* Monitor de execução */}
             <ExecutionMonitor

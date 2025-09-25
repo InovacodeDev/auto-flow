@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-    DocumentDuplicateIcon,
-    ClockIcon,
-    UserIcon,
-    TagIcon,
-    EyeIcon,
-    ArrowPathIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 
 interface WorkflowVersion {
     id: string;
@@ -118,7 +111,7 @@ export const WorkflowVersioning: React.FC<WorkflowVersioningProps> = ({
                         onClick={onCreateVersion}
                         className="flex items-center space-x-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                        <DocumentDuplicateIcon className="w-4 h-4" />
+                        <MaterialIcon icon="content_copy" size={16} />
                         <span>Nova Versão</span>
                     </button>
                 </div>
@@ -145,7 +138,7 @@ export const WorkflowVersioning: React.FC<WorkflowVersioningProps> = ({
                         {/* Version Header */}
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                                <TagIcon className="w-4 h-4 text-gray-500" />
+                                <MaterialIcon icon="tag" className="text-gray-500" size={16} />
                                 <span className="font-medium text-gray-900">v{version.version}</span>
                                 <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(version.status)}`}>
                                     {version.status === "active"
@@ -164,7 +157,7 @@ export const WorkflowVersioning: React.FC<WorkflowVersioningProps> = ({
                                     className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                                     title="Restaurar esta versão"
                                 >
-                                    <ArrowPathIcon className="w-4 h-4" />
+                                    <MaterialIcon icon="restore" size={16} />
                                 </button>
                             )}
                         </div>
@@ -176,15 +169,15 @@ export const WorkflowVersioning: React.FC<WorkflowVersioningProps> = ({
                         {/* Metadata */}
                         <div className="space-y-1 text-xs text-gray-500">
                             <div className="flex items-center space-x-1">
-                                <ClockIcon className="w-3 h-3" />
+                                <MaterialIcon icon="schedule" size={12} />
                                 <span>{formatDate(version.createdAt)}</span>
                             </div>
                             <div className="flex items-center space-x-1">
-                                <UserIcon className="w-3 h-3" />
+                                <MaterialIcon icon="person" size={12} />
                                 <span>{version.createdBy}</span>
                             </div>
                             <div className="flex items-center space-x-1">
-                                <EyeIcon className="w-3 h-3" />
+                                <MaterialIcon icon="visibility" size={12} />
                                 <span>{version.nodeCount} nodes</span>
                             </div>
                         </div>

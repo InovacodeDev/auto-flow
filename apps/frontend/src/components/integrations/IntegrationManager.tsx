@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { CheckCircleIcon, ExclamationCircleIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 
 interface Integration {
     id: string;
@@ -125,11 +125,11 @@ const IntegrationManager: React.FC = () => {
     const getStatusIcon = (status: string) => {
         switch (status) {
             case "configured":
-                return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
+                return <MaterialIcon icon="check_circle" className="text-green-500" size={20} />;
             case "error":
-                return <ExclamationCircleIcon className="h-5 w-5 text-red-500" />;
+                return <MaterialIcon icon="error" className="text-red-500" size={20} />;
             default:
-                return <Cog6ToothIcon className="h-5 w-5 text-gray-400" />;
+                return <MaterialIcon icon="settings" className="text-gray-400" size={20} />;
         }
     };
 
@@ -238,7 +238,7 @@ const IntegrationManager: React.FC = () => {
                                     onClick={() => handleConfigureIntegration(integration)}
                                     className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 >
-                                    <Cog6ToothIcon className="h-4 w-4 mr-1" />
+                                    <MaterialIcon icon="settings" className="text-white mr-1" size={16} />
                                     Configurar
                                 </button>
                             </div>

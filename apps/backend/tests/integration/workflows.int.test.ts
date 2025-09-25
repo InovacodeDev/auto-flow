@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "@jest/globals";
+/// <reference types="jest" />
 import { FastifyInstance } from "fastify";
 import { build } from "../../src/index";
 

@@ -25,10 +25,8 @@ export const useAuthStatus = () => {
  * Verifica se o token ainda é válido
  */
 export const useUserProfile = () => {
-    const { tokens, setUser, setLoading } = useAuthStore();
-    const queryClient = useQueryClient();
-
-    return useQuery({
+    const { tokens, setUser: _setUser, setLoading } = useAuthStore();
+    return useQuery<any>({
         queryKey: ["auth", "profile"],
         queryFn: async (): Promise<User> => {
             if (!tokens?.accessToken) {
@@ -51,7 +49,7 @@ export const useUserProfile = () => {
                 }
 
                 const data = await response.json();
-                setUser(data.user);
+                _setUser(data.user);
                 return data.user;
             } finally {
                 setLoading(false);
@@ -60,16 +58,12 @@ export const useUserProfile = () => {
         enabled: !!tokens?.accessToken,
         staleTime: 5 * 60 * 1000, // 5 minutes
         gcTime: 10 * 60 * 1000, // 10 minutes
-        retry: (failureCount, error) => {
-            // Don't retry on 401 (unauthorized)
-            if (error instanceof Error && error.message.includes("401")) {
-                return false;
-            }
+        retry: (failureCount: number, error: any) => {
+            if (error instanceof Error && error.message.includes("401")) return false;
             return failureCount < 3;
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("Failed to fetch user profile:", error);
-            // If profile fetch fails, clear auth state
             useAuthStore.setState({
                 user: null,
                 tokens: null,
@@ -77,17 +71,17 @@ export const useUserProfile = () => {
                 error: "Session expired",
             });
         },
-    });
+    } as any);
 };
 
 /**
  * Hook para verificar se o token precisa ser renovado
  */
 export const useTokenRefresh = () => {
-    const { tokens, setTokens, setUser } = useAuthStore();
+    const { tokens, setTokens, setUser: _setUser } = useAuthStore();
     const queryClient = useQueryClient();
 
-    return useQuery({
+    return useQuery<any>({
         queryKey: ["auth", "token-refresh"],
         queryFn: async (): Promise<AuthTokens> => {
             if (!tokens?.refreshToken) {
@@ -116,7 +110,7 @@ export const useTokenRefresh = () => {
         staleTime: 10 * 60 * 1000, // 10 minutes
         gcTime: 15 * 60 * 1000, // 15 minutes
         retry: false, // Don't retry token refresh
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("Token refresh failed:", error);
             // If refresh fails, logout user
             useAuthStore.setState({
@@ -127,7 +121,7 @@ export const useTokenRefresh = () => {
             });
             queryClient.clear();
         },
-    });
+    } as any);
 };
 
 /**

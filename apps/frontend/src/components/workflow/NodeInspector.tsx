@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-    XMarkIcon,
-    Cog6ToothIcon,
-    InformationCircleIcon,
-    TrashIcon,
-    DocumentDuplicateIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import { Node } from "reactflow";
 
 interface NodeInspectorProps {
@@ -48,7 +42,7 @@ export const NodeInspector: React.FC<NodeInspectorProps> = ({
         return (
             <div className="w-80 bg-white border-l border-gray-200 shadow-lg h-full flex items-center justify-center">
                 <div className="text-center p-6">
-                    <InformationCircleIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <MaterialIcon icon="info" className="text-gray-300 mx-auto mb-4" size={48} />
                     <p className="text-gray-500 text-sm">
                         Selecione um node no canvas para visualizar suas propriedades
                     </p>
@@ -381,14 +375,14 @@ export const NodeInspector: React.FC<NodeInspectorProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <div className="flex items-center space-x-2">
-                    <Cog6ToothIcon className="w-5 h-5 text-gray-600" />
+                    <MaterialIcon icon="settings" className="text-gray-600" size={20} />
                     <h2 className="text-lg font-semibold text-gray-900">Propriedades</h2>
                 </div>
                 <button
                     onClick={onClose}
                     className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
                 >
-                    <XMarkIcon className="w-5 h-5" />
+                    <MaterialIcon icon="close" size={20} />
                 </button>
             </div>
 
@@ -427,7 +421,7 @@ export const NodeInspector: React.FC<NodeInspectorProps> = ({
                         onClick={() => onDuplicateNode(selectedNode.id)}
                         className="flex-1 flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 py-2 px-3 rounded-md hover:bg-gray-200 transition-colors"
                     >
-                        <DocumentDuplicateIcon className="w-4 h-4" />
+                        <MaterialIcon icon="content_copy" size={16} />
                         <span className="text-sm">Duplicar</span>
                     </button>
 
@@ -435,7 +429,7 @@ export const NodeInspector: React.FC<NodeInspectorProps> = ({
                         onClick={() => onDeleteNode(selectedNode.id)}
                         className="flex-1 flex items-center justify-center space-x-2 bg-red-100 text-red-700 py-2 px-3 rounded-md hover:bg-red-200 transition-colors"
                     >
-                        <TrashIcon className="w-4 h-4" />
+                        <MaterialIcon icon="delete" size={16} />
                         <span className="text-sm">Excluir</span>
                     </button>
                 </div>

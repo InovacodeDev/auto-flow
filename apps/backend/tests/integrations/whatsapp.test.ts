@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, jest } from "@jest/globals";
+/// <reference types="jest" />
 import { WhatsAppIntegration } from "../../src/integrations/whatsapp/WhatsAppIntegration";
 import { WhatsAppConfig } from "../../src/core/types";
 

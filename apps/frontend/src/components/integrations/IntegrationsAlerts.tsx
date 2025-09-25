@@ -1,11 +1,5 @@
 import React from "react";
-import {
-    ExclamationTriangleIcon,
-    XCircleIcon,
-    InformationCircleIcon,
-    CheckCircleIcon,
-    ClockIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 
 interface Alert {
     type: "error" | "warning" | "info";
@@ -21,13 +15,13 @@ export const IntegrationsAlerts: React.FC<IntegrationsAlertsProps> = ({ alerts }
     const getAlertIcon = (type: string) => {
         switch (type) {
             case "error":
-                return <XCircleIcon className="w-5 h-5 text-red-500" />;
+                return <MaterialIcon icon="cancel" className="text-red-500" size={20} />;
             case "warning":
-                return <ExclamationTriangleIcon className="w-5 h-5 text-yellow-500" />;
+                return <MaterialIcon icon="warning" className="text-yellow-500" size={20} />;
             case "info":
-                return <InformationCircleIcon className="w-5 h-5 text-blue-500" />;
+                return <MaterialIcon icon="info" className="text-blue-500" size={20} />;
             default:
-                return <InformationCircleIcon className="w-5 h-5 text-gray-500" />;
+                return <MaterialIcon icon="info" className="text-gray-500" size={20} />;
         }
     };
 
@@ -74,11 +68,9 @@ export const IntegrationsAlerts: React.FC<IntegrationsAlertsProps> = ({ alerts }
         return (
             <div className="bg-white rounded-lg shadow p-6">
                 <div className="text-center">
-                    <CheckCircleIcon className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                    <MaterialIcon icon="check_circle" className="text-green-500 mx-auto mb-4" size={48} />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum alerta</h3>
-                    <p className="text-gray-600">
-                        Todas as integrações estão funcionando normalmente
-                    </p>
+                    <p className="text-gray-600">Todas as integrações estão funcionando normalmente</p>
                 </div>
             </div>
         );
@@ -95,26 +87,17 @@ export const IntegrationsAlerts: React.FC<IntegrationsAlertsProps> = ({ alerts }
 
             <div className="space-y-3">
                 {alerts.map((alert, index) => (
-                    <div
-                        key={index}
-                        className={`border rounded-lg p-4 ${getAlertColor(alert.type)}`}
-                    >
+                    <div key={index} className={`border rounded-lg p-4 ${getAlertColor(alert.type)}`}>
                         <div className="flex items-start">
                             <div className="flex-shrink-0">{getAlertIcon(alert.type)}</div>
                             <div className="ml-3 flex-1">
                                 <div className="flex items-center justify-between">
-                                    <h4
-                                        className={`text-sm font-medium ${getAlertTextColor(alert.type)}`}
-                                    >
+                                    <h4 className={`text-sm font-medium ${getAlertTextColor(alert.type)}`}>
                                         {getAlertTitle(alert.type)}
                                     </h4>
-                                    <span className="text-xs text-gray-500">
-                                        ID: {alert.integrationId}
-                                    </span>
+                                    <span className="text-xs text-gray-500">ID: {alert.integrationId}</span>
                                 </div>
-                                <p className={`mt-1 text-sm ${getAlertTextColor(alert.type)}`}>
-                                    {alert.message}
-                                </p>
+                                <p className={`mt-1 text-sm ${getAlertTextColor(alert.type)}`}>{alert.message}</p>
                             </div>
                         </div>
                     </div>

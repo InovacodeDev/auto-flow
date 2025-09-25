@@ -1,5 +1,5 @@
 import React from "react";
-import { FunnelIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import { IntegrationHealth } from "../../services/integrationsService";
 
 interface IntegrationsFiltersProps {
@@ -12,11 +12,7 @@ interface IntegrationsFiltersProps {
     integrations: IntegrationHealth[];
 }
 
-export const IntegrationsFilters: React.FC<IntegrationsFiltersProps> = ({
-    filters,
-    onFiltersChange,
-    integrations,
-}) => {
+export const IntegrationsFilters: React.FC<IntegrationsFiltersProps> = ({ filters, onFiltersChange, integrations }) => {
     const typeOptions = [
         {
             value: "whatsapp",
@@ -51,13 +47,13 @@ export const IntegrationsFilters: React.FC<IntegrationsFiltersProps> = ({
         },
     ];
 
-    const platformOptions = Array.from(
-        new Set(integrations.map((i) => i.platform).filter(Boolean))
-    ).map((platform) => ({
-        value: platform!,
-        label: platform!,
-        count: integrations.filter((i) => i.platform === platform).length,
-    }));
+    const platformOptions = Array.from(new Set(integrations.map((i) => i.platform).filter(Boolean))).map(
+        (platform) => ({
+            value: platform!,
+            label: platform!,
+            count: integrations.filter((i) => i.platform === platform).length,
+        })
+    );
 
     const handleFilterChange = (key: keyof typeof filters, value: string) => {
         if (value === "") {
@@ -79,7 +75,7 @@ export const IntegrationsFilters: React.FC<IntegrationsFiltersProps> = ({
         <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                    <FunnelIcon className="w-5 h-5 text-gray-500" />
+                    <MaterialIcon icon="filter_list" className="text-gray-500" size={20} />
                     <h3 className="text-lg font-medium text-gray-900">Filtros</h3>
                 </div>
                 {hasActiveFilters && (
@@ -87,7 +83,7 @@ export const IntegrationsFilters: React.FC<IntegrationsFiltersProps> = ({
                         onClick={clearFilters}
                         className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-gray-900"
                     >
-                        <XMarkIcon className="w-4 h-4 mr-1" />
+                        <MaterialIcon icon="close" className="text-gray-600 mr-1" size={16} />
                         Limpar Filtros
                     </button>
                 )}
@@ -96,9 +92,7 @@ export const IntegrationsFilters: React.FC<IntegrationsFiltersProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Tipo */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Tipo de Integração
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Integração</label>
                     <select
                         value={filters.type || ""}
                         onChange={(e) => handleFilterChange("type", e.target.value)}
@@ -132,9 +126,7 @@ export const IntegrationsFilters: React.FC<IntegrationsFiltersProps> = ({
 
                 {/* Plataforma */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Plataforma
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Plataforma</label>
                     <select
                         value={filters.platform || ""}
                         onChange={(e) => handleFilterChange("platform", e.target.value)}
@@ -162,19 +154,18 @@ export const IntegrationsFilters: React.FC<IntegrationsFiltersProps> = ({
                                     onClick={() => handleFilterChange("type", "")}
                                     className="ml-1 text-blue-600 hover:text-blue-800"
                                 >
-                                    <XMarkIcon className="w-3 h-3" />
+                                    <MaterialIcon icon="close" className="text-blue-600" size={12} />
                                 </button>
                             </span>
                         )}
                         {filters.status && (
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Status:{" "}
-                                {statusOptions.find((o) => o.value === filters.status)?.label}
+                                Status: {statusOptions.find((o) => o.value === filters.status)?.label}
                                 <button
                                     onClick={() => handleFilterChange("status", "")}
                                     className="ml-1 text-green-600 hover:text-green-800"
                                 >
-                                    <XMarkIcon className="w-3 h-3" />
+                                    <MaterialIcon icon="close" className="text-green-600" size={12} />
                                 </button>
                             </span>
                         )}
@@ -185,7 +176,7 @@ export const IntegrationsFilters: React.FC<IntegrationsFiltersProps> = ({
                                     onClick={() => handleFilterChange("platform", "")}
                                     className="ml-1 text-purple-600 hover:text-purple-800"
                                 >
-                                    <XMarkIcon className="w-3 h-3" />
+                                    <MaterialIcon icon="close" className="text-purple-600" size={12} />
                                 </button>
                             </span>
                         )}

@@ -13,7 +13,8 @@ export const AIChatPage: React.FC = () => {
     // Get user info for chat
     const userId = user?.id || "user_1";
     const organizationId = user?.organizationId || "org_1";
-    const industry = user?.industry || "technology";
+    // `user` shape can vary; allow optional industry if present on the runtime object
+    const industry = (user as any)?.industry || "technology";
 
     // Set first conversation as active on mount
     useEffect(() => {
@@ -45,12 +46,8 @@ export const AIChatPage: React.FC = () => {
         setConversations((prev) => prev.filter((conv) => conv.sessionId !== conversationId));
 
         if (activeConversationId === conversationId) {
-            const remainingConversations = conversations.filter(
-                (conv) => conv.sessionId !== conversationId
-            );
-            setActiveConversationId(
-                remainingConversations.length > 0 ? remainingConversations[0].sessionId : null
-            );
+            const remainingConversations = conversations.filter((conv) => conv.sessionId !== conversationId);
+            setActiveConversationId(remainingConversations.length > 0 ? remainingConversations[0].sessionId : null);
         }
     };
 
@@ -81,12 +78,7 @@ export const AIChatPage: React.FC = () => {
                                 onClick={toggleHistory}
                                 className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg lg:hidden"
                             >
-                                <svg
-                                    className="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -101,9 +93,7 @@ export const AIChatPage: React.FC = () => {
                         <div className="flex items-center space-x-2">
                             <div className="text-sm text-gray-500">{user?.name || "Usuário"}</div>
                             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm font-medium">
-                                    {user?.name?.charAt(0) || "U"}
-                                </span>
+                                <span className="text-white text-sm font-medium">{user?.name?.charAt(0) || "U"}</span>
                             </div>
                         </div>
                     </div>
@@ -112,11 +102,7 @@ export const AIChatPage: React.FC = () => {
                 {/* Chat Interface */}
                 <div className="flex-1 overflow-hidden">
                     {activeConversationId ? (
-                        <ChatInterface
-                            userId={userId}
-                            organizationId={organizationId}
-                            industry={industry}
-                        />
+                        <ChatInterface userId={userId} organizationId={organizationId} industry={industry} />
                     ) : (
                         <div className="h-full flex items-center justify-center bg-white">
                             <div className="text-center">
@@ -135,12 +121,8 @@ export const AIChatPage: React.FC = () => {
                                         />
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                    Selecione uma conversa
-                                </h3>
-                                <p className="text-gray-600 mb-4">
-                                    Escolha uma conversa existente ou crie uma nova
-                                </p>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">Selecione uma conversa</h3>
+                                <p className="text-gray-600 mb-4">Escolha uma conversa existente ou crie uma nova</p>
                                 <button
                                     onClick={handleNewConversation}
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

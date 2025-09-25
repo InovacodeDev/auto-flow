@@ -100,7 +100,22 @@ export class WhatsAppIntegration extends Integration {
     /**
      * Send a text message via WhatsApp
      */
-    async sendMessage(to: string, message: string): Promise<MessageResult> {
+    // Backwards-compatible sendMessage: supports either (to, message) or a single payload object
+    async sendMessage(
+        toOrPayload: string | { to: string; body: string },
+        maybeMessage?: string
+    ): Promise<MessageResult> {
+        let to: string;
+        let message: string;
+
+        if (typeof toOrPayload === "string") {
+            to = toOrPayload;
+            message = maybeMessage || "";
+        } else {
+            to = toOrPayload.to;
+            message = (toOrPayload as any).body || "";
+        }
+
         const result = await this.sendTextMessage(to, message);
         return {
             success: result.success,

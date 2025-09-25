@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
+/// <reference types="jest" />
 import { WhatsAppService } from "../../src/integrations/whatsapp/WhatsAppService";
 import { PIXService } from "../../src/integrations/pix/PIXService";
 import { CRMIntegrationService } from "../../src/integrations/crm/CRMIntegrationService";
@@ -16,8 +16,8 @@ describe("End-to-End Integration Tests", () => {
 
     beforeEach(() => {
         // Set environment variables for test
-        process.env.MERCADO_PAGO_ACCESS_TOKEN = "test-mp-token";
-        process.env.NODE_ENV = "development";
+        process.env["MERCADO_PAGO_ACCESS_TOKEN"] = "test-mp-token";
+        process.env["NODE_ENV"] = "development";
 
         // Initialize services with test configurations
         whatsappService = new WhatsAppService({

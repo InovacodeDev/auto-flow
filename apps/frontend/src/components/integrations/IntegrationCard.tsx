@@ -1,13 +1,5 @@
 import React from "react";
-import {
-    CheckCircleIcon,
-    XCircleIcon,
-    ClockIcon,
-    ExclamationTriangleIcon,
-    ArrowPathIcon,
-    EyeIcon,
-    CogIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import { IntegrationHealth } from "../../services/integrationsService";
 
 interface IntegrationCardProps {
@@ -18,15 +10,15 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration })
     const getStatusIcon = () => {
         switch (integration.status) {
             case "connected":
-                return <CheckCircleIcon className="w-5 h-5 text-green-500" />;
+                return <MaterialIcon icon="check_circle" className="text-green-500" size={20} />;
             case "error":
-                return <XCircleIcon className="w-5 h-5 text-red-500" />;
+                return <MaterialIcon icon="cancel" className="text-red-500" size={20} />;
             case "configuring":
-                return <ClockIcon className="w-5 h-5 text-yellow-500" />;
+                return <MaterialIcon icon="schedule" className="text-yellow-500" size={20} />;
             case "disconnected":
-                return <ExclamationTriangleIcon className="w-5 h-5 text-gray-500" />;
+                return <MaterialIcon icon="warning" className="text-gray-500" size={20} />;
             default:
-                return <ExclamationTriangleIcon className="w-5 h-5 text-gray-500" />;
+                return <MaterialIcon icon="warning" className="text-gray-500" size={20} />;
         }
     };
 
@@ -102,17 +94,13 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration })
                             {getTypeIcon()}
                         </div>
                         <div>
-                            <h3 className="text-lg font-medium text-gray-900">
-                                {integration.name}
-                            </h3>
+                            <h3 className="text-lg font-medium text-gray-900">{integration.name}</h3>
                             <p className="text-sm text-gray-500">{integration.platform}</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
                         {getStatusIcon()}
-                        <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}
-                        >
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}>
                             {getStatusText()}
                         </span>
                     </div>
@@ -131,9 +119,7 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration })
                     </div>
                     <div>
                         <p className="text-sm text-gray-600">Taxa de Sucesso</p>
-                        <p className="text-lg font-semibold text-gray-900">
-                            {integration.metrics.successRate}%
-                        </p>
+                        <p className="text-lg font-semibold text-gray-900">{integration.metrics.successRate}%</p>
                     </div>
                     <div>
                         <p className="text-sm text-gray-600">Volume Mensal</p>
@@ -156,20 +142,16 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration })
                             <span className="text-sm text-gray-600">Configuração</span>
                             <div className="flex items-center space-x-2">
                                 {integration.configuration.isConfigured ? (
-                                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                                    <MaterialIcon icon="check_circle" className="text-green-500" size={16} />
                                 ) : (
-                                    <ExclamationTriangleIcon className="w-4 h-4 text-yellow-500" />
+                                    <MaterialIcon icon="warning" className="text-yellow-500" size={16} />
                                 )}
                                 <span
                                     className={`text-sm font-medium ${
-                                        integration.configuration.isConfigured
-                                            ? "text-green-600"
-                                            : "text-yellow-600"
+                                        integration.configuration.isConfigured ? "text-green-600" : "text-yellow-600"
                                     }`}
                                 >
-                                    {integration.configuration.isConfigured
-                                        ? "Configurado"
-                                        : "Pendente"}
+                                    {integration.configuration.isConfigured ? "Configurado" : "Pendente"}
                                 </span>
                             </div>
                         </div>
@@ -180,7 +162,7 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration })
                 {integration.errorMessage && (
                     <div className="pt-4 border-t border-gray-200">
                         <div className="flex items-start space-x-2">
-                            <XCircleIcon className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                            <MaterialIcon icon="cancel" className="text-red-500 mt-0.5 flex-shrink-0" size={16} />
                             <div>
                                 <p className="text-sm font-medium text-red-600">Erro</p>
                                 <p className="text-sm text-red-500">{integration.errorMessage}</p>
@@ -207,16 +189,16 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration })
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                         <button className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-gray-900">
-                            <EyeIcon className="w-4 h-4 mr-1" />
+                            <MaterialIcon icon="visibility" className="mr-1" size={16} />
                             Detalhes
                         </button>
                         <button className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-gray-900">
-                            <CogIcon className="w-4 h-4 mr-1" />
+                            <MaterialIcon icon="settings" className="mr-1" size={16} />
                             Configurar
                         </button>
                     </div>
                     <button className="flex items-center px-3 py-1 text-sm text-blue-600 hover:text-blue-700">
-                        <ArrowPathIcon className="w-4 h-4 mr-1" />
+                        <MaterialIcon icon="refresh" className="mr-1" size={16} />
                         Sincronizar
                     </button>
                 </div>

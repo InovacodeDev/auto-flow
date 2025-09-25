@@ -130,7 +130,7 @@ export const useStartConversation = () => {
 
     return useMutation({
         mutationFn: aiApi.startConversation,
-        onSuccess: (data) => {
+        onSuccess: (_data) => {
             // Invalidate conversations list
             queryClient.invalidateQueries({ queryKey: queryKeys.ai.conversations() });
         },
@@ -142,7 +142,7 @@ export const useProcessMessage = () => {
 
     return useMutation({
         mutationFn: aiApi.processMessage,
-        onSuccess: (data, variables) => {
+        onSuccess: (_data, variables) => {
             // Invalidate specific conversation
             queryClient.invalidateQueries({
                 queryKey: queryKeys.ai.conversation(variables.sessionId),

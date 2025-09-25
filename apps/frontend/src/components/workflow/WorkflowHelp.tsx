@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { QuestionMarkCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import React from "react";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import { useKeyboardShortcuts } from "./KeyboardShortcuts";
 
 interface WorkflowHelpProps {
@@ -20,14 +20,12 @@ export const WorkflowHelp: React.FC<WorkflowHelpProps> = ({ isOpen, onClose }) =
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-900">
-                        Ajuda - Construtor de Workflows
-                    </h2>
+                    <h2 className="text-xl font-semibold text-gray-900">Ajuda - Construtor de Workflows</h2>
                     <button
                         onClick={onClose}
                         className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
                     >
-                        <XMarkIcon className="w-5 h-5" />
+                        <MaterialIcon icon="close" className="text-gray-400" size={20} />
                     </button>
                 </div>
 
@@ -35,18 +33,14 @@ export const WorkflowHelp: React.FC<WorkflowHelpProps> = ({ isOpen, onClose }) =
                 <div className="p-6 space-y-6">
                     {/* Atalhos de teclado */}
                     <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">
-                            Atalhos de Teclado
-                        </h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Atalhos de Teclado</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {shortcuts.map((shortcut, index) => (
                                 <div
                                     key={index}
                                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                                 >
-                                    <span className="text-sm text-gray-600">
-                                        {shortcut.description}
-                                    </span>
+                                    <span className="text-sm text-gray-600">{shortcut.description}</span>
                                     <kbd className="px-2 py-1 text-xs font-mono bg-gray-200 text-gray-700 rounded">
                                         {shortcut.key}
                                     </kbd>
@@ -64,12 +58,10 @@ export const WorkflowHelp: React.FC<WorkflowHelpProps> = ({ isOpen, onClose }) =
                                     1
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-900">
-                                        Adicionar Nós
-                                    </p>
+                                    <p className="text-sm font-medium text-gray-900">Adicionar Nós</p>
                                     <p className="text-sm text-gray-600">
-                                        Clique em um nó na biblioteca para adicioná-lo ao canvas.
-                                        Arraste para posicionar.
+                                        Clique em um nó na biblioteca para adicioná-lo ao canvas. Arraste para
+                                        posicionar.
                                     </p>
                                 </div>
                             </div>
@@ -79,12 +71,9 @@ export const WorkflowHelp: React.FC<WorkflowHelpProps> = ({ isOpen, onClose }) =
                                     2
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-900">
-                                        Conectar Nós
-                                    </p>
+                                    <p className="text-sm font-medium text-gray-900">Conectar Nós</p>
                                     <p className="text-sm text-gray-600">
-                                        Arraste das saídas (círculos azuis) para as entradas
-                                        (círculos cinzas) dos nós.
+                                        Arraste das saídas (círculos azuis) para as entradas (círculos cinzas) dos nós.
                                     </p>
                                 </div>
                             </div>
@@ -94,12 +83,9 @@ export const WorkflowHelp: React.FC<WorkflowHelpProps> = ({ isOpen, onClose }) =
                                     3
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-900">
-                                        Configurar Nós
-                                    </p>
+                                    <p className="text-sm font-medium text-gray-900">Configurar Nós</p>
                                     <p className="text-sm text-gray-600">
-                                        Clique em um nó para abrir o inspector e configurar suas
-                                        propriedades.
+                                        Clique em um nó para abrir o inspector e configurar suas propriedades.
                                     </p>
                                 </div>
                             </div>
@@ -109,12 +95,9 @@ export const WorkflowHelp: React.FC<WorkflowHelpProps> = ({ isOpen, onClose }) =
                                     4
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-900">
-                                        Salvar Workflow
-                                    </p>
+                                    <p className="text-sm font-medium text-gray-900">Salvar Workflow</p>
                                     <p className="text-sm text-gray-600">
-                                        Use Ctrl+S para salvar ou clique no botão "Salvar" na
-                                        toolbar.
+                                        Use Ctrl+S para salvar ou clique no botão "Salvar" na toolbar.
                                     </p>
                                 </div>
                             </div>
@@ -158,9 +141,7 @@ export const WorkflowHelp: React.FC<WorkflowHelpProps> = ({ isOpen, onClose }) =
 
                 {/* Footer */}
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
-                    <p className="text-sm text-gray-600">
-                        Precisa de mais ajuda? Entre em contato com o suporte.
-                    </p>
+                    <p className="text-sm text-gray-600">Precisa de mais ajuda? Entre em contato com o suporte.</p>
                 </div>
             </div>
         </div>
@@ -177,7 +158,7 @@ export const HelpButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
             className="fixed bottom-6 left-6 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center justify-center z-40"
             title="Ajuda e Dicas"
         >
-            <QuestionMarkCircleIcon className="w-6 h-6" />
+            <MaterialIcon icon="help" className="text-white" size={24} />
         </button>
     );
 };

@@ -1,14 +1,5 @@
 import React from "react";
 import { NodeProps } from "reactflow";
-import {
-    PlayIcon,
-    GlobeAltIcon,
-    ClockIcon,
-    CalendarIcon,
-    CursorArrowRaysIcon,
-    BellIcon,
-    CircleStackIcon,
-} from "@heroicons/react/24/outline";
 import BaseNode, { NodeStatus } from "./BaseNode";
 
 // Manual Trigger Node
@@ -23,7 +14,7 @@ export const ManualTriggerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={PlayIcon}
+            icon="play_arrow"
             color="bg-green-500"
             title="Trigger Manual"
             subtitle="Inicia o workflow manualmente"
@@ -56,7 +47,7 @@ export const WebhookTriggerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={GlobeAltIcon}
+            icon="public"
             color="bg-blue-500"
             title="Webhook"
             subtitle={getSubtitle()}
@@ -90,7 +81,7 @@ export const ScheduleTriggerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ClockIcon}
+            icon="schedule"
             color="bg-purple-500"
             title="Agendamento"
             subtitle={getSubtitle()}
@@ -123,7 +114,7 @@ export const CalendarTriggerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CalendarIcon}
+            icon="calendar_today"
             color="bg-indigo-500"
             title="Calendário"
             subtitle={getSubtitle()}
@@ -155,7 +146,7 @@ export const FormTriggerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CursorArrowRaysIcon}
+            icon="touch_app"
             color="bg-orange-500"
             title="Formulário"
             subtitle={getSubtitle()}
@@ -187,7 +178,7 @@ export const NotificationTriggerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={BellIcon}
+            icon="notifications"
             color="bg-pink-500"
             title="Notificação"
             subtitle={getSubtitle()}
@@ -220,7 +211,7 @@ export const DatabaseTriggerNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CircleStackIcon}
+            icon="storage"
             color="bg-teal-500"
             title="Banco de Dados"
             subtitle={getSubtitle()}

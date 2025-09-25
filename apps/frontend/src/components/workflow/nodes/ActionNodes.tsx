@@ -1,21 +1,5 @@
 import React from "react";
 import { NodeProps } from "reactflow";
-import {
-    GlobeAltIcon,
-    EnvelopeIcon,
-    DocumentTextIcon,
-    CircleStackIcon,
-    ChatBubbleLeftRightIcon,
-    CloudIcon,
-    CurrencyDollarIcon,
-    UserIcon,
-    ChartBarIcon,
-    CogIcon,
-    DocumentArrowDownIcon,
-    BellIcon,
-    ShieldCheckIcon,
-    ArrowPathIcon,
-} from "@heroicons/react/24/outline";
 import BaseNode, { NodeStatus } from "./BaseNode";
 
 // HTTP Request Action Node
@@ -36,7 +20,7 @@ export const HttpRequestActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={GlobeAltIcon}
+            icon="public"
             color="bg-orange-500"
             title="Requisição HTTP"
             subtitle={getSubtitle()}
@@ -74,7 +58,7 @@ export const EmailActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={EnvelopeIcon}
+            icon="email"
             color="bg-red-500"
             title="Enviar Email"
             subtitle={getSubtitle()}
@@ -112,7 +96,7 @@ export const DatabaseActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CircleStackIcon}
+            icon="storage"
             color="bg-teal-500"
             title="Banco de Dados"
             subtitle={getSubtitle()}
@@ -149,7 +133,7 @@ export const WhatsAppActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ChatBubbleLeftRightIcon}
+            icon="chat"
             color="bg-green-600"
             title="WhatsApp"
             subtitle={getSubtitle()}
@@ -187,7 +171,7 @@ export const CloudStorageActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CloudIcon}
+            icon="cloud"
             color="bg-blue-600"
             title="Armazenamento"
             subtitle={getSubtitle()}
@@ -225,7 +209,7 @@ export const PaymentActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CurrencyDollarIcon}
+            icon="attach_money"
             color="bg-emerald-500"
             title="Pagamento"
             subtitle={getSubtitle()}
@@ -263,7 +247,7 @@ export const UserManagementActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={UserIcon}
+            icon="person"
             color="bg-indigo-500"
             title="Gerenciar Usuário"
             subtitle={getSubtitle()}
@@ -299,7 +283,7 @@ export const AnalyticsActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ChartBarIcon}
+            icon="bar_chart"
             color="bg-purple-500"
             title="Analytics"
             subtitle={getSubtitle()}
@@ -335,7 +319,7 @@ export const SystemActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={CogIcon}
+            icon="settings"
             color="bg-gray-600"
             title="Sistema"
             subtitle={getSubtitle()}
@@ -371,7 +355,7 @@ export const FileDownloadActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={DocumentArrowDownIcon}
+            icon="download"
             color="bg-cyan-500"
             title="Download"
             subtitle={getSubtitle()}
@@ -408,7 +392,7 @@ export const NotificationActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={BellIcon}
+            icon="notifications"
             color="bg-pink-500"
             title="Notificação"
             subtitle={getSubtitle()}
@@ -445,7 +429,7 @@ export const SecurityActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ShieldCheckIcon}
+            icon="verified_user"
             color="bg-red-600"
             title="Segurança"
             subtitle={getSubtitle()}
@@ -481,7 +465,7 @@ export const DataTransformActionNode: React.FC<NodeProps> = (props) => {
     return (
         <BaseNode
             {...props}
-            icon={ArrowPathIcon}
+            icon="refresh"
             color="bg-yellow-500"
             title="Transformar Dados"
             subtitle={getSubtitle()}

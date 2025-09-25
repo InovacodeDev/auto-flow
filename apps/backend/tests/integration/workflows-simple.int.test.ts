@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+/// <reference types="jest" />
 import { FastifyInstance } from "fastify";
 import fastify from "fastify";
 import { workflowRoutes } from "../../src/routes/workflows";

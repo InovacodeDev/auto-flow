@@ -1,12 +1,5 @@
 import React from "react";
-import {
-    UserIcon,
-    SparklesIcon,
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    LightBulbIcon,
-    ArrowPathIcon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 import { ChatMessage } from "../../services/aiService";
 
 interface MessageBubbleProps {
@@ -16,7 +9,7 @@ interface MessageBubbleProps {
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const isUser = message.role === "user";
     const isAssistant = message.role === "assistant";
-    const isSystem = message.role === "system";
+    // system role currently unused visually; keep detection inline if needed later
 
     const formatTimestamp = (timestamp: string) => {
         return new Date(timestamp).toLocaleTimeString("pt-BR", {
@@ -26,9 +19,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     };
 
     const getMessageIcon = () => {
-        if (isUser) return <UserIcon className="w-5 h-5" />;
-        if (isAssistant) return <SparklesIcon className="w-5 h-5" />;
-        return <CheckCircleIcon className="w-5 h-5" />;
+        if (isUser) return <MaterialIcon icon="person" className="text-current" size={16} />;
+        if (isAssistant) return <MaterialIcon icon="auto_awesome" className="text-current" size={16} />;
+        return <MaterialIcon icon="check_circle" className="text-current" size={16} />;
     };
 
     const getMessageIconColor = () => {
@@ -64,7 +57,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             <div className="mt-3 space-y-2">
                 {workflowGenerated && (
                     <div className="flex items-center space-x-2 text-sm text-green-600">
-                        <CheckCircleIcon className="w-4 h-4" />
+                        <MaterialIcon icon="check_circle" className="text-current" size={16} />
                         <span>Workflow gerado com sucesso!</span>
                     </div>
                 )}
@@ -79,7 +72,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                 {suggestions && suggestions.length > 0 && (
                     <div className="space-y-1">
                         <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                            <LightBulbIcon className="w-4 h-4" />
+                            <MaterialIcon icon="lightbulb" className="text-current" size={16} />
                             <span>Sugestões:</span>
                         </div>
                         <ul className="list-disc list-inside space-y-1 ml-6">
@@ -95,7 +88,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                 {nextSteps && nextSteps.length > 0 && (
                     <div className="space-y-1">
                         <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                            <ArrowPathIcon className="w-4 h-4" />
+                            <MaterialIcon icon="arrow_forward" className="text-current" size={16} />
                             <span>Próximos passos:</span>
                         </div>
                         <ul className="list-disc list-inside space-y-1 ml-6">
@@ -113,9 +106,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
 
     return (
         <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-            <div
-                className={`flex items-start space-x-3 max-w-3xl ${isUser ? "flex-row-reverse space-x-reverse" : ""}`}
-            >
+            <div className={`flex items-start space-x-3 max-w-3xl ${isUser ? "flex-row-reverse space-x-reverse" : ""}`}>
                 {/* Avatar */}
                 <div
                     className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${getMessageBgColor()} ${getMessageBorderColor()} border`}
@@ -133,9 +124,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                         {renderMetadata()}
                     </div>
 
-                    <div
-                        className={`mt-1 text-xs text-gray-500 ${isUser ? "text-right" : "text-left"}`}
-                    >
+                    <div className={`mt-1 text-xs text-gray-500 ${isUser ? "text-right" : "text-left"}`}>
                         {formatTimestamp(message.timestamp)}
                     </div>
                 </div>

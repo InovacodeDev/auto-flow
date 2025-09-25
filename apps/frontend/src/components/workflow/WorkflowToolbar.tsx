@@ -1,14 +1,5 @@
 import React from "react";
-import {
-    PlayIcon,
-    DocumentDuplicateIcon,
-    TrashIcon,
-    ArrowsPointingOutIcon,
-    Bars3Icon,
-    Cog6ToothIcon,
-    DocumentTextIcon,
-    Squares2X2Icon,
-} from "@heroicons/react/24/outline";
+import { MaterialIcon } from "../ui/MaterialIcon";
 
 interface WorkflowToolbarProps {
     onSave: () => void;
@@ -46,7 +37,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
                         className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                         title="Biblioteca de Nodes"
                     >
-                        <Bars3Icon className="w-4 h-4" />
+                        <MaterialIcon icon="menu" size={16} />
                         <span>Nodes</span>
                     </button>
 
@@ -56,7 +47,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
                             className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-purple-100 hover:bg-purple-200 rounded-lg transition-colors"
                             title="Templates de Workflow"
                         >
-                            <DocumentTextIcon className="w-4 h-4" />
+                            <MaterialIcon icon="description" size={16} />
                             <span>Templates</span>
                         </button>
                     )}
@@ -67,7 +58,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
                             className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors"
                             title="Galeria de Nós"
                         >
-                            <Squares2X2Icon className="w-4 h-4" />
+                            <MaterialIcon icon="apps" size={16} />
                             <span>Galeria</span>
                         </button>
                     )}
@@ -79,7 +70,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
                                 className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                                 title="Salvar Workflow"
                             >
-                                <DocumentDuplicateIcon className="w-4 h-4" />
+                                <MaterialIcon icon="content_copy" size={16} />
                                 <span>Salvar</span>
                             </button>
 
@@ -93,7 +84,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
                                 }`}
                                 title="Gerenciar Execuções"
                             >
-                                <PlayIcon className="w-4 h-4" />
+                                <MaterialIcon icon="play_arrow" size={16} />
                                 <span>Execuções</span>
                             </button>
                         </>
@@ -102,9 +93,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
 
                 {/* Centro - Título */}
                 <div className="flex-1 text-center">
-                    <h1 className="text-lg font-semibold text-gray-900">
-                        Constructor Visual de Workflows
-                    </h1>
+                    <h1 className="text-lg font-semibold text-gray-900">Constructor Visual de Workflows</h1>
                 </div>
 
                 {/* Lado direito - Controles de visualização */}
@@ -114,7 +103,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
                         className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                         title="Ajustar Visualização"
                     >
-                        <ArrowsPointingOutIcon className="w-4 h-4" />
+                        <MaterialIcon icon="fullscreen" size={16} />
                         <span>Fit View</span>
                     </button>
 
@@ -123,7 +112,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
                         className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                         title="Inspector de Propriedades"
                     >
-                        <Cog6ToothIcon className="w-4 h-4" />
+                        <MaterialIcon icon="settings" size={16} />
                         <span>Inspector</span>
                     </button>
 
@@ -133,7 +122,7 @@ export const WorkflowToolbar: React.FC<WorkflowToolbarProps> = ({
                             className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
                             title="Limpar Canvas"
                         >
-                            <TrashIcon className="w-4 h-4" />
+                            <MaterialIcon icon="delete" size={16} />
                             <span>Limpar</span>
                         </button>
                     )}
