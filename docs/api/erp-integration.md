@@ -34,19 +34,19 @@ Configura a integração com um ERP específico.
 
 ```json
 {
-    "platform": "omie",
-    "apiKey": "sua-api-key",
-    "apiSecret": "seu-api-secret",
-    "apiUrl": "https://app.omie.com.br/api/v1/",
-    "companyId": "123456",
-    "webhookSecret": "webhook-secret",
-    "taxConfiguration": {
-        "defaultCfop": "5102",
-        "icmsRate": 18,
-        "ipiRate": 0,
-        "pisRate": 1.65,
-        "cofinsRate": 7.6
-    }
+  "platform": "omie",
+  "apiKey": "sua-api-key",
+  "apiSecret": "seu-api-secret",
+  "apiUrl": "https://app.omie.com.br/api/v1/",
+  "companyId": "123456",
+  "webhookSecret": "webhook-secret",
+  "taxConfiguration": {
+    "defaultCfop": "5102",
+    "icmsRate": 18,
+    "ipiRate": 0,
+    "pisRate": 1.65,
+    "cofinsRate": 7.6
+  }
 }
 ```
 
@@ -54,9 +54,9 @@ Configura a integração com um ERP específico.
 
 ```json
 {
-    "success": true,
-    "message": "Integração omie configurada com sucesso",
-    "platform": "omie"
+  "success": true,
+  "message": "Integração omie configurada com sucesso",
+  "platform": "omie"
 }
 ```
 
@@ -68,17 +68,17 @@ Configura a integração com um ERP específico.
 
 ```json
 {
-    "name": "Produto Exemplo",
-    "sku": "PROD-001",
-    "price": 99.9,
-    "cost": 50.0,
-    "category": "Eletrônicos",
-    "description": "Descrição do produto",
-    "stockQuantity": 100,
-    "unit": "UN",
-    "ncm": "85171100",
-    "cfop": "5102",
-    "icmsRate": 18
+  "name": "Produto Exemplo",
+  "sku": "PROD-001",
+  "price": 99.9,
+  "cost": 50.0,
+  "category": "Eletrônicos",
+  "description": "Descrição do produto",
+  "stockQuantity": 100,
+  "unit": "UN",
+  "ncm": "85171100",
+  "cfop": "5102",
+  "icmsRate": 18
 }
 ```
 
@@ -92,8 +92,8 @@ Configura a integração com um ERP específico.
 
 ```json
 {
-    "operation": "add",
-    "quantity": 10
+  "operation": "add",
+  "quantity": 10
 }
 ```
 
@@ -105,19 +105,19 @@ Configura a integração com um ERP específico.
 
 ```json
 {
-    "name": "João Silva",
-    "email": "joao@email.com",
-    "phone": "(11) 99999-9999",
-    "document": "123.456.789-00",
-    "address": {
-        "street": "Rua das Flores",
-        "number": "123",
-        "neighborhood": "Centro",
-        "city": "São Paulo",
-        "state": "SP",
-        "zipCode": "01234-567"
-    },
-    "customerType": "individual"
+  "name": "João Silva",
+  "email": "joao@email.com",
+  "phone": "(11) 99999-9999",
+  "document": "123.456.789-00",
+  "address": {
+    "street": "Rua das Flores",
+    "number": "123",
+    "neighborhood": "Centro",
+    "city": "São Paulo",
+    "state": "SP",
+    "zipCode": "01234-567"
+  },
+  "customerType": "individual"
 }
 ```
 
@@ -129,17 +129,17 @@ Configura a integração com um ERP específico.
 
 ```json
 {
-    "customerId": "cliente-123",
-    "items": [
-        {
-            "productId": "produto-456",
-            "quantity": 2,
-            "unitPrice": 99.9
-        }
-    ],
-    "dueDate": "2024-12-31",
-    "paymentMethod": "PIX",
-    "observations": "Observações da fatura"
+  "customerId": "cliente-123",
+  "items": [
+    {
+      "productId": "produto-456",
+      "quantity": 2,
+      "unitPrice": 99.9
+    }
+  ],
+  "dueDate": "2024-12-31",
+  "paymentMethod": "PIX",
+  "observations": "Observações da fatura"
 }
 ```
 
@@ -149,10 +149,10 @@ Configura a integração com um ERP específico.
 
 ```json
 {
-    "date": "2024-01-15",
-    "amount": 199.8,
-    "description": "PIX recebido",
-    "reference": "PIX-123456"
+  "date": "2024-01-15",
+  "amount": 199.8,
+  "description": "PIX recebido",
+  "reference": "PIX-123456"
 }
 ```
 
@@ -174,24 +174,24 @@ Sincroniza dados entre AutoFlow e o ERP.
 
 ```json
 {
-    "status": "ok",
-    "service": "ERP Integration Service",
-    "timestamp": "2024-01-15T10:30:00Z",
-    "platforms": {
-        "configured": ["omie", "contaazul"],
-        "available": ["omie", "contaazul", "bling"]
-    },
-    "features": [
-        "Gestão completa de produtos",
-        "Cadastro unificado de clientes",
-        "Faturamento automático",
-        "Controle de estoque em tempo real",
-        "Conciliação bancária automatizada",
-        "Webhooks para eventos fiscais",
-        "Sincronização bidirecional",
-        "Integração PIX + CRM + WhatsApp",
-        "Compliance fiscal brasileiro"
-    ]
+  "status": "ok",
+  "service": "ERP Integration Service",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "platforms": {
+    "configured": ["omie", "contaazul"],
+    "available": ["omie", "contaazul", "bling"]
+  },
+  "features": [
+    "Gestão completa de produtos",
+    "Cadastro unificado de clientes",
+    "Faturamento automático",
+    "Controle de estoque em tempo real",
+    "Conciliação bancária automatizada",
+    "Webhooks para eventos fiscais",
+    "Sincronização bidirecional",
+    "Integração PIX + CRM + WhatsApp",
+    "Compliance fiscal brasileiro"
+  ]
 }
 ```
 
@@ -259,33 +259,33 @@ A integração ERP garante compliance com a legislação brasileira:
 ## Automações Disponíveis
 
 1. **Cliente → Produto → Fatura → PIX**
-    - Lead do CRM vira cliente no ERP
-    - Produto criado automaticamente
-    - Fatura gerada e enviada por WhatsApp
-    - PIX processado e conciliado
+   - Lead do CRM vira cliente no ERP
+   - Produto criado automaticamente
+   - Fatura gerada e enviada por WhatsApp
+   - PIX processado e conciliado
 
 2. **Estoque Baixo → Reposição**
-    - Webhook de estoque baixo
-    - Criação automática de pedido de compra
-    - Notificação por WhatsApp
+   - Webhook de estoque baixo
+   - Criação automática de pedido de compra
+   - Notificação por WhatsApp
 
 3. **NFe Autorizada → Cliente**
-    - Webhook da NFe autorizada
-    - Envio automático por WhatsApp
-    - Atualização do status no CRM
+   - Webhook da NFe autorizada
+   - Envio automático por WhatsApp
+   - Atualização do status no CRM
 
 ## Error Handling
 
 ```json
 {
-    "success": false,
-    "error": "Descrição do erro",
-    "code": "ERP_ERROR_CODE",
-    "details": {
-        "platform": "omie",
-        "operation": "create_product",
-        "originalError": "Mensagem original do ERP"
-    }
+  "success": false,
+  "error": "Descrição do erro",
+  "code": "ERP_ERROR_CODE",
+  "details": {
+    "platform": "omie",
+    "operation": "create_product",
+    "originalError": "Mensagem original do ERP"
+  }
 }
 ```
 

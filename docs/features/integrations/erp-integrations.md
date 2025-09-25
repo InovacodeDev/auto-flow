@@ -15,31 +15,22 @@ As integrações com ERPs brasileiros permitem sincronizar clientes, produtos e 
 
 #### Variáveis de Ambiente
 
-```bash
-# Omie ERP
-OMIE_APP_KEY=1234567890123
-OMIE_APP_SECRET=abc123def456ghi789
+```markdown
+# ERP Integrations - Omie & Bling (Consolidado)
+
+Conteúdo consolidado. Resumo canônico:
+
+- ../../consolidated/integrations-summary.md
+
+Arquivo completo arquivado em:
+
+- ../../archive/erp-integrations-full.md
+
+Resumo rápido:
+
+- Integrações com Omie e Bling: sincronização de clientes, produtos, pedidos, e endpoints para criação/atualização.
+- Campos mapeados, exemplos de workflows e limites conhecidos estão na cópia arquivada.
 ```
-
-#### Setup Detalhado
-
-1. **Acessar Configurações da API**
-    - Entre no Omie ERP
-    - Vá para Configurações → Usuários e Permissões → API
-    - Clique em "Gerar Chave de Integração"
-
-2. **Obter Credenciais**
-    - Copie o App Key (13 dígitos)
-    - Copie o App Secret (string alfanumérica)
-    - Configure permissões necessárias
-
-3. **Testar Conexão**
-    - Use as credenciais no AutoFlow
-    - Execute teste de conexão
-
-### Funcionalidades Omie
-
-#### Create Contact (Cliente)
 
 ```typescript
 {
@@ -105,17 +96,17 @@ BLING_API_KEY=abc123def456ghi789jkl012
 #### Setup Detalhado
 
 1. **Gerar Token API**
-    - Entre no Bling ERP
-    - Vá para Configurações → API
-    - Clique em "Gerar Novo Token"
+   - Entre no Bling ERP
+   - Vá para Configurações → API
+   - Clique em "Gerar Novo Token"
 
 2. **Configurar Permissões**
-    - Marque permissões para: Contatos, Produtos, Pedidos
-    - Defina IP de origem (opcional)
+   - Marque permissões para: Contatos, Produtos, Pedidos
+   - Defina IP de origem (opcional)
 
 3. **Obter API Key**
-    - Copie o token gerado
-    - Configure no AutoFlow
+   - Copie o token gerado
+   - Configure no AutoFlow
 
 ### Funcionalidades Bling
 
@@ -141,48 +132,48 @@ Similar ao Omie, mas com endpoints diferentes:
 
 ```json
 {
-    "name": "Sync Customer to ERP",
-    "triggers": [
+  "name": "Sync Customer to ERP",
+  "triggers": [
+    {
+      "type": "webhook",
+      "config": {
+        "source": "ecommerce",
+        "event": "customer_created"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "create_contact",
+      "config": {
+        "integration": "omie_erp",
+        "action": "create_contact"
+      },
+      "data": {
+        "name": "{{trigger.customer.name}}",
+        "email": "{{trigger.customer.email}}",
+        "phone": "{{trigger.customer.phone}}",
+        "document": "{{trigger.customer.document}}"
+      }
+    },
+    {
+      "type": "conditional",
+      "condition": "previous.success == true",
+      "true_actions": [
         {
-            "type": "webhook",
-            "config": {
-                "source": "ecommerce",
-                "event": "customer_created"
-            }
+          "type": "update_customer",
+          "config": {
+            "integration": "ecommerce"
+          },
+          "data": {
+            "customerId": "{{trigger.customer.id}}",
+            "erpId": "{{previous.data.contactId}}",
+            "erpSynced": true
+          }
         }
-    ],
-    "actions": [
-        {
-            "type": "create_contact",
-            "config": {
-                "integration": "omie_erp",
-                "action": "create_contact"
-            },
-            "data": {
-                "name": "{{trigger.customer.name}}",
-                "email": "{{trigger.customer.email}}",
-                "phone": "{{trigger.customer.phone}}",
-                "document": "{{trigger.customer.document}}"
-            }
-        },
-        {
-            "type": "conditional",
-            "condition": "previous.success == true",
-            "true_actions": [
-                {
-                    "type": "update_customer",
-                    "config": {
-                        "integration": "ecommerce"
-                    },
-                    "data": {
-                        "customerId": "{{trigger.customer.id}}",
-                        "erpId": "{{previous.data.contactId}}",
-                        "erpSynced": true
-                    }
-                }
-            ]
-        }
-    ]
+      ]
+    }
+  ]
 }
 ```
 
@@ -190,50 +181,50 @@ Similar ao Omie, mas com endpoints diferentes:
 
 ```json
 {
-    "name": "Create ERP Order",
-    "triggers": [
-        {
-            "type": "webhook",
-            "config": {
-                "source": "payment",
-                "event": "payment_approved"
-            }
-        }
-    ],
-    "actions": [
-        {
-            "type": "get_order",
-            "config": {
-                "integration": "ecommerce"
-            },
-            "data": {
-                "orderId": "{{trigger.payment.externalReference}}"
-            }
-        },
-        {
-            "type": "create_order",
-            "config": {
-                "integration": "omie_erp",
-                "action": "create_order"
-            },
-            "data": {
-                "customerId": "{{previous.data.customer.erpId}}",
-                "items": "{{previous.data.items}}",
-                "total": "{{previous.data.total}}"
-            }
-        },
-        {
-            "type": "send_message",
-            "config": {
-                "integration": "whatsapp_business",
-                "action": "send_text_message"
-            },
-            "data": {
-                "to": "{{previous[0].data.customer.phone}}",
-                "message": "✅ Pedido confirmado!\n\nNº ERP: {{previous.data.orderNumber}}\nValor: R$ {{previous.data.total}}\n\nSeu produto será processado em breve!"
-            }
-        }
-    ]
+  "name": "Create ERP Order",
+  "triggers": [
+    {
+      "type": "webhook",
+      "config": {
+        "source": "payment",
+        "event": "payment_approved"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "get_order",
+      "config": {
+        "integration": "ecommerce"
+      },
+      "data": {
+        "orderId": "{{trigger.payment.externalReference}}"
+      }
+    },
+    {
+      "type": "create_order",
+      "config": {
+        "integration": "omie_erp",
+        "action": "create_order"
+      },
+      "data": {
+        "customerId": "{{previous.data.customer.erpId}}",
+        "items": "{{previous.data.items}}",
+        "total": "{{previous.data.total}}"
+      }
+    },
+    {
+      "type": "send_message",
+      "config": {
+        "integration": "whatsapp_business",
+        "action": "send_text_message"
+      },
+      "data": {
+        "to": "{{previous[0].data.customer.phone}}",
+        "message": "✅ Pedido confirmado!\n\nNº ERP: {{previous.data.orderNumber}}\nValor: R$ {{previous.data.total}}\n\nSeu produto será processado em breve!"
+      }
+    }
+  ]
 }
 ```
 
@@ -241,42 +232,42 @@ Similar ao Omie, mas com endpoints diferentes:
 
 ```json
 {
-    "name": "Sync Products ERP → E-commerce",
-    "triggers": [
+  "name": "Sync Products ERP → E-commerce",
+  "triggers": [
+    {
+      "type": "schedule",
+      "config": {
+        "cron": "0 */6 * * *"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "list_products",
+      "config": {
+        "integration": "omie_erp",
+        "filter": "updated_since=6hours"
+      }
+    },
+    {
+      "type": "loop",
+      "items": "{{previous.data.products}}",
+      "actions": [
         {
-            "type": "schedule",
-            "config": {
-                "cron": "0 */6 * * *"
-            }
+          "type": "update_product",
+          "config": {
+            "integration": "ecommerce"
+          },
+          "data": {
+            "sku": "{{item.sku}}",
+            "name": "{{item.name}}",
+            "price": "{{item.price}}",
+            "stock": "{{item.stock}}"
+          }
         }
-    ],
-    "actions": [
-        {
-            "type": "list_products",
-            "config": {
-                "integration": "omie_erp",
-                "filter": "updated_since=6hours"
-            }
-        },
-        {
-            "type": "loop",
-            "items": "{{previous.data.products}}",
-            "actions": [
-                {
-                    "type": "update_product",
-                    "config": {
-                        "integration": "ecommerce"
-                    },
-                    "data": {
-                        "sku": "{{item.sku}}",
-                        "name": "{{item.name}}",
-                        "price": "{{item.price}}",
-                        "stock": "{{item.stock}}"
-                    }
-                }
-            ]
-        }
-    ]
+      ]
+    }
+  ]
 }
 ```
 

@@ -18,45 +18,30 @@ O AutoFlow oferece integrações nativas com as principais APIs e serviços do m
 
 #### Configuração
 
-```typescript
-const whatsappConfig: WhatsAppConfig = {
-    apiKey: process.env.WHATSAPP_API_KEY,
-    phoneNumberId: "123456789",
-    businessAccountId: "business_account_id",
-    webhookVerifyToken: "verify_token",
-};
+```markdown
+# Integrações Brasileiras (Consolidado)
+
+Conteúdo consolidado. Resumo canônico:
+
+- ../../consolidated/integrations-summary.md
+
+Arquivo completo arquivado em:
+
+- ../../archive/brazilian-integrations-full.md
+
+Resumo rápido:
+
+- Visão geral das integrações nativas (WhatsApp, PIX, ERPs, CRMs) e padrões de arquitetura para integração.
+- Para endpoints, exemplos e DDL, consulte a cópia arquivada.
 ```
-
-#### Casos de Uso
-
-- **Atendimento automatizado**: Resposta automática para dúvidas frequentes
-- **Notificações**: Alertas de pedidos, pagamentos, entregas
-- **Marketing**: Campanhas promocionais e newsletters
-- **Suporte**: Tickets de suporte e follow-up
-
-#### API Endpoints
-
-- `POST /api/integrations/whatsapp/send-message`
-- `POST /api/integrations/whatsapp/webhook`
-- `GET /api/integrations/whatsapp/templates`
-
-### 💰 PIX Integration (Mercado Pago)
-
-#### Funcionalidades
-
-- Geração de PIX dinâmico e estático
-- QR Codes para pagamento
-- Webhooks de confirmação
-- Reconciliação automática
-- Suporte a diferentes bancos
 
 #### Configuração
 
 ```typescript
 const pixConfig: PIXConfig = {
-    accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN,
-    userId: "mercado_pago_user_id",
-    webhookUrl: "https://app.autoflow.com.br/webhooks/pix",
+  accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN,
+  userId: "mercado_pago_user_id",
+  webhookUrl: "https://app.autoflow.com.br/webhooks/pix",
 };
 ```
 
@@ -88,8 +73,8 @@ const pixConfig: PIXConfig = {
 
 ```typescript
 const blingConfig: ERPConfig = {
-    apiKey: process.env.BLING_API_KEY,
-    baseUrl: "https://www.bling.com.br/Api/v3",
+  apiKey: process.env.BLING_API_KEY,
+  baseUrl: "https://www.bling.com.br/Api/v3",
 };
 ```
 
@@ -106,8 +91,8 @@ const blingConfig: ERPConfig = {
 
 ```typescript
 const omieConfig: ERPConfig = {
-    apiKey: process.env.OMIE_API_KEY,
-    appSecret: process.env.OMIE_APP_SECRET,
+  apiKey: process.env.OMIE_API_KEY,
+  appSecret: process.env.OMIE_APP_SECRET,
 };
 ```
 
@@ -126,8 +111,8 @@ const omieConfig: ERPConfig = {
 
 ```typescript
 const rdConfig: CRMConfig = {
-    apiKey: process.env.RD_STATION_ACCESS_TOKEN,
-    clientId: process.env.RD_STATION_CLIENT_ID,
+  apiKey: process.env.RD_STATION_ACCESS_TOKEN,
+  clientId: process.env.RD_STATION_CLIENT_ID,
 };
 ```
 
@@ -151,8 +136,8 @@ const rdConfig: CRMConfig = {
 
 ```typescript
 const pipedriveConfig: CRMConfig = {
-    apiKey: process.env.PIPEDRIVE_API_KEY,
-    baseUrl: "https://api.pipedrive.com/v1",
+  apiKey: process.env.PIPEDRIVE_API_KEY,
+  baseUrl: "https://api.pipedrive.com/v1",
 };
 ```
 
@@ -169,8 +154,8 @@ const pipedriveConfig: CRMConfig = {
 
 ```typescript
 const hubspotConfig: CRMConfig = {
-    apiKey: process.env.HUBSPOT_ACCESS_TOKEN,
-    baseUrl: "https://api.hubapi.com",
+  apiKey: process.env.HUBSPOT_ACCESS_TOKEN,
+  baseUrl: "https://api.hubapi.com",
 };
 ```
 
@@ -180,18 +165,29 @@ const hubspotConfig: CRMConfig = {
 
 ```typescript
 abstract class Integration {
-    protected apiKey: string;
-    protected baseUrl: string;
-    protected organizationId: string;
+  protected apiKey: string;
+  protected baseUrl: string;
+  protected organizationId: string;
 
-    abstract authenticate(): Promise<boolean>;
-    abstract validateConfig(): Promise<ValidationResult>;
-    abstract execute(action: IntegrationAction): Promise<ActionResult>;
+  abstract authenticate(): Promise<boolean>;
+  abstract validateConfig(): Promise<ValidationResult>;
+  abstract execute(action: IntegrationAction): Promise<ActionResult>;
 
-    // Métodos comuns
-    protected async makeRequest(endpoint: string, method: string, data?: any): Promise<any>;
-    protected async logActivity(action: string, success: boolean, metadata?: any): Promise<void>;
-    protected validateRequiredFields(config: any, fields: string[]): ValidationResult;
+  // Métodos comuns
+  protected async makeRequest(
+    endpoint: string,
+    method: string,
+    data?: any,
+  ): Promise<any>;
+  protected async logActivity(
+    action: string,
+    success: boolean,
+    metadata?: any,
+  ): Promise<void>;
+  protected validateRequiredFields(
+    config: any,
+    fields: string[],
+  ): ValidationResult;
 }
 ```
 
@@ -199,12 +195,22 @@ abstract class Integration {
 
 ```typescript
 class IntegrationManager {
-    private integrations: Map<string, Integration> = new Map();
+  private integrations: Map<string, Integration> = new Map();
 
-    async loadIntegration(type: string, config: any, organizationId: string): Promise<Integration>;
-    async executeAction(integrationType: string, action: IntegrationAction): Promise<ActionResult>;
-    async validateIntegration(type: string, config: any): Promise<ValidationResult>;
-    async getAvailableActions(type: string): Promise<string[]>;
+  async loadIntegration(
+    type: string,
+    config: any,
+    organizationId: string,
+  ): Promise<Integration>;
+  async executeAction(
+    integrationType: string,
+    action: IntegrationAction,
+  ): Promise<ActionResult>;
+  async validateIntegration(
+    type: string,
+    config: any,
+  ): Promise<ValidationResult>;
+  async getAvailableActions(type: string): Promise<string[]>;
 }
 ```
 
@@ -244,18 +250,21 @@ class IntegrationManager {
 ```typescript
 // Webhook universal para todas as integrações
 app.post("/api/webhooks/:integration/:organizationId", async (req, res) => {
-    const { integration, organizationId } = req.params;
-    const payload = req.body;
+  const { integration, organizationId } = req.params;
+  const payload = req.body;
 
-    const integrationInstance = await loadIntegration(integration, organizationId);
-    const events = await integrationInstance.processWebhook(payload);
+  const integrationInstance = await loadIntegration(
+    integration,
+    organizationId,
+  );
+  const events = await integrationInstance.processWebhook(payload);
 
-    // Disparar workflows baseados nos eventos
-    for (const event of events) {
-        await workflowEngine.triggerByWebhook(event, organizationId);
-    }
+  // Disparar workflows baseados nos eventos
+  for (const event of events) {
+    await workflowEngine.triggerByWebhook(event, organizationId);
+  }
 
-    res.status(200).send("OK");
+  res.status(200).send("OK");
 });
 ```
 
@@ -287,10 +296,10 @@ app.post("/api/webhooks/:integration/:organizationId", async (req, res) => {
 ```typescript
 // Configuração de rate limits por integração
 const rateLimits = {
-    whatsapp: { requests: 1000, window: "1h" },
-    pix: { requests: 10000, window: "1h" },
-    crm: { requests: 5000, window: "1h" },
-    erp: { requests: 2000, window: "1h" },
+  whatsapp: { requests: 1000, window: "1h" },
+  pix: { requests: 10000, window: "1h" },
+  crm: { requests: 5000, window: "1h" },
+  erp: { requests: 2000, window: "1h" },
 };
 ```
 
@@ -341,16 +350,16 @@ docker logs autoflow-backend | grep "Integration.*auth"
 ```typescript
 // Health check para todas as integrações
 app.get("/api/integrations/health", async (req, res) => {
-    const health = {};
+  const health = {};
 
-    for (const [name, integration] of integrations) {
-        health[name] = {
-            status: (await integration.testConnection()) ? "healthy" : "unhealthy",
-            lastCheck: new Date().toISOString(),
-        };
-    }
+  for (const [name, integration] of integrations) {
+    health[name] = {
+      status: (await integration.testConnection()) ? "healthy" : "unhealthy",
+      lastCheck: new Date().toISOString(),
+    };
+  }
 
-    res.json(health);
+  res.json(health);
 });
 ```
 

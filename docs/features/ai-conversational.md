@@ -54,73 +54,16 @@ class AIService {
         organizationId: string,
         message: string,
         context?: OrganizationContext
-    ): Promise<ChatResponse>;
+    # IA Conversacional — documento consolidado
 
-    // Conversão de função GPT para WorkflowDefinition
-    private convertToWorkflowDefinition(functionArgs: any, organizationId: string): Promise<WorkflowDefinition>;
-}
-```
+    Este arquivo foi consolidado. A versão canônica e resumida está em:
 
-#### API Endpoints
+    - `docs/consolidated/ai-conversational-summary.md`
 
-##### Chat Conversacional
+    Para o conteúdo técnico completo, veja o arquivo arquivado:
 
-```typescript
-POST /api/ai/chat
-Content-Type: application/json
+    - `docs/archive/ai-conversational-full.md`
 
-{
-    "message": "Quero automatizar envio de mensagens de boas-vindas",
-    "organizationContext": {
-        "businessType": "E-commerce",
-        "availableIntegrations": ["WhatsApp Business", "PIX"],
-        "existingWorkflows": ["follow-up-vendas"],
-        "commonPatterns": ["atendimento-cliente"]
-    }
-}
-
-// Response
-{
-    "success": true,
-    "data": {
-        "response": "Perfeito! Criei um workflow que...",
-        "workflowGenerated": {
-            "id": "wf_12345",
-            "name": "Boas-vindas WhatsApp",
-            "description": "Envio automático de mensagem...",
-            // ... WorkflowDefinition completa
-        },
-        "suggestions": [
-            "Adicionar follow-up após 24h",
-            "Integrar com sistema de cupons",
-            "Configurar horário comercial"
-        ]
-    }
-}
-```
-
-##### Histórico de Conversa
-
-```typescript
-GET /api/ai/chat/history
-
-// Response
-{
-    "success": true,
-    "data": {
-        "messages": [
-            {
-                "id": "msg_123",
-                "role": "user",
-                "content": "Quero automatizar vendas",
-                "timestamp": "2024-09-18T15:30:00Z",
-                "metadata": {
-                    "organizationId": "org_456"
-                }
-            },
-            {
-                "id": "msg_124",
-                "role": "assistant",
                 "content": "Vou criar um workflow de vendas...",
                 "timestamp": "2024-09-18T15:30:15Z",
                 "metadata": {
@@ -139,9 +82,9 @@ GET /api/ai/chat/history
 
 ```typescript
 interface AIChatProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onWorkflowGenerated?: (workflowId: string) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onWorkflowGenerated?: (workflowId: string) => void;
 }
 
 // Features implementadas:
@@ -255,15 +198,15 @@ INSTRUÇÕES:
 ### Manual Testing Scenarios
 
 1. **Criação de Workflow Simples**
-    - Input: "Quero enviar mensagem de boas-vindas"
-    - Expected: Workflow gerado com trigger manual + send_message
+   - Input: "Quero enviar mensagem de boas-vindas"
+   - Expected: Workflow gerado com trigger manual + send_message
 
 2. **Workflow Complexo com Condições**
-    - Input: "Enviar cobrança via PIX se cliente não pagou em 3 dias"
-    - Expected: Workflow com schedule trigger + conditions + PIX integration
+   - Input: "Enviar cobrança via PIX se cliente não pagou em 3 dias"
+   - Expected: Workflow com schedule trigger + conditions + PIX integration
 
 3. **Refinamento Iterativo**
-    - Input inicial → Workflow gerado → Feedback → Workflow refinado
+   - Input inicial → Workflow gerado → Feedback → Workflow refinado
 
 ## Future Considerations
 

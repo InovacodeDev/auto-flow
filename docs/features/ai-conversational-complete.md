@@ -13,31 +13,31 @@ O sistema de IA Conversacional permite que usuários criem automações através
 - **Localização**: `apps/backend/src/ai/IntelligentPromptSystem.ts`
 - **Responsabilidade**: Sistema de prompts especializados para diferentes contextos
 - **Funcionalidades**:
-    - Prompts para criação de workflows
-    - Prompts para otimização
-    - Prompts para troubleshooting
-    - Contextos específicos por indústria (e-commerce, serviços, educação)
+  - Prompts para criação de workflows
+  - Prompts para otimização
+  - Prompts para troubleshooting
+  - Contextos específicos por indústria (e-commerce, serviços, educação)
 
 #### 2. NaturalLanguageWorkflowParser
 
 - **Localização**: `apps/backend/src/ai/NaturalLanguageWorkflowParser.ts`
 - **Responsabilidade**: Parser para converter linguagem natural em estruturas de workflow
 - **Funcionalidades**:
-    - Detecção de intenções (criar, modificar, perguntar, ajuda)
-    - Extração de entidades (tempo, integrações, valores, contatos)
-    - Identificação de triggers, actions e conditions
-    - Cálculo de confiança das interpretações
+  - Detecção de intenções (criar, modificar, perguntar, ajuda)
+  - Extração de entidades (tempo, integrações, valores, contatos)
+  - Identificação de triggers, actions e conditions
+  - Cálculo de confiança das interpretações
 
 #### 3. AIConversationalService
 
 - **Localização**: `apps/backend/src/ai/AIConversationalService.ts`
 - **Responsabilidade**: Serviço principal de conversação com integração OpenAI
 - **Funcionalidades**:
-    - Gerenciamento de contexto de conversas
-    - Integração com OpenAI GPT-4
-    - Processamento de mensagens
-    - Geração de sugestões inteligentes
-    - Estatísticas de conversação
+  - Gerenciamento de contexto de conversas
+  - Integração com OpenAI GPT-4
+  - Processamento de mensagens
+  - Geração de sugestões inteligentes
+  - Estatísticas de conversação
 
 ### API Endpoints
 
@@ -59,20 +59,20 @@ O sistema de IA Conversacional permite que usuários criem automações através
 
 - **Localização**: `apps/frontend/src/components/ai-chat/AIChatInterface.tsx`
 - **Funcionalidades**:
-    - Interface de chat em tempo real
-    - Sugestões inteligentes contextuais
-    - Indicadores de confiança
-    - Avaliação de respostas (thumbs up/down)
-    - Próximos passos sugeridos
-    - Badges para workflows criados
+  - Interface de chat em tempo real
+  - Sugestões inteligentes contextuais
+  - Indicadores de confiança
+  - Avaliação de respostas (thumbs up/down)
+  - Próximos passos sugeridos
+  - Badges para workflows criados
 
 #### AIChatPage
 
 - **Localização**: `apps/frontend/src/pages/AIChatPage.tsx`
 - **Funcionalidades**:
-    - Página dedicada para chat com IA
-    - Layout responsivo
-    - Integração com roteador
+  - Página dedicada para chat com IA
+  - Layout responsivo
+  - Integração com roteador
 
 ## Funcionalidades Implementadas
 

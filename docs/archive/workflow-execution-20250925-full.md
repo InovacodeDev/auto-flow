@@ -1,19 +1,13 @@
-# Execução de Workflows (consolidado)
+````````markdown
+# Execução de Workflows — Arquivo completo (2025-09-25)
 
-Este arquivo foi consolidado. O conteúdo técnico completo foi arquivado para referência.
+Esta é uma cópia arquivada da versão atual de `docs/features/workflow-execution.md` criada em 2025-09-25.
 
-- Documento canônico (consolidado): `../../consolidated/workflow-engine-summary.md`
-- Cópia arquivada (versão completa, 2025-09-25): `../../archive/workflow-execution-20250925-full.md`
+---
 
-Resumo rápido:
+COPY OF ORIGINAL CONTENT BELOW:
 
-- Endpoint de execução: `POST /api/workflows/:id/execute`
-- Endpoints auxiliares: `GET /api/workflows/:id/executions`, `GET /api/workflows/executions/:executionId/logs`
-- Banco de dados: tabelas `workflow_executions` e `workflow_execution_logs`
-- UI: ExecutionPanel (visualização e logs)
-
-Para ver DDL completas, exemplos e trechos de código, abra a cópia arquivada indicada acima.
-
+```````markdown
 # Execução de Workflows
 
 ## Overview
@@ -53,7 +47,7 @@ Sistema completo de execução de workflows que permite executar workflows criad
 
 ### Database Schema
 
-`````sql
+``````sql
 -- Tabela de execuções
 CREATE TABLE workflow_executions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -72,7 +66,8 @@ CREATE TABLE workflow_executions (
 CREATE TABLE workflow_execution_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     execution_id UUID NOT NULL REFERENCES workflow_executions(id) ON DELETE CASCADE,
-    ````markdown
+`````markdown
+
     # Execução de Workflows (Consolidado)
 
     Este arquivo foi consolidado. O resumo canônico e os detalhes de implementação estão em:
@@ -95,4 +90,17 @@ CREATE TABLE workflow_execution_logs (
 
     ````
 {
-`````
+``````
+```````
+````````
+
+```
+
+```
+
+````
+
+```
+
+```
+````

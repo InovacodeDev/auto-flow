@@ -24,100 +24,35 @@ WHATSAPP_WEBHOOK_VERIFY_TOKEN=sua_token_verificacao
 
 ### Setup Detalhado
 
-#### 1. Criar Aplicação Facebook
+```markdown
+# WhatsApp Business API Integration (Consolidado)
 
-1. Acesse [developers.facebook.com](https://developers.facebook.com)
-2. Crie nova aplicação → "Business"
-3. Adicione produto "WhatsApp Business API"
+Conteúdo consolidado. Resumo canônico:
 
-#### 2. Configurar Número de Telefone
+- ../../consolidated/integrations-summary.md
 
-1. No painel da aplicação, vá para WhatsApp → Getting Started
-2. Adicione número de telefone comercial
-3. Verifique o número via SMS/chamada
-4. Copie o Phone Number ID
+Arquivo completo arquivado em:
 
-#### 3. Gerar Token de Acesso
+- ../../archive/whatsapp-business-full.md
 
-1. Em WhatsApp → Getting Started
-2. Gere um token temporário (24h) ou configure token permanente
-3. Para token permanente:
-    - Crie System User em Business Manager
-    - Atribua permissões necessárias
-    - Gere token permanente
+Resumo rápido:
 
-#### 4. Configurar Webhook
+- Integração com WhatsApp Business API: envio/recebimento, templates aprovados, mídia, webhooks.
+- Pontos de atenção: templates precisam aprovação da Meta, rate limits, janela de 24h.
 
-1. Em WhatsApp → Configuration
-2. Configure webhook URL: `https://seu-dominio.com/api/integrations/whatsapp/webhook`
-3. Defina Verify Token: mesmo valor da variável `WHATSAPP_WEBHOOK_VERIFY_TOKEN`
-4. Inscreva-se nos eventos: `messages`
-
-## Funcionalidades
-
-### Ações Disponíveis
-
-#### Send Text Message
-
-```typescript
-{
-  type: "send_text_message",
-  payload: {
-    to: "+5511999999999",
-    message: "Olá! Como posso ajudar?"
-  }
-}
+Para detalhes de configuração, exemplos e troubleshooting, consulte a cópia arquivada.
 ```
-
-#### Send Template Message
-
-```typescript
-{
-  type: "send_template_message",
-  payload: {
-    to: "+5511999999999",
-    templateName: "welcome_message",
-    parameters: ["João", "AutoFlow"]
-  }
-}
-```
-
-#### Send Media Message
-
-```typescript
-{
-  type: "send_media_message",
-  payload: {
-    to: "+5511999999999",
-    type: "image",
-    mediaUrl: "https://example.com/image.jpg",
-    caption: "Imagem anexada"
-  }
-}
-```
-
-### Templates WhatsApp
-
-Templates devem ser aprovados pela Meta antes do uso:
-
-#### Template de Boas-vindas
-
-```
-Nome: welcome_message
-Categoria: MARKETING
-Idioma: pt_BR
-
-Conteúdo:
-Olá {{1}}! 👋
 
 Bem-vindo(a) ao {{2}}! Estamos aqui para ajudar você.
 
 Se precisar de algo, é só chamar!
+
 ```
 
 #### Template de Cobrança
 
 ```
+
 Nome: payment_reminder
 Categoria: ACCOUNT_UPDATE
 Idioma: pt_BR
@@ -129,7 +64,8 @@ Seu pagamento de R$ {{2}} está em aberto.
 Vencimento: {{3}}
 
 Para quitar: {{4}}
-```
+
+````
 
 ## Uso nos Workflows
 
@@ -143,21 +79,21 @@ Para quitar: {{4}}
         "events": ["message_received"]
     }
 }
-```
+````
 
 ### Action: Resposta Automática
 
 ```json
 {
-    "type": "send_message",
-    "config": {
-        "integration": "whatsapp_business",
-        "action": "send_text_message"
-    },
-    "data": {
-        "to": "{{trigger.message.from}}",
-        "message": "Obrigado pela mensagem! Em breve responderemos."
-    }
+  "type": "send_message",
+  "config": {
+    "integration": "whatsapp_business",
+    "action": "send_text_message"
+  },
+  "data": {
+    "to": "{{trigger.message.from}}",
+    "message": "Obrigado pela mensagem! Em breve responderemos."
+  }
 }
 ```
 
@@ -165,49 +101,49 @@ Para quitar: {{4}}
 
 ```json
 {
-    "name": "Atendimento Automático WhatsApp",
-    "triggers": [
+  "name": "Atendimento Automático WhatsApp",
+  "triggers": [
+    {
+      "type": "webhook",
+      "config": {
+        "source": "whatsapp",
+        "event": "message_received"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "conditional",
+      "condition": "trigger.message.body.includes('oi') || trigger.message.body.includes('olá')",
+      "true_actions": [
         {
-            "type": "webhook",
-            "config": {
-                "source": "whatsapp",
-                "event": "message_received"
-            }
+          "type": "send_message",
+          "config": {
+            "integration": "whatsapp_business",
+            "action": "send_template_message"
+          },
+          "data": {
+            "to": "{{trigger.message.from}}",
+            "templateName": "welcome_message",
+            "parameters": ["Cliente", "AutoFlow"]
+          }
         }
-    ],
-    "actions": [
+      ],
+      "false_actions": [
         {
-            "type": "conditional",
-            "condition": "trigger.message.body.includes('oi') || trigger.message.body.includes('olá')",
-            "true_actions": [
-                {
-                    "type": "send_message",
-                    "config": {
-                        "integration": "whatsapp_business",
-                        "action": "send_template_message"
-                    },
-                    "data": {
-                        "to": "{{trigger.message.from}}",
-                        "templateName": "welcome_message",
-                        "parameters": ["Cliente", "AutoFlow"]
-                    }
-                }
-            ],
-            "false_actions": [
-                {
-                    "type": "send_message",
-                    "config": {
-                        "integration": "whatsapp_business",
-                        "action": "send_text_message"
-                    },
-                    "data": {
-                        "to": "{{trigger.message.from}}",
-                        "message": "Desculpe, não entendi. Digite 'oi' para começar."
-                    }
-                }
-            ]
+          "type": "send_message",
+          "config": {
+            "integration": "whatsapp_business",
+            "action": "send_text_message"
+          },
+          "data": {
+            "to": "{{trigger.message.from}}",
+            "message": "Desculpe, não entendi. Digite 'oi' para começar."
+          }
         }
-    ]
+      ]
+    }
+  ]
 }
 ```
 
@@ -232,10 +168,10 @@ Para quitar: {{4}}
 
 - **Sintoma**: Webhook não é chamado quando mensagens são recebidas
 - **Verificações**:
-    1. URL do webhook está acessível publicamente
-    2. Verify token confere com configuração
-    3. Webhook está inscrito no evento "messages"
-    4. Certificado SSL válido
+  1. URL do webhook está acessível publicamente
+  2. Verify token confere com configuração
+  3. Webhook está inscrito no evento "messages"
+  4. Certificado SSL válido
 
 ### Limite de Rate Limiting
 

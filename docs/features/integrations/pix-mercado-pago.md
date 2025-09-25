@@ -14,31 +14,24 @@ A integração PIX com Mercado Pago permite processar pagamentos instantâneos d
 
 ### Variáveis de Ambiente
 
-```bash
-# PIX - Mercado Pago
-MERCADO_PAGO_ACCESS_TOKEN=APP_USR-xxxxxxxx
-MERCADO_PAGO_USER_ID=123456789
-MERCADO_PAGO_WEBHOOK_SECRET=sua_webhook_secret
+```markdown
+# PIX Integration - Mercado Pago (Consolidado)
+
+Conteúdo consolidado. Resumo canônico:
+
+- ../../consolidated/integrations-summary.md
+
+Arquivo completo arquivado em:
+
+- ../../archive/pix-mercado-pago-full.md
+
+Resumo rápido:
+
+- Suporte a criação de pagamentos PIX, verificação de status, webhooks de notificação e reconciliação automática.
+- Endpoints principais: `POST /api/integrations/pix/create-payment`, `GET /api/integrations/pix/payment-status/:id`, `POST /api/integrations/pix/webhook`.
+
+Para exemplos completos de payloads, webhooks e troubleshooting, consulte a cópia arquivada.
 ```
-
-### Setup Detalhado
-
-#### 1. Criar Aplicação Mercado Pago
-
-1. Acesse [developers.mercadopago.com](https://developers.mercadopago.com)
-2. Faça login com sua conta Mercado Pago
-3. Vá para "Suas aplicações" → "Criar aplicação"
-4. Preencha dados da aplicação
-5. Configure URLs de redirect e webhook
-
-#### 2. Obter Credenciais
-
-1. Na aplicação criada, acesse "Credenciais"
-2. Copie o Access Token (modo Produção)
-3. Anote o User ID da conta
-4. Configure webhook secret para segurança
-
-#### 3. Configurar Webhook
 
 1. Em "Webhooks" na aplicação
 2. Configure URL: `https://seu-dominio.com/api/integrations/pix/webhook`
@@ -72,14 +65,14 @@ MERCADO_PAGO_WEBHOOK_SECRET=sua_webhook_secret
 
 ```json
 {
-    "success": true,
-    "data": {
-        "paymentId": "12345678901",
-        "status": "pending",
-        "qrCode": "00020126580014br.gov.bcb.pix...",
-        "qrCodeBase64": "iVBORw0KGgoAAAANSUhEUgAA...",
-        "ticketUrl": "https://mercadopago.com/mlb/payments/ticket/..."
-    }
+  "success": true,
+  "data": {
+    "paymentId": "12345678901",
+    "status": "pending",
+    "qrCode": "00020126580014br.gov.bcb.pix...",
+    "qrCodeBase64": "iVBORw0KGgoAAAANSUhEUgAA...",
+    "ticketUrl": "https://mercadopago.com/mlb/payments/ticket/..."
+  }
 }
 ```
 
@@ -98,15 +91,15 @@ MERCADO_PAGO_WEBHOOK_SECRET=sua_webhook_secret
 
 ```json
 {
-    "success": true,
-    "data": {
-        "paymentId": "12345678901",
-        "status": "approved",
-        "statusDetail": "accredited",
-        "amount": 100.5,
-        "dateCreated": "2024-01-15T10:30:00Z",
-        "dateApproved": "2024-01-15T10:32:15Z"
-    }
+  "success": true,
+  "data": {
+    "paymentId": "12345678901",
+    "status": "approved",
+    "statusDetail": "accredited",
+    "amount": 100.5,
+    "dateCreated": "2024-01-15T10:30:00Z",
+    "dateApproved": "2024-01-15T10:32:15Z"
+  }
 }
 ```
 
@@ -138,41 +131,41 @@ MERCADO_PAGO_WEBHOOK_SECRET=sua_webhook_secret
 
 ```json
 {
-    "name": "Gerar Cobrança PIX",
-    "triggers": [
-        {
-            "type": "webhook",
-            "config": {
-                "source": "ecommerce",
-                "event": "order_created"
-            }
-        }
-    ],
-    "actions": [
-        {
-            "type": "create_payment",
-            "config": {
-                "integration": "pix_mercado_pago",
-                "action": "create_pix_payment"
-            },
-            "data": {
-                "amount": "{{trigger.order.total}}",
-                "description": "Pedido #{{trigger.order.id}}",
-                "externalReference": "{{trigger.order.id}}"
-            }
-        },
-        {
-            "type": "send_message",
-            "config": {
-                "integration": "whatsapp_business",
-                "action": "send_text_message"
-            },
-            "data": {
-                "to": "{{trigger.order.customer.phone}}",
-                "message": "🏦 *PIX Gerado!*\n\nValor: R$ {{trigger.order.total}}\nCódigo PIX: {{previous.data.qrCode}}\n\nPague pelo app do seu banco!"
-            }
-        }
-    ]
+  "name": "Gerar Cobrança PIX",
+  "triggers": [
+    {
+      "type": "webhook",
+      "config": {
+        "source": "ecommerce",
+        "event": "order_created"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "create_payment",
+      "config": {
+        "integration": "pix_mercado_pago",
+        "action": "create_pix_payment"
+      },
+      "data": {
+        "amount": "{{trigger.order.total}}",
+        "description": "Pedido #{{trigger.order.id}}",
+        "externalReference": "{{trigger.order.id}}"
+      }
+    },
+    {
+      "type": "send_message",
+      "config": {
+        "integration": "whatsapp_business",
+        "action": "send_text_message"
+      },
+      "data": {
+        "to": "{{trigger.order.customer.phone}}",
+        "message": "🏦 *PIX Gerado!*\n\nValor: R$ {{trigger.order.total}}\nCódigo PIX: {{previous.data.qrCode}}\n\nPague pelo app do seu banco!"
+      }
+    }
+  ]
 }
 ```
 
@@ -180,43 +173,46 @@ MERCADO_PAGO_WEBHOOK_SECRET=sua_webhook_secret
 
 ```json
 {
-    "name": "Confirmar Pagamento PIX",
-    "triggers": [
-        {
-            "type": "webhook",
-            "config": {
-                "source": "pix_mercado_pago",
-                "event": "payment_approved"
-            }
-        }
-    ],
-    "actions": [
-        {
-            "type": "update_order",
-            "config": {
-                "integration": "erp",
-                "action": "update_order_status"
-            },
-            "data": {
-                "orderId": "{{trigger.payment.externalReference}}",
-                "status": "paid",
-                "paymentMethod": "pix",
-                "paymentId": "{{trigger.payment.id}}"
-            }
-        },
-        {
-            "type": "send_message",
-            "config": {
-                "integration": "whatsapp_business",
-                "action": "send_template_message"
-            },
-            "data": {
-                "to": "{{trigger.payment.customer.phone}}",
-                "templateName": "payment_confirmed",
-                "parameters": ["{{trigger.payment.externalReference}}", "{{trigger.payment.amount}}"]
-            }
-        }
-    ]
+  "name": "Confirmar Pagamento PIX",
+  "triggers": [
+    {
+      "type": "webhook",
+      "config": {
+        "source": "pix_mercado_pago",
+        "event": "payment_approved"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "update_order",
+      "config": {
+        "integration": "erp",
+        "action": "update_order_status"
+      },
+      "data": {
+        "orderId": "{{trigger.payment.externalReference}}",
+        "status": "paid",
+        "paymentMethod": "pix",
+        "paymentId": "{{trigger.payment.id}}"
+      }
+    },
+    {
+      "type": "send_message",
+      "config": {
+        "integration": "whatsapp_business",
+        "action": "send_template_message"
+      },
+      "data": {
+        "to": "{{trigger.payment.customer.phone}}",
+        "templateName": "payment_confirmed",
+        "parameters": [
+          "{{trigger.payment.externalReference}}",
+          "{{trigger.payment.amount}}"
+        ]
+      }
+    }
+  ]
 }
 ```
 
@@ -224,53 +220,53 @@ MERCADO_PAGO_WEBHOOK_SECRET=sua_webhook_secret
 
 ```json
 {
-    "name": "Cobrança com Lembrete",
-    "triggers": [
+  "name": "Cobrança com Lembrete",
+  "triggers": [
+    {
+      "type": "schedule",
+      "config": {
+        "cron": "0 9 * * *"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "check_pending_orders",
+      "config": {
+        "integration": "erp",
+        "filter": "status=pending AND created_at < 1day"
+      }
+    },
+    {
+      "type": "loop",
+      "items": "{{previous.data.orders}}",
+      "actions": [
         {
-            "type": "schedule",
-            "config": {
-                "cron": "0 9 * * *"
-            }
-        }
-    ],
-    "actions": [
-        {
-            "type": "check_pending_orders",
-            "config": {
-                "integration": "erp",
-                "filter": "status=pending AND created_at < 1day"
-            }
+          "type": "create_payment",
+          "config": {
+            "integration": "pix_mercado_pago",
+            "action": "create_pix_payment"
+          },
+          "data": {
+            "amount": "{{item.total}}",
+            "description": "Lembrete - Pedido #{{item.id}}",
+            "externalReference": "reminder-{{item.id}}"
+          }
         },
         {
-            "type": "loop",
-            "items": "{{previous.data.orders}}",
-            "actions": [
-                {
-                    "type": "create_payment",
-                    "config": {
-                        "integration": "pix_mercado_pago",
-                        "action": "create_pix_payment"
-                    },
-                    "data": {
-                        "amount": "{{item.total}}",
-                        "description": "Lembrete - Pedido #{{item.id}}",
-                        "externalReference": "reminder-{{item.id}}"
-                    }
-                },
-                {
-                    "type": "send_message",
-                    "config": {
-                        "integration": "whatsapp_business",
-                        "action": "send_text_message"
-                    },
-                    "data": {
-                        "to": "{{item.customer.phone}}",
-                        "message": "🔔 *Lembrete de Pagamento*\n\nPedido: #{{item.id}}\nValor: R$ {{item.total}}\n\nPague agora pelo PIX: {{previous.data.qrCode}}"
-                    }
-                }
-            ]
+          "type": "send_message",
+          "config": {
+            "integration": "whatsapp_business",
+            "action": "send_text_message"
+          },
+          "data": {
+            "to": "{{item.customer.phone}}",
+            "message": "🔔 *Lembrete de Pagamento*\n\nPedido: #{{item.id}}\nValor: R$ {{item.total}}\n\nPague agora pelo PIX: {{previous.data.qrCode}}"
+          }
         }
-    ]
+      ]
+    }
+  ]
 }
 ```
 
@@ -282,18 +278,18 @@ O Mercado Pago enviará notificações para os seguintes eventos:
 
 ```json
 {
-    "id": 12345,
-    "live_mode": true,
-    "type": "payment",
-    "date_created": "2024-01-15T10:30:00Z",
-    "application_id": 123456789,
-    "user_id": 987654321,
-    "version": 1,
-    "api_version": "v1",
-    "action": "payment.created",
-    "data": {
-        "id": "12345678901"
-    }
+  "id": 12345,
+  "live_mode": true,
+  "type": "payment",
+  "date_created": "2024-01-15T10:30:00Z",
+  "application_id": 123456789,
+  "user_id": 987654321,
+  "version": 1,
+  "api_version": "v1",
+  "action": "payment.created",
+  "data": {
+    "id": "12345678901"
+  }
 }
 ```
 
@@ -301,18 +297,18 @@ O Mercado Pago enviará notificações para os seguintes eventos:
 
 ```json
 {
-    "id": 12346,
-    "live_mode": true,
-    "type": "payment",
-    "date_created": "2024-01-15T10:32:15Z",
-    "application_id": 123456789,
-    "user_id": 987654321,
-    "version": 1,
-    "api_version": "v1",
-    "action": "payment.updated",
-    "data": {
-        "id": "12345678901"
-    }
+  "id": 12346,
+  "live_mode": true,
+  "type": "payment",
+  "date_created": "2024-01-15T10:32:15Z",
+  "application_id": 123456789,
+  "user_id": 987654321,
+  "version": 1,
+  "api_version": "v1",
+  "action": "payment.updated",
+  "data": {
+    "id": "12345678901"
+  }
 }
 ```
 
@@ -332,26 +328,26 @@ O Mercado Pago enviará notificações para os seguintes eventos:
 
 - **Sintoma**: Pagamentos não são processados automaticamente
 - **Verificações**:
-    1. URL webhook está acessível
-    2. Webhook está configurado para eventos "payments"
-    3. SSL válido
-    4. Resposta HTTP 200 no endpoint
+  1. URL webhook está acessível
+  2. Webhook está configurado para eventos "payments"
+  3. SSL válido
+  4. Resposta HTTP 200 no endpoint
 
 ### QR Code não é gerado
 
 - **Sintoma**: qrCode vem vazio na resposta
 - **Verificações**:
-    1. Valor mínimo R$ 0,01
-    2. Chave PIX válida e ativa
-    3. Conta Mercado Pago em boas condições
+  1. Valor mínimo R$ 0,01
+  2. Chave PIX válida e ativa
+  3. Conta Mercado Pago em boas condições
 
 ### Pagamento não é aprovado
 
 - **Possíveis causas**:
-    - Chave PIX incorreta
-    - Problemas no banco do pagador
-    - Valor incorreto
-    - Conta bloqueada
+  - Chave PIX incorreta
+  - Problemas no banco do pagador
+  - Valor incorreto
+  - Conta bloqueada
 
 ## Limitações
 

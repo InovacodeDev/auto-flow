@@ -79,11 +79,11 @@ GET /api/pix/health - Health check
 ```javascript
 // Exemplo: Loja online automatizada
 const cobranca = await pixService.createPIXPayment({
-    amount: 149.9,
-    description: "Produto XYZ - Loja ABC",
-    payerEmail: "cliente@email.com",
-    payerDocument: "12345678901",
-    externalReference: "PEDIDO_001",
+  amount: 149.9,
+  description: "Produto XYZ - Loja ABC",
+  payerEmail: "cliente@email.com",
+  payerDocument: "12345678901",
+  externalReference: "PEDIDO_001",
 });
 
 // QR Code gerado automaticamente
@@ -96,11 +96,11 @@ const cobranca = await pixService.createPIXPayment({
 ```javascript
 // Exemplo: Consultoria com pagamento recorrente
 const recorrente = await pixService.createRecurringPayment({
-    amount: 500.0,
-    description: "Consultoria Mensal - Janeiro 2024",
-    frequency: "monthly",
-    startDate: new Date("2024-01-01"),
-    payerEmail: "cliente@empresa.com",
+  amount: 500.0,
+  description: "Consultoria Mensal - Janeiro 2024",
+  frequency: "monthly",
+  startDate: new Date("2024-01-01"),
+  payerEmail: "cliente@empresa.com",
 });
 
 // Débito automático mensal configurado
@@ -112,29 +112,29 @@ const recorrente = await pixService.createRecurringPayment({
 ```javascript
 // Exemplo: Marketplace com múltiplos vendedores
 async function processarVendaMarketplace(venda) {
-    // 1. Criar cobrança PIX
-    const pagamento = await pixService.createPIXPayment({
-        amount: venda.valor,
-        description: `${venda.produto} - ${venda.vendedor}`,
-        externalReference: venda.id,
-    });
+  // 1. Criar cobrança PIX
+  const pagamento = await pixService.createPIXPayment({
+    amount: venda.valor,
+    description: `${venda.produto} - ${venda.vendedor}`,
+    externalReference: venda.id,
+  });
 
-    // 2. Enviar link via WhatsApp
-    await whatsappService.sendTemplate({
-        to: venda.comprador.telefone,
-        template: "cobranca_pix",
-        variables: {
-            valor: pixService.formatCurrency(venda.valor),
-            qrcode: pagamento.qrCode,
-            link: pagamento.paymentLink,
-        },
-    });
+  // 2. Enviar link via WhatsApp
+  await whatsappService.sendTemplate({
+    to: venda.comprador.telefone,
+    template: "cobranca_pix",
+    variables: {
+      valor: pixService.formatCurrency(venda.valor),
+      qrcode: pagamento.qrCode,
+      link: pagamento.paymentLink,
+    },
+  });
 
-    // 3. Webhook automatiza:
-    // - Confirmação para comprador
-    // - Notificação para vendedor
-    // - Atualização de estoque
-    // - Disparo de logística
+  // 3. Webhook automatiza:
+  // - Confirmação para comprador
+  // - Notificação para vendedor
+  // - Atualização de estoque
+  // - Disparo de logística
 }
 ```
 
@@ -148,10 +148,10 @@ async function processarVendaMarketplace(venda) {
 4. **Cliente paga via PIX (instantâneo)**
 5. **Webhook confirma pagamento em tempo real**
 6. **Workflows automáticos disparados**:
-    - Confirmação para cliente
-    - Nota fiscal automática
-    - Ativação de serviço/produto
-    - Atualização CRM/ERP
+   - Confirmação para cliente
+   - Nota fiscal automática
+   - Ativação de serviço/produto
+   - Atualização CRM/ERP
 
 ### Fluxo 2: Cobrança Recorrente
 
@@ -167,9 +167,9 @@ async function processarVendaMarketplace(venda) {
 1. **Cobrança não paga no prazo**
 2. **Sistema detecta automaticamente**
 3. **Sequência de lembranças via WhatsApp**:
-    - Dia do vencimento
-    - 3 dias após vencimento
-    - 7 dias após vencimento
+   - Dia do vencimento
+   - 3 dias após vencimento
+   - 7 dias após vencimento
 4. **Ofertas de desconto automáticas**
 5. **Renegociação facilitada**
 

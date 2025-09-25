@@ -18,73 +18,81 @@ A IA Conversacional é o diferencial competitivo do AutoFlow, permitindo que usu
 
 ```typescript
 class AutoFlowAIAssistant {
-    private openai: OpenAI;
-    private promptTemplates: PromptTemplateRepository;
-    private businessContext: BusinessContextAnalyzer;
-    private workflowGenerator: WorkflowGenerator;
+  private openai: OpenAI;
+  private promptTemplates: PromptTemplateRepository;
+  private businessContext: BusinessContextAnalyzer;
+  private workflowGenerator: WorkflowGenerator;
 
-    async createWorkflowFromNaturalLanguage(
-        userMessage: string,
-        organizationContext: OrganizationContext
-    ): Promise<WorkflowSuggestion> {
-        // 1. Analyze business context
-        const context = await this.businessContext.analyze(organizationContext);
+  async createWorkflowFromNaturalLanguage(
+    userMessage: string,
+    organizationContext: OrganizationContext,
+  ): Promise<WorkflowSuggestion> {
+    // 1. Analyze business context
+    const context = await this.businessContext.analyze(organizationContext);
 
-        // 2. Process natural language intent
-        const intent = await this.processUserIntent(userMessage, context);
+    // 2. Process natural language intent
+    const intent = await this.processUserIntent(userMessage, context);
 
-        // 3. Generate workflow structure
-        const workflow = await this.workflowGenerator.generate(intent, context);
+    // 3. Generate workflow structure
+    const workflow = await this.workflowGenerator.generate(intent, context);
 
-        // 4. Validate and optimize
-        const optimizedWorkflow = await this.optimizeWorkflow(workflow);
+    // 4. Validate and optimize
+    const optimizedWorkflow = await this.optimizeWorkflow(workflow);
 
-        return {
-            workflow: optimizedWorkflow,
-            confidence: intent.confidence,
-            explanation: this.generateExplanation(workflow, userMessage),
-            alternatives: await this.generateAlternatives(intent, context),
-        };
-    }
+    return {
+      workflow: optimizedWorkflow,
+      confidence: intent.confidence,
+      explanation: this.generateExplanation(workflow, userMessage),
+      alternatives: await this.generateAlternatives(intent, context),
+    };
+  }
 
-    private async processUserIntent(message: string, context: BusinessContext): Promise<UserIntent> {
-        const prompt = this.promptTemplates.getAutomationCreationPrompt({
-            userMessage: message,
-            businessType: context.industry,
-            existingIntegrations: context.availableIntegrations,
-            language: "pt-BR",
-        });
+  private async processUserIntent(
+    message: string,
+    context: BusinessContext,
+  ): Promise<UserIntent> {
+    const prompt = this.promptTemplates.getAutomationCreationPrompt({
+      userMessage: message,
+      businessType: context.industry,
+      existingIntegrations: context.availableIntegrations,
+      language: "pt-BR",
+    });
 
-        const response = await this.openai.chat.completions.create({
-            model: "gpt-4-turbo-preview",
-            messages: [
-                { role: "system", content: prompt.systemMessage },
-                { role: "user", content: message },
-            ],
-            functions: [
-                {
-                    name: "create_automation_intent",
-                    description: "Extract automation intent from user message",
-                    parameters: {
-                        type: "object",
-                        properties: {
-                            triggerType: {
-                                type: "string",
-                                enum: ["webhook", "schedule", "whatsapp_received", "email_received"],
-                            },
-                            actions: { type: "array", items: { type: "string" } },
-                            conditions: { type: "array", items: { type: "object" } },
-                            confidence: { type: "number", minimum: 0, maximum: 1 },
-                            clarificationNeeded: { type: "array", items: { type: "string" } },
-                        },
-                    },
-                },
-            ],
-            function_call: { name: "create_automation_intent" },
-        });
+    const response = await this.openai.chat.completions.create({
+      model: "gpt-4-turbo-preview",
+      messages: [
+        { role: "system", content: prompt.systemMessage },
+        { role: "user", content: message },
+      ],
+      functions: [
+        {
+          name: "create_automation_intent",
+          description: "Extract automation intent from user message",
+          parameters: {
+            type: "object",
+            properties: {
+              triggerType: {
+                type: "string",
+                enum: [
+                  "webhook",
+                  "schedule",
+                  "whatsapp_received",
+                  "email_received",
+                ],
+              },
+              actions: { type: "array", items: { type: "string" } },
+              conditions: { type: "array", items: { type: "object" } },
+              confidence: { type: "number", minimum: 0, maximum: 1 },
+              clarificationNeeded: { type: "array", items: { type: "string" } },
+            },
+          },
+        },
+      ],
+      function_call: { name: "create_automation_intent" },
+    });
 
-        return JSON.parse(response.choices[0].message.function_call.arguments);
-    }
+    return JSON.parse(response.choices[0].message.function_call.arguments);
+  }
 }
 ```
 
@@ -92,33 +100,37 @@ class AutoFlowAIAssistant {
 
 ```typescript
 interface AIPromptTemplate {
-    id: string;
-    name: string;
-    context: "automation_creation" | "optimization" | "troubleshooting" | "explanation";
+  id: string;
+  name: string;
+  context:
+    | "automation_creation"
+    | "optimization"
+    | "troubleshooting"
+    | "explanation";
 
-    systemMessage: string;
-    userMessageTemplate: string;
-    variables: string[];
+  systemMessage: string;
+  userMessageTemplate: string;
+  variables: string[];
 
-    expectedOutput: "workflow_json" | "suggestion" | "analysis" | "explanation";
+  expectedOutput: "workflow_json" | "suggestion" | "analysis" | "explanation";
 
-    // Brazilian business context
-    businessContext: {
-        industries: string[];
-        commonIntegrations: string[];
-        regulations: string[];
-    };
+  // Brazilian business context
+  businessContext: {
+    industries: string[];
+    commonIntegrations: string[];
+    regulations: string[];
+  };
 }
 
 class PromptTemplateRepository {
-    // Template para criação de automações
-    getAutomationCreationPrompt(context: PromptContext): AIPromptTemplate {
-        return {
-            id: "automation_creation_v1",
-            name: "Criação de Automação",
-            context: "automation_creation",
+  // Template para criação de automações
+  getAutomationCreationPrompt(context: PromptContext): AIPromptTemplate {
+    return {
+      id: "automation_creation_v1",
+      name: "Criação de Automação",
+      context: "automation_creation",
 
-            systemMessage: `
+      systemMessage: `
 Você é um especialista em automação empresarial para PMEs brasileiras.
 Seu objetivo é criar workflows de automação baseados em descrições em linguagem natural.
 
@@ -138,20 +150,20 @@ FORMATO DE RESPOSTA:
 Use a função create_automation_intent para estruturar a resposta.
       `,
 
-            userMessageTemplate: context.userMessage,
-            variables: ["businessType", "existingIntegrations", "userMessage"],
-            expectedOutput: "workflow_json",
-        };
-    }
+      userMessageTemplate: context.userMessage,
+      variables: ["businessType", "existingIntegrations", "userMessage"],
+      expectedOutput: "workflow_json",
+    };
+  }
 
-    // Template para otimização de workflows
-    getOptimizationPrompt(workflow: AutoFlowWorkflow): AIPromptTemplate {
-        return {
-            id: "workflow_optimization_v1",
-            name: "Otimização de Workflow",
-            context: "optimization",
+  // Template para otimização de workflows
+  getOptimizationPrompt(workflow: AutoFlowWorkflow): AIPromptTemplate {
+    return {
+      id: "workflow_optimization_v1",
+      name: "Otimização de Workflow",
+      context: "optimization",
 
-            systemMessage: `
+      systemMessage: `
 Analise o workflow fornecido e sugira otimizações específicas para PMEs brasileiras.
 
 CRITÉRIOS DE OTIMIZAÇÃO:
@@ -169,11 +181,11 @@ FOQUE EM:
 - Métricas de sucesso mensuráveis
       `,
 
-            userMessageTemplate: JSON.stringify(workflow, null, 2),
-            variables: ["workflow"],
-            expectedOutput: "suggestion",
-        };
-    }
+      userMessageTemplate: JSON.stringify(workflow, null, 2),
+      variables: ["workflow"],
+      expectedOutput: "suggestion",
+    };
+  }
 }
 ```
 
@@ -181,52 +193,52 @@ FOQUE EM:
 
 ```typescript
 class BusinessContextAnalyzer {
-    async analyze(org: OrganizationContext): Promise<BusinessContext> {
-        return {
-            industry: org.industry,
-            size: org.employeeCount,
+  async analyze(org: OrganizationContext): Promise<BusinessContext> {
+    return {
+      industry: org.industry,
+      size: org.employeeCount,
 
-            // Analyze current integrations
-            availableIntegrations: await this.getAvailableIntegrations(org),
+      // Analyze current integrations
+      availableIntegrations: await this.getAvailableIntegrations(org),
 
-            // Identify pain points based on industry
-            commonPainPoints: this.getIndustryPainPoints(org.industry),
+      // Identify pain points based on industry
+      commonPainPoints: this.getIndustryPainPoints(org.industry),
 
-            // Suggest relevant automations
-            recommendedAutomations: await this.getRecommendations(org),
+      // Suggest relevant automations
+      recommendedAutomations: await this.getRecommendations(org),
 
-            // Compliance requirements
-            complianceRequirements: this.getComplianceRequirements(org.industry),
+      // Compliance requirements
+      complianceRequirements: this.getComplianceRequirements(org.industry),
 
-            // ROI opportunities
-            roiOpportunities: this.calculateROIOpportunities(org),
-        };
-    }
+      // ROI opportunities
+      roiOpportunities: this.calculateROIOpportunities(org),
+    };
+  }
 
-    private getIndustryPainPoints(industry: string): string[] {
-        const painPointsMap: Record<string, string[]> = {
-            ecommerce: [
-                "Gestão de pedidos manual",
-                "Atendimento WhatsApp não automatizado",
-                "Acompanhamento de entrega manual",
-                "Recuperação de carrinho abandono",
-            ],
-            servicos: [
-                "Agendamento manual",
-                "Follow-up de clientes manual",
-                "Cobrança e faturamento manual",
-                "Relatórios de produtividade manuais",
-            ],
-            retail: [
-                "Controle de estoque manual",
-                "Promoções e campanhas manuais",
-                "Atendimento pós-venda não sistematizado",
-                "Análise de vendas manual",
-            ],
-        };
+  private getIndustryPainPoints(industry: string): string[] {
+    const painPointsMap: Record<string, string[]> = {
+      ecommerce: [
+        "Gestão de pedidos manual",
+        "Atendimento WhatsApp não automatizado",
+        "Acompanhamento de entrega manual",
+        "Recuperação de carrinho abandono",
+      ],
+      servicos: [
+        "Agendamento manual",
+        "Follow-up de clientes manual",
+        "Cobrança e faturamento manual",
+        "Relatórios de produtividade manuais",
+      ],
+      retail: [
+        "Controle de estoque manual",
+        "Promoções e campanhas manuais",
+        "Atendimento pós-venda não sistematizado",
+        "Análise de vendas manual",
+      ],
+    };
 
-        return painPointsMap[industry] || [];
-    }
+    return painPointsMap[industry] || [];
+  }
 }
 ```
 
@@ -234,63 +246,73 @@ class BusinessContextAnalyzer {
 
 ```typescript
 interface ConversationContext {
-    sessionId: string;
-    userId: string;
-    organizationId: string;
+  sessionId: string;
+  userId: string;
+  organizationId: string;
 
-    currentWorkflow?: Partial<AutoFlowWorkflow>;
-    clarificationQueue: string[];
-    conversationHistory: ConversationMessage[];
+  currentWorkflow?: Partial<AutoFlowWorkflow>;
+  clarificationQueue: string[];
+  conversationHistory: ConversationMessage[];
 
-    state: "initial" | "clarifying" | "generating" | "reviewing" | "completed";
+  state: "initial" | "clarifying" | "generating" | "reviewing" | "completed";
 }
 
 class ConversationManager {
-    async handleUserMessage(message: string, context: ConversationContext): Promise<ConversationResponse> {
-        switch (context.state) {
-            case "initial":
-                return await this.handleInitialRequest(message, context);
+  async handleUserMessage(
+    message: string,
+    context: ConversationContext,
+  ): Promise<ConversationResponse> {
+    switch (context.state) {
+      case "initial":
+        return await this.handleInitialRequest(message, context);
 
-            case "clarifying":
-                return await this.handleClarification(message, context);
+      case "clarifying":
+        return await this.handleClarification(message, context);
 
-            case "reviewing":
-                return await this.handleReview(message, context);
+      case "reviewing":
+        return await this.handleReview(message, context);
 
-            default:
-                throw new Error(`Invalid conversation state: ${context.state}`);
-        }
+      default:
+        throw new Error(`Invalid conversation state: ${context.state}`);
+    }
+  }
+
+  private async handleInitialRequest(
+    message: string,
+    context: ConversationContext,
+  ): Promise<ConversationResponse> {
+    const suggestion = await this.aiAssistant.createWorkflowFromNaturalLanguage(
+      message,
+      {
+        organizationId: context.organizationId,
+      },
+    );
+
+    if (suggestion.confidence < 0.7) {
+      // Need clarification
+      context.state = "clarifying";
+      context.clarificationQueue = suggestion.clarificationNeeded || [];
+
+      return {
+        type: "clarification_needed",
+        message:
+          "Entendi que você quer criar uma automação, mas preciso de mais detalhes:",
+        questions: context.clarificationQueue,
+        partialWorkflow: suggestion.workflow,
+      };
     }
 
-    private async handleInitialRequest(message: string, context: ConversationContext): Promise<ConversationResponse> {
-        const suggestion = await this.aiAssistant.createWorkflowFromNaturalLanguage(message, {
-            organizationId: context.organizationId,
-        });
+    // High confidence - present workflow for review
+    context.state = "reviewing";
+    context.currentWorkflow = suggestion.workflow;
 
-        if (suggestion.confidence < 0.7) {
-            // Need clarification
-            context.state = "clarifying";
-            context.clarificationQueue = suggestion.clarificationNeeded || [];
-
-            return {
-                type: "clarification_needed",
-                message: "Entendi que você quer criar uma automação, mas preciso de mais detalhes:",
-                questions: context.clarificationQueue,
-                partialWorkflow: suggestion.workflow,
-            };
-        }
-
-        // High confidence - present workflow for review
-        context.state = "reviewing";
-        context.currentWorkflow = suggestion.workflow;
-
-        return {
-            type: "workflow_generated",
-            message: suggestion.explanation,
-            workflow: suggestion.workflow,
-            alternatives: suggestion.alternatives,
-        };
-    }
+    return {
+      type: "workflow_generated",
+      message: suggestion.explanation,
+      workflow: suggestion.workflow,
+      alternatives: suggestion.alternatives,
+    };
+  }
 }
 ```
 
